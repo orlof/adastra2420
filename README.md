@@ -1,0 +1,179 @@
+To compile in OSX + VSCode, press Command+p and write "task " (note SPACE after "task").
+You must have following prerequisites in path:
+  - "xcbasic3", "exomizer", vice's "c1541"
+  - Optionally you need "python3" and "zx0" to create resources,
+    but it is manual task
+
+This will show you the compilation targets.
+ - "Run Warzone" builds the disc image and runs it
+ - "Build warzone.d64" builds the disc image
+ - "Run Intro" runs intro
+ - "Run Battle" runs battle state
+
+
+|  ZP  | SHARED |  XCB3  | LOADER |  ZX0   | INTRO  | BATTLE |
+|------|--------|--------|--------|--------|--------|--------|
+| 0x16 | ZP_W0  |   FP   |  USED  | SRCPTR |        |        |
+| 0x17 | ZP_W0  |   FP   |  USED  | SRCPTR |        |        |
+| 0x18 | ZP_W1  |   FP   |  USED  | DSTPTR |        |        |
+| 0x19 | ZP_W1  |   FP   |  USED  | DSTPTR |        |        |
+| 0x1A | ZP_W2  |   FP   |  USED  | LENGTH |        |        |
+| 0x1B | ZP_W2  |   FP   |  USED  | LENGTH |        |        |
+| 0x1C | ZP_I0  |   FP   |        | OFFSET |        |        |
+| 0x1D | ZP_I0  |   FP   |        | OFFSET |        |        |
+| 0x1E | ZP_I1  |   FP   |        |        |        |        |
+| 0x1F | ZP_I1  |   FP   |        |        |        |        |
+| 0x20 | ZP_B0  |   FP   |        |        |        |        |
+| 0x21 | ZP_B1  |   FP   |        |        |        |        |
+| 0x22 | ZP_B2  |   FP   |        |        |        |        |
+| 0x23 | ZP_B3  |   FP   |        |        |        |        |
+| 0x24 | ZP_B4  |   FP   |        |        |        |        |
+| 0x25 | ZP_B5  |   FP   |        |        |        |        |
+| 0x26 | ZP_L0  |   FP   |        |        |        |        |
+| 0x27 | ZP_L0  |   FP   |        |        |        |        |
+| 0x28 | ZP_L0  |   FP   |        |        |        |        |
+| 0x29 | ZP_L1  |   FP   |        |        |        |        |
+| 0x2A | ZP_L1  |   FP   |        |        |        |        |
+| 0x2B | ZP_L1  |   FP   |        |        |        |        |
+| 0x2C |        |   FP   |        |        |        |        |
+| 0x2D |        |   FP   |        |        |        |        |
+| 0x2E |        |   FP   |        |        |        |        |
+| 0x2F |        |   FP   |        |        |        |        |
+| 0x30 |        |   FP   |        |        |        |        |
+| 0x31 |        |   FP   |        |        |        |        |
+| 0x32 |        |   FP   |        |        |        |        |
+| 0x33 |        |   FP   |        |        |        |        |
+| 0x34 |        |   FP   |        |        |        |        |
+| 0x35 |        |   FP   |        |        |        |        |
+| 0x36 |        |   FP   |        |        |        |        |
+| 0x37 |        |   FP   |        |        |        |        |
+| 0x38 |        |   FP   |        |        |        |        |
+| 0x39 |        |   FP   |        |        |        |        |
+| 0x3A |        |   FP   |        |        |        |        |
+| 0x3B |        |   FP   |        |        |        |        |
+| 0x3C |        |  FAST  |        |        |        |        |
+| 0x3D |        |  FAST  |        |        |        |        |
+| 0x3E |        |  FAST  |        |        |        |        |
+| 0x3F |        |  FAST  |        |        |        |        |
+| 0x40 |        |  FAST  |        |        |        |        |
+| 0x41 |        |  FAST  |        |        |        |        |
+| 0x42 |        |  FAST  |        |        |        |        |
+| 0x43 |        |  FAST  |        |        |        |        |
+| 0x44 |        |  FAST  |        |        |        |        |
+| 0x45 |        |  FAST  |        |        |        |        |
+| 0x46 |        |  FAST  |        |        |        |        |
+| 0x47 |        |  FAST  |        |        |        |        |
+| 0x48 |        |  FAST  |        |        |        |        |
+| 0x49 |        |  FAST  |        |        |        |        |
+| 0x4A |        |  FAST  |        |        |        |        |
+| 0x4B |        |  FAST  |        |        |        |        |
+| 0x4C |        |  FAST  |        |        |        |        |
+| 0x4D |        |  FAST  |        |        |        |        |
+| 0x4E |        |  FAST  |        |        |        |        |
+| 0x4F |        |  FAST  |        |        |        |        |
+| 0x50 |        |  FAST  |        |        |        |        |
+| 0x51 |        |  FAST  |        |        |        |        |
+| 0x52 |        |  FAST  |        |        |        |        |
+| 0x53 |        |  FAST  |        |        |        |        |
+| 0x54 |        |  FAST  |        |        |        |        |
+| 0x55 |        |  FAST  |        |        |        |        |
+| 0x56 |        |  FAST  |        |        |        |        |
+| 0x57 |        |  FAST  |        |        |        |        |
+| 0x58 |        |  FAST  |        |        |        |        |
+| 0x59 |        |  FAST  |        |        |        |        |
+| 0x5A |        |  FAST  |        |        |        |        |
+| 0x5B |        |  FAST  |        |        |        |        |
+| 0x5C |        |  FAST  |        |        |        |        |
+| 0x5D |        |  FAST  |        |        |        |        |
+| 0x5E |        |  FAST  |        |        |        |        |
+| 0x5F |        |  FAST  |        |        |        |        |
+| 0x60 |        |  FAST  |        |        |        |        |
+| 0x61 |        |  FAST  |        |        |        |        |
+| 0x62 |        |  FAST  |        |        |        |        |
+| 0x63 |        |  FAST  |        |        |        |        |
+| 0x64 |        |  FAST  |        |        |        |        |
+| 0x65 |        |  FAST  |        |        |        |        |
+| 0x66 |        |  FAST  |        |        |        |        |
+| 0x67 |        |  FAST  |        |        |        |        |
+| 0x68 |        |  FAST  |        |        |        |        |
+| 0x69 |        |  FAST  |        |        |        |        |
+
+
+
+
+
+| BANK | START | END   | TYPE   | LOADER   | INTRO    | STRATEGY | BATTLE   |
+|------|-------|-------|--------|----------|----------|----------|----------|
+| 0    | $0000 | $03FF | SYSTEM |          |          |          |          |
+| 0    | $0400 | $07FF | RAM    | LOADER   |          |          |          |
+| 0    | $0800 | $0BFF | BASIC  |          |          |          |          |
+| 0    | $0C00 | $0FFF |        |          |          |          |          |
+| 0    | $1000 | $13FF |        |          | SID      |          | CODE     |
+| 0    | $1400 | $17FF |        |          | SID      |          | CODE     |
+| 0    | $1800 | $1BFF |        |          | SID      |          | CODE     |
+| 0    | $1C00 | $1FFF |        |          | SID      |          | CODE     |
+| 0    | $2000 | $23FF |        |          | CODE     |          | CODE     |
+| 0    | $2400 | $27FF |        |          | CODE     |          | CODE     |
+| 0    | $2800 | $2BFF |        |          | CODE     |          | CODE     |
+| 0    | $2C00 | $2FFF |        |          | CODE     |          | CODE     |
+| 0    | $3000 | $33FF |        |          | CODE     |          | CODE     |
+| 0    | $3400 | $37FF |        |          | CODE     |          | CODE     |
+| 0    | $3800 | $3BFF |        |          | CODE     |          | CODE     |
+| 0    | $3C00 | $3FFF |        |          | CODE     |          | CODE     |
+| 1    | $4000 | $43FF |        | INSTALL  | CODE     |          | CODE     |
+| 1    | $4400 | $47FF |        | INSTALL  | CODE     |          | CODE     |
+| 1    | $4800 | $4BFF |        | INSTALL  | CODE     |          | CODE     |
+| 1    | $4C00 | $4FFF |        | INSTALL  | CODE     |          | CODE     |
+| 1    | $5000 | $53FF |        | INSTALL  | CODE     |          | CODE     |
+| 1    | $5400 | $57FF |        | INSTALL  | CODE     |          | CODE     |
+| 1    | $5800 | $5BFF |        | INSTALL  | CODE     |          | CODE     |
+| 1    | $5C00 | $5FFF |        |          | CODE     |          | CODE     |
+| 1    | $6000 | $63FF |        |          | CODE     |          | CODE     |
+| 1    | $6400 | $67FF |        |          | CODE     |          | CODE     |
+| 1    | $6800 | $6BFF |        |          | CODE     |          | CODE     |
+| 1    | $6C00 | $6FFF |        |          | CODE     |          | CODE     |
+| 1    | $7000 | $73FF |        |          | CODE     |          | CODE     |
+| 1    | $7400 | $77FF |        |          | CODE     |          | CODE     |
+| 1    | $7800 | $7BFF |        |          | CODE     |          | CODE     |
+| 1    | $7C00 | $7FFF |        |          | CODE     |          | CODE     |
+| 2    | $8000 | $83FF |        |          | CODE     |          | CODE     |
+| 2    | $8400 | $87FF |        |          | CODE     |          | CODE     |
+| 2    | $8800 | $8BFF |        |          | CODE     |          | CODE     |
+| 2    | $8C00 | $8FFF |        |          | CODE     |          |          |
+| 2    | $9000 | $93FF |        |          | CODE     |          |          |
+| 2    | $9400 | $97FF |        |          | CODE     |          |          |
+| 2    | $9800 | $9BFF |        |          | CODE     |          |          |
+| 2    | $9C00 | $9FFF |        |          | CODE     |          |          |
+| 2    | $A000 | $A3FF |        |          | CODE     |          |          |
+| 2    | $A400 | $A7FF |        |          | CODE     |          |          |
+| 2    | $A800 | $ABFF |        |          | CODE     |          |          |
+| 2    | $AC00 | $AFFF |        |          | CODE     |          |          |
+| 2    | $B000 | $B3FF |        |          | CODE     |          | MAP A    |
+| 2    | $B400 | $B7FF |        |          | CODE     |          | MAP A    |
+| 2    | $B800 | $BBFF |        |          |          |          | MAP B    |
+| 2    | $BC00 | $BFFF |        |          |          |          | MAP B    |
+| 3    | $C000 | $C3FF |        | FONT     |          |          | FONT     |
+| 3    | $C400 | $C7FF |        | FONT     |          |          | FONT     |
+| 3    | $C800 | $CBFF |        | SCREEN   | SCREEN   |          | SCREEN   |
+| 3    | $CC00 | $CFFF |        | XCBASIC  | XCBASIC  |          | XCBASIC  |
+| 3    | $D000 | $D3FF | IO     |          | SPRITE   |          | SPRITE   |
+| 3    | $D400 | $D7FF | IO     |          | SPRITE   |          | SPRITE   |
+| 3    | $D800 | $DBFF | COLMEM |          | SPRITE   |          | SPRITE   |
+| 3    | $DC00 | $DFFF | IO     |          | SPRITE   |          | SPRITE   |
+| 3    | $E000 | $E3FF | KERNAL |          | BITMAP   |          |          |
+| 3    | $E400 | $E7FF | KERNAL |          | BITMAP   |          |          |
+| 3    | $E800 | $EBFF | KERNAL |          | BITMAP   |          |          |
+| 3    | $EC00 | $EFFF | KERNAL |          | BITMAP   |          |          |
+| 3    | $F000 | $F3FF | KERNAL |          | BITMAP   |          |          |
+| 3    | $F400 | $F7FF | KERNAL |          | BITMAP   |          |          |
+| 3    | $F800 | $FBFF | KERNAL |          | BITMAP   |          |          |
+| 3    | $FC00 | $FFFF | KERNAL |          | BITMAP   |          |          |
+
+
+|START |END   | NAME              | TYPE  |
+|------|------|-------------------|-------|
+| 0800 | 0800 | GameState         | B     |
+| 0801 | 0803 | PlayerCredit      | L     |
+| 0804 | 080d | ComponentValue    | W(5)  |
+| 080e | 0817 | ComponentCapacity | W(5)  |
+| 0818 | 081a | PlayerSubSystem   | B(3)  |
