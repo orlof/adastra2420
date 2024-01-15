@@ -2,7 +2,7 @@ import os
 
 #FILENAME = "gfx/loader_font.bin"
 #FILENAME = "data/battle_map.prg"
-FILENAME = "gfx/battle_charset.prg"
+FILENAME = "loader/save-c64.prg"
 
 
 def main():

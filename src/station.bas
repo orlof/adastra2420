@@ -9,6 +9,21 @@ INCLUDE "../libs/lib_ui.bas"
 INCLUDE "../libs/lib_rnd.bas"
 INCLUDE "../libs/lib_sid.bas"
 
+TYPE SaveParamsType
+    FileName AS WORD
+    From AS WORD
+    Length AS WORD
+    LoadAddress AS WORD
+    DriveCodeBuffer AS WORD
+END TYPE
+
+DIM SaveParams AS SaveParamsType
+SaveParams.FileName = $0000
+SaveParams.From = $0800
+SaveParams.Length = $800
+SaveParams.LoadAddress = $0800
+SaveParams.DriveCodeBuffer = $b300
+
 DIM ArtifactTitle(12) AS STRING * 15 @_ArtifactTitle
 DIM ComponentTitle(5) AS STRING * 6 @_ComponentTitle
 DIM SubSystemTitle(2) AS STRING * 6 @_SubSystemTitle
@@ -17,6 +32,7 @@ DIM ComponentInitialValue(5) AS WORD @_ComponentInitialValue
 DIM ComponentPrice(5) AS BYTE @_ComponentPrice
 DIM ComponentUpgradeCost(5) AS BYTE @_ComponentUpgradeCost
 DIM ComponentMaxCapacity(5) AS WORD @_ComponentMaxCapacity
+DIM SaveFileName(5) AS STRING * 9 @_SaveFileName
 
 DIM LeftPanel AS UiPanel
 DIM TradePanel AS UiPanel
@@ -25,8 +41,10 @@ DIM CargoPanel AS UiPanel
 DIM ShieldPanel AS UiPanel
 DIM DiplomacyPanel AS UiPanel
 DIM DiscPanel AS UiPanel
+DIM SlotPanel AS UiPanel
+DIM NotifyPanel AS UiPanel
 
-DECLARE SUB DrawDesktop() STATIC
+DECLARE SUB DrawDesktop(Char AS BYTE) STATIC
 DECLARE SUB MissionBriefingHandler() STATIC
 DECLARE SUB SetupGraphics() STATIC
 DECLARE SUB CreateLeftPanel() STATIC
@@ -36,9 +54,13 @@ DECLARE SUB CreateCargoPanel() STATIC
 DECLARE SUB CreateShieldPanel() STATIC
 DECLARE SUB CreateDiplomacyPanel() STATIC
 DECLARE SUB CreateDiscPanel() STATIC
+DECLARE SUB CreateSlotPanel(IsSave AS BYTE) STATIC
+DECLARE SUB AutoSave() STATIC
+DECLARE SUB SaveGame(FileNr AS BYTE) STATIC
+DECLARE SUB LoadGame(FileNr AS BYTE) STATIC
 DECLARE FUNCTION GetBuyAllPrice AS LONG(ComponentId AS BYTE) STATIC
 
-MEMCPY @SID_Driven_20, $1000, @SID_END_Driven_20 - @SID_Driven_20
+MEMCPY @SID_Driven_20, $1000, @SID_Driven_20_End - @SID_Driven_20
 ASM
     lda #0
     jsr $1000
@@ -47,6 +69,8 @@ END ASM
 ON TIMER 17095 GOSUB InterruptHandlerPlaySid
 TIMER INTERRUPT ON
 
+MEMCPY @Krills_Save, $bb00, @Krills_Save_End - @Krills_Save
+
 CALL SetupGraphics()
 
 IF GameState = GAMESTATE_MISSIONBRIEFING THEN
@@ -54,6 +78,9 @@ IF GameState = GAMESTATE_MISSIONBRIEFING THEN
     GameState = GAMESTATE_PLAYING
     PlayerCredit = 10000
     LocalMapVergeStationId = 5
+    FOR ZP_B0 = 0 TO 11
+        ArtifactLocation(ZP_B0) = LOC_SOURCE
+    NEXT
     FOR ZP_B0 = 0 TO 4
         ComponentCapacity(ZP_B0) = ComponentInitialCapacity(ZP_B0)
         ComponentValue(ZP_B0) = ComponentInitialValue(ZP_B0)
@@ -63,7 +90,10 @@ IF GameState = GAMESTATE_MISSIONBRIEFING THEN
     NEXT
 END IF
 
-CALL DrawDesktop()
+CALL DrawDesktop($30+LocalMapVergeStationId)
+
+CALL AutoSave()
+
 CALL CreateLeftPanel()
 
 CALL LeftPanel.SetSelected(4)
@@ -97,7 +127,7 @@ LeftPanelHandler:
             CASE 16 ' diplomacy
                 CALL LeftPanel.SetFocus(FALSE)
                 CALL CreateDiplomacyPanel()
-                CALL DiplomacyPanel.SetSelected(1)
+                CALL DiplomacyPanel.SetSelected(8)
                 GOTO DiplomacyPanelHandler
             CASE 17 ' disc
                 CALL LeftPanel.SetFocus(FALSE)
@@ -110,15 +140,58 @@ LeftPanelHandler:
                 CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
                 CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
 
-                CALL Text(7, 2, 1, 0, TRUE, "skymax", $c000)
+                CALL Text(7, 2, 1, 0, TRUE, "worluk", $c000)
                 CALL Text(13, 5, 1, 0, TRUE, "launch sequence", $c000)
                 CALL Text(15, 7, 1, 0, FALSE, "initiated", $c000)
 
                 CALL SidStop()
 
-                CALL LoadProgram("space", CWORD(4096))
+                'CALL LoadProgram("space", CWORD(4096))
+                END
         END SELECT
     LOOP
+
+SUB AutoSave() STATIC
+    CALL NotifyPanel.Init("", 13, 10, 14, 5, TRUE)
+    CALL NotifyPanel.Center(1, "autosaving", COLOR_BLUE, TRUE)
+
+    CALL SaveGame(5)
+
+    CALL NotifyPanel.Dispose()
+END SUB
+
+SUB SaveGame(FileNr AS BYTE) STATIC
+    SaveParams.FileName = @SaveFileName(FileNr) + 1
+    ZP_W0 = @SaveParams
+
+    ASM
+        lda #1
+        sta $30
+
+        ldx {ZP_W0}
+        ldy {ZP_W0}+1
+        jsr $bb00
+        bcs save_failed
+        lda #0
+save_failed
+        sta $30
+    END ASM
+END SUB
+
+SUB LoadGame(FileNr AS BYTE) STATIC
+    ZP_W0 = @SaveFileName(FileNr) + 1
+    ASM
+        sta $40
+        ldx {ZP_W0}
+        ldy {ZP_W0}+1
+        jsr $440
+        bcs load_failed
+        lda #0
+load_failed
+        sta $40
+        jmp load_failed
+    END ASM
+END SUB
 
 DiplomacyPanelHandler:
     CALL DiplomacyPanel.SetFocus(TRUE)
@@ -126,11 +199,61 @@ DiplomacyPanelHandler:
     DO
         CALL DiplomacyPanel.WaitEvent(FALSE)
 
-        SELECT CASE DiplomacyPanel.Event
+        IF (DiplomacyPanel.Event = EVENT_FIRE) AND (DiplomacyPanel.Selected = 9) THEN
+            SELECT CASE LocalMapVergeStationId
+                CASE 5
+                    PlayerCredit = PlayerCredit - 10000
+                CASE 6
+                    ComponentValue(COMP_METAL) = ComponentValue(COMP_METAL) - 250
+                CASE 7
+                    ComponentValue(COMP_GOLD) = ComponentValue(COMP_GOLD) - 500
+                CASE ELSE
+                    ArtifactLocation(LocalMapVergeStationId+4) = LOC_DESTINATION
+            END SELECT
+
+            ArtifactLocation(LocalMapVergeStationId) = LOC_PLAYER
+        END IF
+
+        CALL DiplomacyPanel.Dispose()
+        CALL LeftPanel.Right(13, 1, GetLong2String(PlayerCredit, 7), COLOR_YELLOW, FALSE)
+        CALL LeftPanel.Left(10, 4, GetWord2String(ComponentValue(0), 3), COLOR_LIGHTGRAY, TRUE)
+        CALL LeftPanel.Left(10, 5, GetWord2String(ComponentValue(1), 3), COLOR_LIGHTGRAY, TRUE)
+        GOTO LeftPanelHandler
+    LOOP
+
+LoadPanelHandler:
+    CALL SlotPanel.SetFocus(TRUE)
+
+    DO
+        CALL SlotPanel.WaitEvent(FALSE)
+
+        SELECT CASE SlotPanel.Event
             CASE EVENT_LEFT
-                CALL DiplomacyPanel.Dispose()
-                GOTO LeftPanelHandler
+                CALL SlotPanel.Dispose()
+                GOTO DiscPanelHandler
             CASE EVENT_FIRE
+                CALL LoadGame(SlotPanel.Selected - 1)
+                CALL SlotPanel.Dispose()
+                CALL DiscPanel.Dispose()
+                GOTO LeftPanelHandler
+        END SELECT
+    LOOP
+
+SavePanelHandler:
+    CALL SlotPanel.SetFocus(TRUE)
+
+    DO
+        CALL SlotPanel.WaitEvent(FALSE)
+
+        SELECT CASE SlotPanel.Event
+            CASE EVENT_LEFT
+                CALL SlotPanel.Dispose()
+                GOTO DiscPanelHandler
+            CASE EVENT_FIRE
+                CALL SaveGame(SlotPanel.Selected - 1)
+                CALL SlotPanel.Dispose()
+                CALL DiscPanel.Dispose()
+                GOTO LeftPanelHandler
         END SELECT
     LOOP
 
@@ -145,6 +268,16 @@ DiscPanelHandler:
                 CALL DiscPanel.Dispose()
                 GOTO LeftPanelHandler
             CASE EVENT_FIRE
+                CALL DiscPanel.SetFocus(FALSE)
+                IF DiscPanel.Selected = 1 THEN
+                    CALL CreateSlotPanel(0)
+                    CALL SlotPanel.SetSelected(1)
+                    GOTO LoadPanelHandler
+                ELSE
+                    CALL CreateSlotPanel(1)
+                    CALL SlotPanel.SetSelected(1)
+                    GOTO SavePanelHandler
+                END IF
         END SELECT
     LOOP
 
@@ -287,7 +420,11 @@ REM ********************************
 SUB SetupGraphics() STATIC
     BORDER COLOR_BLACK
     BACKGROUND COLOR_BLACK
-    CALL SetVideoBank(3)
+    'CALL SetVideoBank(3)
+    ASM
+        lda #0          ;bank=3
+        sta $dd00
+    END ASM
     CALL SetCharacterMemory(0)
     CALL SetScreenMemory(2)
     SCREEN 2
@@ -297,8 +434,8 @@ SUB SetupGraphics() STATIC
     CALL SetGraphicsMode(STANDARD_CHARACTER_MODE)
 END SUB
 
-SUB DrawDesktop() STATIC
-    CALL UiLattice(0, 0, 40, 25, $30+LocalMapVergeStationId, $30+LocalMapVergeStationId, COLOR_BLUE, COLOR_DARKGRAY)
+SUB DrawDesktop(Char AS BYTE) STATIC
+    CALL UiLattice(0, 0, 40, 25, Char, Char, COLOR_BLUE, COLOR_DARKGRAY)
     'MEMSET $c800, 1000, 32
     'MEMSET $d800, 1000, COLOR_MIDDLEGRAY
 END SUB
@@ -354,27 +491,78 @@ SUB CreateShieldPanel() STATIC
 END SUB
 
 SUB CreateDiplomacyPanel() STATIC
-    CALL DiplomacyPanel.Init("diplomacy", 11, 14, 26, 8, TRUE)
+    ArtifactLocation(9) = LOC_SOURCE
+    ArtifactLocation(10) = LOC_SOURCE
+    ArtifactLocation(11) = LOC_SOURCE
+
+    IF PlayerCredit >= 10000 THEN
+        ArtifactLocation(9) = LOC_PLAYER
+    END IF
+    IF ComponentValue(COMP_METAL) >= 250 THEN
+        ArtifactLocation(10) = LOC_PLAYER
+    END IF
+    IF ComponentValue(COMP_GOLD) >= 500 THEN
+        ArtifactLocation(11) = LOC_PLAYER
+    END IF
+
+    CALL DiplomacyPanel.Init("diplomacy", 5, 0, 30, 25, TRUE)
     CALL DiplomacyPanel.SetEvents(EVENT_FIRE OR EVENT_LEFT)
 
-    CALL DiplomacyPanel.Left(11, 1, "cur max metal", COLOR_BLUE, FALSE)
+    CALL DiplomacyPanel.Center(1, "welcome to verge station " + STR$(LocalMapVergeStationId), COLOR_BLUE, FALSE)
 
-    CALL DiplomacyPanel.Left(1, 3, "repair", COLOR_LIGHTGRAY, TRUE)
-    CALL DiplomacyPanel.Right(13, 3, GetWord2String(ComponentValue(COMP_ARMOR), 3), COLOR_LIGHTGRAY, TRUE)
-    CALL DiplomacyPanel.Right(17, 3, GetWord2String(ComponentCapacity(COMP_ARMOR), 3), COLOR_LIGHTGRAY, TRUE)
-    CALL DiplomacyPanel.Right(21, 3, GetWord2String(ComponentPrice(COMP_ARMOR), 3), COLOR_LIGHTGRAY, TRUE)
+    IF ArtifactLocation(LocalMapVergeStationId) = LOC_SOURCE THEN
+        CALL DiplomacyPanel.Center(3, "we can sell you", COLOR_LIGHTGRAY, FALSE)
+        CALL DiplomacyPanel.Center(4, ArtifactTitle(LocalMapVergeStationId), COLOR_YELLOW, FALSE)
+        CALL DiplomacyPanel.Center(5, "in exchange we want", COLOR_LIGHTGRAY, FALSE)
+        CALL DiplomacyPanel.Center(6, ArtifactTitle(LocalMapVergeStationId+4), COLOR_YELLOW, FALSE)
+
+        CALL DiplomacyPanel.Center(8, "i'll be back", COLOR_LIGHTGRAY, TRUE)
+        IF ArtifactLocation(LocalMapVergeStationId+4) = LOC_PLAYER THEN
+            CALL DiplomacyPanel.Center(9, "it's a deal", COLOR_LIGHTGRAY, TRUE)
+        END IF
+    ELSE
+        CALL DiplomacyPanel.Center(8, "godspeed commander", COLOR_LIGHTGRAY, TRUE)
+    END IF
+
+    CALL DiplomacyPanel.Center(11, "mission status", COLOR_BLUE, FALSE)
+
+    FOR ZP_B0 = 0 TO 8
+        IF (ZP_B0 < 4) OR (ArtifactLocation(ZP_B0) > LOC_SOURCE) THEN
+            CALL DiplomacyPanel.Left(1, 13+ZP_B0, ArtifactTitle(ZP_B0), COLOR_LIGHTGRAY, TRUE)
+            SELECT CASE ArtifactLocation(ZP_B0)
+                CASE LOC_SOURCE
+                    CALL DiplomacyPanel.Center(22, 13+ZP_B0, "no", COLOR_RED, FALSE)
+                CASE LOC_PLAYER
+                    CALL DiplomacyPanel.Center(22, 13+ZP_B0, "acquired", COLOR_ORANGE, FALSE)
+                CASE LOC_DESTINATION
+                    CALL DiplomacyPanel.Center(22, 13+ZP_B0, "delivered", COLOR_GREEN, FALSE)
+            END SELECT
+        END IF
+    NEXT
 END SUB
 
 SUB CreateDiscPanel() STATIC
-    CALL DiscPanel.Init("disc", 11, 14, 26, 8, TRUE)
+    CALL DiscPanel.Init("disc", 16, 14, 8, 6, TRUE)
     CALL DiscPanel.SetEvents(EVENT_FIRE OR EVENT_LEFT)
 
-    CALL DiscPanel.Left(11, 1, "cur max metal", COLOR_BLUE, FALSE)
+    CALL DiscPanel.Left(1, 1, "load", COLOR_LIGHTGRAY, TRUE)
+    CALL DiscPanel.Left(1, 2, "save", COLOR_LIGHTGRAY, TRUE)
+END SUB
 
-    CALL DiscPanel.Left(1, 3, "repair", COLOR_LIGHTGRAY, TRUE)
-    CALL DiscPanel.Right(13, 3, GetWord2String(ComponentValue(COMP_ARMOR), 3), COLOR_LIGHTGRAY, TRUE)
-    CALL DiscPanel.Right(17, 3, GetWord2String(ComponentCapacity(COMP_ARMOR), 3), COLOR_LIGHTGRAY, TRUE)
-    CALL DiscPanel.Right(21, 3, GetWord2String(ComponentPrice(COMP_ARMOR), 3), COLOR_LIGHTGRAY, TRUE)
+SUB CreateSlotPanel(IsSave AS BYTE) STATIC
+    IF IsSave THEN
+        CALL SlotPanel.Init("save", 24, 12, 12, 9, TRUE)
+    ELSE
+        CALL SlotPanel.Init("load", 24, 12, 12, 10, TRUE)
+        CALL SlotPanel.Left(1, 6, "autosave", COLOR_LIGHTGRAY, TRUE)
+    END IF
+    CALL SlotPanel.SetEvents(EVENT_FIRE OR EVENT_LEFT)
+
+    CALL SlotPanel.Left(1, 1, "slot 1", COLOR_LIGHTGRAY, TRUE)
+    CALL SlotPanel.Left(1, 2, "slot 2", COLOR_LIGHTGRAY, TRUE)
+    CALL SlotPanel.Left(1, 3, "slot 3", COLOR_LIGHTGRAY, TRUE)
+    CALL SlotPanel.Left(1, 4, "slot 4", COLOR_LIGHTGRAY, TRUE)
+    CALL SlotPanel.Left(1, 5, "slot 5", COLOR_LIGHTGRAY, TRUE)
 END SUB
 
 SUB CreateTradePanel(ComponentId AS BYTE) STATIC
@@ -411,7 +599,7 @@ SUB CreateLeftPanel() STATIC
 
     CALL LeftPanel.Left(0, 10, "station services", COLOR_BLUE, FALSE)
     CALL LeftPanel.Left(1, 12, "system upgrades", COLOR_LIGHTGRAY, TRUE)
-    CALL LeftPanel.Left(1, 13, "armor", COLOR_LIGHTGRAY, TRUE)
+    CALL LeftPanel.Left(1, 13, "shields", COLOR_LIGHTGRAY, TRUE)
     CALL LeftPanel.Left(1, 14, "cargo space", COLOR_LIGHTGRAY, TRUE)
     CALL LeftPanel.Left(1, 16, "diplomacy", COLOR_LIGHTGRAY, TRUE)
     CALL LeftPanel.Left(1, 17, "disc", COLOR_LIGHTGRAY, TRUE)
@@ -421,7 +609,7 @@ END SUB
 SUB MissionBriefingHandler() STATIC
     DIM Panel AS UiPanel
 
-    CALL DrawDesktop()
+    CALL DrawDesktop($30)
     CALL Panel.Init("mission briefing", 1, 1, 38, 23, FALSE)
     CALL Panel.SetEvents(EVENT_FIRE)
     Panel.Selected = 19
@@ -467,8 +655,6 @@ SUB MissionBriefingHandler() STATIC
     CALL Panel.Center(19, "press fire", COLOR_LIGHTGRAY, TRUE)
 
     CALL Panel.WaitEvent(FALSE)
-
-    CALL DrawDesktop()
 END SUB
 
 
@@ -507,6 +693,20 @@ DATA AS STRING * 6 "weapon"
 DATA AS STRING * 6 "engine"
 DATA AS STRING * 6 "gyro"
 
+_SaveFileName:
+DATA AS STRING*8 "save0001"
+DATA AS BYTE 0
+DATA AS STRING*8 "save0002"
+DATA AS BYTE 0
+DATA AS STRING*8 "save0003"
+DATA AS BYTE 0
+DATA AS STRING*8 "save0004"
+DATA AS BYTE 0
+DATA AS STRING*8 "save0005"
+DATA AS BYTE 0
+DATA AS STRING*8 "autosave"
+DATA AS BYTE 0
+
 _ComponentInitialCapacity:
 DATA AS WORD 150, 150, 150, 150, 50
 
@@ -524,4 +724,8 @@ DATA AS WORD 999, 999, 999, 999, 250
 
 SID_Driven_20:
 INCBIN "../sfx/Driven_20.bin"
-SID_END_Driven_20:
+SID_Driven_20_End:
+
+Krills_Save:
+INCBIN "../loader/save-c64.bin"
+Krills_Save_End:

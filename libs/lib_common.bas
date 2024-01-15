@@ -30,12 +30,12 @@ DIM SHARED ZP_B5 AS BYTE @$25
 DIM SHARED ZP_L0 AS LONG @$26
 DIM SHARED ZP_L1 AS LONG @$29
 
-DIM _ProgramFilename AS STRING*17 @$5ef
-DIM _ProgramAddress AS WORD @$5ed
+DIM SHARED _ProgramAddress AS WORD @$420
+DIM SHARED _ProgramFilename AS STRING*28 @$422
 
 SUB LoadProgram(Filename AS STRING*16, Address AS WORD) STATIC SHARED
-    IF PEEK($601) = $ae THEN
-        MEMSET @_ProgramFilename, 17, 0
+    IF PEEK($441) = $ee THEN
+        MEMSET @_ProgramFilename, 29, 0
         _ProgramFilename = Filename
         _ProgramAddress = Address
 
@@ -51,6 +51,10 @@ SHARED CONST GAMESTATE_PLAYING          = 1
 SHARED CONST GAMESTATE_GAMEOVER         = 2
 SHARED CONST GAMESTATE_COMPLETED        = 3
 
+SHARED CONST LOC_SOURCE = 0
+SHARED CONST LOC_PLAYER = 1
+SHARED CONST LOC_DESTINATION = 2
+
 DIM GameState AS BYTE @$800 SHARED
 DIM PlayerCredit AS LONG @$801 SHARED
 
@@ -59,3 +63,5 @@ DIM ComponentCapacity(5) AS WORD @$80e SHARED
 
 DIM PlayerSubSystem(3) AS BYTE @$818 SHARED
 DIM LocalMapVergeStationId AS BYTE @$81b SHARED
+
+DIM ArtifactLocation(12) AS BYTE @$81c SHARED

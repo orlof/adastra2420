@@ -72,7 +72,7 @@ CALL ChangePage()
 
 CALL ShowImage(@Encounter002_Bitmap, @Encounter002_Screen, @Encounter002_Color, $0b)
 
-CALL Center(2, COLOR_NARRATOR, "this is you, cmdr max power")
+CALL Center(2, COLOR_NARRATOR, "this is you, commander max power")
 CALL Center(3, COLOR_NARRATOR, "a ranger from federation of free traders")
 CALL ChangePage()
 
@@ -134,16 +134,11 @@ CALL ChangePage()
 
 CALL Left(0, COLOR_YOU, "you")
 CALL Center(2, COLOR_YOU, "lieutenant, good to meet you")
-
-CALL ChangePage()
-
-CALL Left(0, COLOR_YOU, "you")
-CALL Center(2, COLOR_YOU, "i hope you have a plan, all i've got")
-CALL Center(3, COLOR_YOU, "is my charm and my trusty worluk")
 CALL ChangePage()
 
 CALL Left(0, COLOR_LIEUTENANT, "lieutenant sarah jameson")
-CALL Center(2, COLOR_LIEUTENANT, "yes, sir")
+CALL Center(2, COLOR_LIEUTENANT, "good to meet you too, sir")
+CALL Center(3, COLOR_LIEUTENANT, "your reputation has preceded you")
 CALL ChangePage()
 
 CALL Left(0, COLOR_LIEUTENANT, "lieutenant sarah jameson")
@@ -162,6 +157,15 @@ CALL Center(2, COLOR_LIEUTENANT, "our only hope is to build")
 CALL Center(3, COLOR_LIEUTENANT, "a singularity diffuser")
 CALL ChangePage()
 
+CALL Left(0, COLOR_YOU, "you")
+CALL Center(2, COLOR_YOU, "gathering components for sd")
+CALL Center(3, COLOR_YOU, "will be extremely dangerous task")
+CALL ChangePage()
+
+CALL Left(0, COLOR_LIEUTENANT, "lieutenant sarah jameson")
+CALL Center(2, COLOR_LIEUTENANT, "that's why you are here, sir")
+CALL ChangePage()
+
 CALL Left(0, COLOR_LIEUTENANT, "lieutenant sarah jameson")
 CALL Center(2, COLOR_LIEUTENANT, "negotiate the components from nearby")
 CALL Center(3, COLOR_LIEUTENANT, "space stations and bring them to us")
@@ -174,7 +178,7 @@ CALL ChangePage()
 
 CALL Left(0, COLOR_YOU, "you")
 CALL Center(1, COLOR_YOU, "aye, lieutenant")
-CALL Center(2, COLOR_YOU, "lets get this show on the road")
+CALL Center(2, COLOR_YOU, "consider it done")
 CALL ChangePage()
 
 RASTER INTERRUPT OFF

@@ -1,0 +1,493 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build All",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Build aileon.d64",
+                "EXOMIZE Intro",
+                "EXOMIZE Flight",
+                "EXOMIZE Station"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Run Aileon",
+            "type": "shell",
+            "osx": {
+                "command": "open",
+                "args": [
+                    "build/aileon.d64"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
+                "args": [
+                    "build/aileon.d64"
+                ]
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Build aileon.d64"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Run Intro",
+            "type": "shell",
+            "osx": {
+                "command": "open",
+                "args": [
+                    "build/_intro.prg"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
+                "args": [
+                    "build/_intro.prg"
+                ]
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "EXOMIZE Intro"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Run Flight",
+            "type": "shell",
+            "osx": {
+                "command": "open",
+                "args": [
+                    "build/_flight.prg"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
+                "args": [
+                    "build/_flight.prg"
+                ]
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "EXOMIZE Flight"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Run Station",
+            "type": "shell",
+            "osx": {
+                "command": "open",
+                "args": [
+                    "build/_station.prg"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
+                "args": [
+                    "build/_station.prg"
+                ]
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "EXOMIZE Station"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Build aileon.d64",
+            "type": "shell",
+            "osx": {
+                "command": "${config:xcbasic3.vice}/bin/c1541",
+                "args": [
+                    "-format",
+                    "aileon,of",
+                    "d64",
+                    "build/aileon.d64",
+                    "-attach",
+                    "build/aileon.d64",
+                    "-write",
+                    "build/loader.prg",
+                    "loader",
+                    "-write",
+                    "build/intro.prg",
+                    "intro",
+                    "-write",
+                    "build/flight.prg",
+                    "flight",
+                    "-write",
+                    "data/savefile.prg",
+                    "autosave",
+                    "-write",
+                    "data/savefile.prg",
+                    "save0001",
+                    "-write",
+                    "data/savefile.prg",
+                    "save0002",
+                    "-write",
+                    "data/savefile.prg",
+                    "save0003",
+                    "-write",
+                    "data/savefile.prg",
+                    "save0004",
+                    "-write",
+                    "data/savefile.prg",
+                    "save0005",
+                    "-write",
+                    "build/station.prg",
+                    "station"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.vice}/bin/c1541.exe",
+                "args": [
+                    "-format",
+                    "aileon,of",
+                    "d64",
+                    "build/aileon.d64",
+                    "-attach",
+                    "build/aileon.d64",
+                    "-write",
+                    "build/loader.prg",
+                    "loader",
+                    "-write",
+                    "build/intro.prg",
+                    "intro",
+                    "-write",
+                    "build/flight.prg",
+                    "flight",
+                    "-write",
+                    "build/station.prg",
+                    "station"
+                ]
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "EXOMIZE Loader",
+                "XCB3 Intro",
+                "XCB3 Flight",
+                "XCB3 Station"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "EXOMIZE Loader",
+            "type": "shell",
+            "osx": {
+                "command": "${config:xcbasic3.packer}/exomizer",
+                "args": [
+                    "sfx",
+                    "basic",
+                    "build/_loader.prg",
+                    "loader/install-c64.prg",
+                    "gfx/generic_charset.prg",
+                    "-o",
+                    "build/loader.prg",
+                    "-x",
+                    "'inc $d020'"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.packer}/exomizer.exe",
+                "args": [
+                    "sfx",
+                    "basic",
+                    "loader/loader-c64.prg",
+                    "build/_loader.prg",
+                    "loader/install-c64.prg",
+                    "gfx/generic_charset.prg",
+                    "-o",
+                    "build/loader.prg",
+                    "-x",
+                    "'inc $d020'"
+                ]
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "XCB3 Loader"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "EXOMIZE Flight",
+            "type": "shell",
+            "osx": {
+                "command": "${config:xcbasic3.packer}/exomizer",
+                "args": [
+                    "sfx",
+                    "4096",
+                    "build/flight.prg",
+                    "gfx/generic_charset.prg",
+                    "-o",
+                    "build/_flight.prg",
+                    "-x",
+                    "'inc $d020'"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.packer}/exomizer.exe",
+                "args": [
+                    "sfx",
+                    "4096",
+                    "build/flight.prg",
+                    "gfx/generic_charset.prg",
+                    "-o",
+                    "build/_flight.prg",
+                    "-x",
+                    "'inc $d020'"
+                ]
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "XCB3 Flight"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "EXOMIZE Station",
+            "type": "shell",
+            "osx": {
+                "command": "${config:xcbasic3.packer}/exomizer",
+                "args": [
+                    "sfx",
+                    "8192",
+                    "build/station.prg",
+                    "gfx/generic_charset.prg",
+                    "-o",
+                    "build/_station.prg",
+                    "-x",
+                    "'inc $d020'"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.packer}/exomizer.exe",
+                "args": [
+                    "sfx",
+                    "8192",
+                    "build/station.prg",
+                    "gfx/generic_charset.prg",
+                    "-o",
+                    "build/_station.prg",
+                    "-x",
+                    "'inc $d020'"
+                ]
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "XCB3 Station"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "EXOMIZE Intro",
+            "type": "shell",
+            "osx": {
+                "command": "${config:xcbasic3.packer}/exomizer",
+                "args": [
+                    "sfx",
+                    "8192",
+                    "build/intro.prg",
+                    "gfx/generic_charset.prg",
+                    "-o",
+                    "build/_intro.prg",
+                    "-x",
+                    "'inc $d020'"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.packer}/exomizer.exe",
+                "args": [
+                    "sfx",
+                    "8192",
+                    "build/intro.prg",
+                    "gfx/generic_charset.prg",
+                    "-o",
+                    "build/_intro.prg",
+                    "-x",
+                    "'inc $d020'"
+                ]
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "XCB3 Intro"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "XCB3",
+            "type": "shell",
+            "osx": {
+                "command": "${config:xcbasic3.basefolder}/bin/macOS/xcbasic3",
+                "args": [
+                    "${file}",
+                    "build/_${fileBasenameNoExtension}.prg"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.basefolder}/bin/Windows/xcbasic3.exe",
+                "args": [
+                    "${file}",
+                    "${fileDirname}\\${fileBasenameNoExtension}.prg"
+                ]
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "XCB3 Intro",
+            "type": "shell",
+            "osx": {
+                "command": "${config:xcbasic3.basefolder}/bin/macOS/xcbasic3",
+                "args": [
+                    "-b=False",
+                    "-o=8192",
+                    "src/intro.bas",
+                    "build/intro.prg"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.basefolder}/bin/Windows/xcbasic3.exe",
+                "args": [
+                    "-b=False",
+                    "-o=8192",
+                    "src/intro.bas",
+                    "build/intro.prg"
+                ]
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "XCB3 Flight",
+            "type": "shell",
+            "osx": {
+                "command": "${config:xcbasic3.basefolder}/bin/macOS/xcbasic3",
+                "args": [
+                    "-b=False",
+                    "-o=4096",
+                    "src/flight.bas",
+                    "build/flight.prg"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.basefolder}/bin/Windows/xcbasic3.exe",
+                "args": [
+                    "-b=False",
+                    "-o=4096",
+                    "src/flight.bas",
+                    "build/flight.prg"
+                ]
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "XCB3 Station",
+            "type": "shell",
+            "osx": {
+                "command": "${config:xcbasic3.basefolder}/bin/macOS/xcbasic3",
+                "args": [
+                    "-b=False",
+                    "-o=8192",
+                    "src/station.bas",
+                    "build/station.prg"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.basefolder}/bin/Windows/xcbasic3.exe",
+                "args": [
+                    "-b=False",
+                    "-o=8192",
+                    "src/station.bas",
+                    "build/station.prg"
+                ]
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "XCB3 Loader",
+            "type": "shell",
+            "osx": {
+                "command": "${config:xcbasic3.basefolder}/bin/macOS/xcbasic3",
+                "args": [
+                    "-p=False",
+                    "src/loader.bas",
+                    "build/_loader.prg"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.basefolder}/bin/Windows/xcbasic3.exe",
+                "args": [
+                    "-p=False",
+                    "src/loader.bas",
+                    "build/_loader.prg"
+                ]
+            },
+            "problemMatcher": []
+        }
+    ]
+}
