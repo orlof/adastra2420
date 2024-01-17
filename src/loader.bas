@@ -15,12 +15,12 @@ CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 CALL FillBitmap(0)
 SCREEN 2
 
-CALL Text(13, 6, 1, 0, TRUE,  "aileon", $c000)
-CALL Text(16, 9, 1, 0, FALSE, "mmxxiv", $c000)
-CALL Text(2, 11, 1, 0, FALSE, "           code    orlof", $c000)
-CALL Text(2, 13, 1, 0, FALSE, "       loader        krill", $c000)
-CALL Text(2, 15, 1, 0, FALSE, "      music            roy batty", $c000)
-CALL Text(2, 17, 1, 0, FALSE, "xc=basic3                fekete csaba", $c000)
+CALL Text(13, 6, 1, 0, TRUE,  "aileon", CHAR_MEMORY)
+CALL Text(16, 9, 1, 0, FALSE, "mmxxiv", CHAR_MEMORY)
+CALL Text(2, 11, 1, 0, FALSE, "           code    orlof", CHAR_MEMORY)
+CALL Text(2, 13, 1, 0, FALSE, "       loader        krill", CHAR_MEMORY)
+CALL Text(2, 15, 1, 0, FALSE, "      music            roy batty", CHAR_MEMORY)
+CALL Text(2, 17, 1, 0, FALSE, "xc=basic3                fekete csaba", CHAR_MEMORY)
 
 CALL InstallDriveCode()
 CALL InstallLoaderCode()

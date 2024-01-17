@@ -192,13 +192,13 @@ CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 
 CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
 
-CALL Text(7, 2, 1, 0, TRUE, "verge station", $c000)
-CALL Text(13, 4, 1, 0, TRUE, "network", $c000)
-CALL Text(15, 7, 1, 0, FALSE, "connecting", $c000)
+CALL Text(7, 2, 1, 0, TRUE, "verge station", CHAR_MEMORY)
+CALL Text(13, 4, 1, 0, TRUE, "network", CHAR_MEMORY)
+CALL Text(15, 7, 1, 0, FALSE, "connecting", CHAR_MEMORY)
 
 CALL SidStop()
 
-GameState = GAMESTATE_MISSIONBRIEFING
+GameState = GAMESTATE_STARTING
 
 CALL LoadProgram("station", CWORD(8192))
 
@@ -220,7 +220,7 @@ IRQ:
         lda #0          ;bank=3
         sta $dd00
 
-        lda #%00100000  ;screen_memory=2, character_memory=0
+        lda #%00100100  ;screen_memory=2, character_memory=2
         sta $d018
 
         lda #$1b        ;bim_map_mode=0

@@ -266,7 +266,9 @@ TYPE UiPanel
                 NEXT Col
             END IF
         NEXT Row
-        TEXTAT THIS.X+1, THIS.Y, THIS.Title, BorderColor
+        IF LEN(THIS.Title) > 0 THEN
+            TEXTAT THIS.X+1, THIS.Y, THIS.Title, BorderColor
+        END IF
     END SUB
 
     ' PUBLIC

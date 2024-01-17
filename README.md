@@ -102,7 +102,7 @@ This will show you the compilation targets.
 
 
 
-| BANK | START | END   | TYPE   | LOADER   | INTRO    | STRATEGY | BATTLE   |
+| BANK | START | END   | TYPE   | LOADER   | INTRO    | STATION  | SPACE    |
 |------|-------|-------|--------|----------|----------|----------|----------|
 | 0    | $0000 | $03FF | SYSTEM |          |          |          |          |
 | 0    | $0400 | $07FF | RAM    | LOADER   |          |          |          |
@@ -148,32 +148,39 @@ This will show you the compilation targets.
 | 2    | $A400 | $A7FF |        |          | CODE     |          |          |
 | 2    | $A800 | $ABFF |        |          | CODE     |          |          |
 | 2    | $AC00 | $AFFF |        |          | CODE     |          |          |
-| 2    | $B000 | $B3FF |        |          | CODE     |          | MAP A    |
-| 2    | $B400 | $B7FF |        |          | CODE     |          | MAP A    |
-| 2    | $B800 | $BBFF |        |          |          |          | MAP B    |
-| 2    | $BC00 | $BFFF |        |          |          |          | MAP B    |
-| 3    | $C000 | $C3FF |        | FONT     |          |          | FONT     |
-| 3    | $C400 | $C7FF |        | FONT     |          |          | FONT     |
-| 3    | $C800 | $CBFF |        | SCREEN   | SCREEN   |          | SCREEN   |
-| 3    | $CC00 | $CFFF |        | XCBASIC  | XCBASIC  |          | XCBASIC  |
-| 3    | $D000 | $D3FF | IO     |          | SPRITE   |          | SPRITE   |
-| 3    | $D400 | $D7FF | IO     |          | SPRITE   |          | SPRITE   |
-| 3    | $D800 | $DBFF | COLMEM |          | SPRITE   |          | SPRITE   |
-| 3    | $DC00 | $DFFF | IO     |          | SPRITE   |          | SPRITE   |
-| 3    | $E000 | $E3FF | KERNAL |          | BITMAP   |          |          |
-| 3    | $E400 | $E7FF | KERNAL |          | BITMAP   |          |          |
-| 3    | $E800 | $EBFF | KERNAL |          | BITMAP   |          |          |
-| 3    | $EC00 | $EFFF | KERNAL |          | BITMAP   |          |          |
-| 3    | $F000 | $F3FF | KERNAL |          | BITMAP   |          |          |
-| 3    | $F400 | $F7FF | KERNAL |          | BITMAP   |          |          |
-| 3    | $F800 | $FBFF | KERNAL |          | BITMAP   |          |          |
-| 3    | $FC00 | $FFFF | KERNAL |          | BITMAP   |          |          |
+| 2    | $B000 | $B3FF |        |          | CODE     |          |          |
+| 2    | $B400 | $B7FF |        |          | CODE     |          |          |
+| 2    | $B800 | $BBFF |        |          |          |          |          |
+| 2    | $BC00 | $BFFF |        |          |          |          |          |
+| 3    | $C000 | $C3FF |        |          |          |          | SPRITE   |
+| 3    | $C400 | $C7FF |        |          |          |          | SPRITE   |
+| 3    | $C800 | $CBFF |        | SCREEN   | SCREEN   | SCREEN   | SCREEN   |
+| 3    | $CC00 | $CFFF |        | XCBASIC  | XCBASIC  | XCBASIC  | XCBASIC  |
+| 3    | $D000 | $D3FF | IO     | FONT     | FONT     | FONT     | FONT     |
+| 3    | $D400 | $D7FF | IO     | FONT     | FONT     | FONT     | FONT     |
+| 3    | $D800 | $DBFF | COLMEM |          |          |          |          |
+| 3    | $DC00 | $DFFF | IO     |          |          |          |          |
+| 3    | $E000 | $E3FF | KERNAL | BITMAP   | BITMAP   | BITMAP   | BITMAP   |
+| 3    | $E400 | $E7FF | KERNAL | BITMAP   | BITMAP   | BITMAP   | BITMAP   |
+| 3    | $E800 | $EBFF | KERNAL | BITMAP   | BITMAP   | BITMAP   | BITMAP   |
+| 3    | $EC00 | $EFFF | KERNAL | BITMAP   | BITMAP   | BITMAP   | BITMAP   |
+| 3    | $F000 | $F3FF | KERNAL | BITMAP   | BITMAP   | BITMAP   | BITMAP   |
+| 3    | $F400 | $F7FF | KERNAL | BITMAP   | BITMAP   | BITMAP   | BITMAP   |
+| 3    | $F800 | $FBFF | KERNAL | BITMAP   | BITMAP   | BITMAP   | BITMAP   |
+| 3    | $FC00 | $FFFF | KERNAL | BITMAP   | BITMAP   | BITMAP   | BITMAP   |
 
 
 |START |END   | NAME              | TYPE  |
 |------|------|-------------------|-------|
-| 0800 | 0800 | GameState         | B     |
-| 0801 | 0803 | PlayerCredit      | L     |
-| 0804 | 080d | ComponentValue    | W(5)  |
-| 080e | 0817 | ComponentCapacity | W(5)  |
-| 0818 | 081a | PlayerSubSystem   | B(3)  |
+| 0800 | 08ff | GameMap           | B(256)|
+| 0900 | 0900 | GameState         | B     |
+| 0901 | 0902 | TimeLeft          | D     |
+| 0903 | 0905 | PlayerCredit      | L     |
+| 0906 | 0908 | PlayerX           | L     |
+| 0909 | 090b | PlayerY           | L     |
+| 090c | 090c | StationId         | B     |
+| 090d | 090f | PlayerSubSystem   | B(3)  |
+| 0910 | 0919 | ComponentValue    | W(5)  |
+| 091a | 0923 | ComponentCapacity | W(5)  |
+| 0924 | 092f | ArtifactLocation  | B(12) |
+ 

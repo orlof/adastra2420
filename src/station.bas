@@ -1,6 +1,9 @@
 OPTION FASTINTERRUPT
 SYSTEM INTERRUPT OFF
 
+DIM Debug AS BYTE
+Debug = (PEEK($441) <> $ee)
+
 INCLUDE "../libs/lib_common.bas"
 INCLUDE "../libs/lib_str.bas"
 INCLUDE "../libs/lib_gfx.bas"
@@ -24,15 +27,17 @@ SaveParams.Length = $800
 SaveParams.LoadAddress = $0800
 SaveParams.DriveCodeBuffer = $b300
 
+DIM SaveFileName(5) AS STRING * 9 @_SaveFileName
+
 DIM ArtifactTitle(12) AS STRING * 15 @_ArtifactTitle
 DIM ComponentTitle(5) AS STRING * 6 @_ComponentTitle
 DIM SubSystemTitle(2) AS STRING * 6 @_SubSystemTitle
+
 DIM ComponentInitialCapacity(5) AS WORD @_ComponentInitialCapacity
 DIM ComponentInitialValue(5) AS WORD @_ComponentInitialValue
 DIM ComponentPrice(5) AS BYTE @_ComponentPrice
 DIM ComponentUpgradeCost(5) AS BYTE @_ComponentUpgradeCost
 DIM ComponentMaxCapacity(5) AS WORD @_ComponentMaxCapacity
-DIM SaveFileName(5) AS STRING * 9 @_SaveFileName
 
 DIM LeftPanel AS UiPanel
 DIM TradePanel AS UiPanel
@@ -73,11 +78,12 @@ MEMCPY @Krills_Save, $bb00, @Krills_Save_End - @Krills_Save
 
 CALL SetupGraphics()
 
-IF GameState = GAMESTATE_MISSIONBRIEFING THEN
+IF Debug OR (GameState = GAMESTATE_STARTING) THEN
     CALL MissionBriefingHandler()
-    GameState = GAMESTATE_PLAYING
+    GameState = GAMESTATE_STATION
     PlayerCredit = 10000
     LocalMapVergeStationId = 5
+    MEMCPY @_GameMap, @GameMap, 256
     FOR ZP_B0 = 0 TO 11
         ArtifactLocation(ZP_B0) = LOC_SOURCE
     NEXT
@@ -85,9 +91,9 @@ IF GameState = GAMESTATE_MISSIONBRIEFING THEN
         ComponentCapacity(ZP_B0) = ComponentInitialCapacity(ZP_B0)
         ComponentValue(ZP_B0) = ComponentInitialValue(ZP_B0)
     NEXT
-    FOR ZP_B0 = 0 TO 2
-        PlayerSubSystem(ZP_B0) = 0
-    NEXT
+    PlayerSubSystem(SUBSYSTEM_WEAPON) = 0
+    PlayerSubSystem(SUBSYSTEM_ENGINE) = 0
+    PlayerSubSystem(SUBSYSTEM_GYRO)   = 0
 END IF
 
 CALL DrawDesktop($30+LocalMapVergeStationId)
@@ -140,9 +146,9 @@ LeftPanelHandler:
                 CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
                 CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
 
-                CALL Text(7, 2, 1, 0, TRUE, "worluk", $c000)
-                CALL Text(13, 5, 1, 0, TRUE, "launch sequence", $c000)
-                CALL Text(15, 7, 1, 0, FALSE, "initiated", $c000)
+                CALL Text(7, 2, 1, 0, TRUE, "worluk", CHAR_MEMORY)
+                CALL Text(13, 5, 1, 0, TRUE, "launch sequence", CHAR_MEMORY)
+                CALL Text(15, 7, 1, 0, FALSE, "initiated", CHAR_MEMORY)
 
                 CALL SidStop()
 
@@ -164,33 +170,38 @@ SUB SaveGame(FileNr AS BYTE) STATIC
     SaveParams.FileName = @SaveFileName(FileNr) + 1
     ZP_W0 = @SaveParams
 
-    ASM
-        lda #1
-        sta $30
+    IF NOT Debug THEN
+        ASM
+            lda #1
+            sta $30
 
-        ldx {ZP_W0}
-        ldy {ZP_W0}+1
-        jsr $bb00
-        bcs save_failed
-        lda #0
+            ldx {ZP_W0}
+            ldy {ZP_W0}+1
+            jsr $bb00
+            bcs save_failed
+            lda #0
 save_failed
-        sta $30
-    END ASM
+            sta $30
+        END ASM
+    END IF
 END SUB
 
 SUB LoadGame(FileNr AS BYTE) STATIC
     ZP_W0 = @SaveFileName(FileNr) + 1
-    ASM
-        sta $40
-        ldx {ZP_W0}
-        ldy {ZP_W0}+1
-        jsr $440
-        bcs load_failed
-        lda #0
+
+    IF NOT Debug THEN
+        ASM
+            sta $40
+            ldx {ZP_W0}
+            ldy {ZP_W0}+1
+            jsr $440
+            bcs load_failed
+            lda #0
 load_failed
-        sta $40
-        jmp load_failed
-    END ASM
+            sta $40
+            jmp load_failed
+        END ASM
+    END IF
 END SUB
 
 DiplomacyPanelHandler:
@@ -404,15 +415,6 @@ TradePanelHandler:
         END SELECT
     LOOP
 
-SELECT CASE GameState
-    CASE GAMESTATE_COMPLETED
-        CALL LoadProgram("completed", CWORD(8192))
-    CASE GAMESTATE_PLAYING
-
-END SELECT
-
-END
-
 REM ********************************
 REM * ROUTINES
 REM ********************************
@@ -425,7 +427,7 @@ SUB SetupGraphics() STATIC
         lda #0          ;bank=3
         sta $dd00
     END ASM
-    CALL SetCharacterMemory(0)
+    CALL SetCharacterMemory(2)
     CALL SetScreenMemory(2)
     SCREEN 2
     MEMSET $c800, 1000, 32
@@ -721,6 +723,24 @@ DATA AS BYTE 1, 1, 1, 1, 3
 
 _ComponentMaxCapacity:
 DATA AS WORD 999, 999, 999, 999, 250
+
+_GameMap:
+DATA AS BYTE $00, $00, $00, $00, $18, $18, $18, $18, $18, $18, $1f, $1f, $1f, $18, $00, $00
+DATA AS BYTE $00, $00, $18, $18, $18, $18, $10, $10, $10, $18, $18, $18, $18, $18, $18, $00
+DATA AS BYTE $00, $18, $18, $1e, $18, $18, $10, $36, $10, $10, $10, $10, $18, $18, $18, $00
+DATA AS BYTE $00, $18, $18, $18, $18, $18, $10, $10, $10, $08, $08, $08, $10, $18, $18, $18
+DATA AS BYTE $18, $18, $18, $18, $18, $10, $10, $10, $08, $08, $ee, $08, $10, $18, $18, $18
+DATA AS BYTE $18, $18, $18, $10, $10, $10, $10, $10, $10, $08, $08, $08, $10, $10, $18, $18
+DATA AS BYTE $18, $18, $10, $10, $10, $18, $18, $18, $18, $10, $10, $08, $10, $10, $18, $18
+DATA AS BYTE $18, $18, $10, $10, $10, $18, $18, $18, $18, $18, $10, $10, $10, $18, $18, $18
+DATA AS BYTE $18, $18, $10, $10, $18, $18, $be, $18, $18, $18, $18, $18, $18, $18, $18, $18
+DATA AS BYTE $18, $18, $18, $10, $10, $18, $18, $18, $18, $18, $18, $18, $18, $18, $18, $00
+DATA AS BYTE $18, $18, $18, $18, $10, $10, $18, $18, $18, $18, $18, $18, $18, $18, $18, $00
+DATA AS BYTE $18, $18, $18, $18, $18, $10, $18, $18, $18, $18, $18, $18, $18, $9e, $18, $00
+DATA AS BYTE $00, $18, $18, $de, $18, $18, $18, $18, $18, $18, $18, $18, $18, $18, $18, $00
+DATA AS BYTE $00, $18, $18, $18, $18, $18, $18, $18, $18, $18, $18, $18, $18, $18, $00, $00
+DATA AS BYTE $00, $00, $18, $18, $18, $18, $18, $18, $18, $18, $1f, $1f, $1f, $18, $00, $00
+DATA AS BYTE $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $07, $66, $07, $00, $00, $00
 
 SID_Driven_20:
 INCBIN "../sfx/Driven_20.bin"
