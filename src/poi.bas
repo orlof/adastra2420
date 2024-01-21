@@ -1,6 +1,6 @@
 CONST MISSILE_SILO_ARMOR = 21
 
-CONST RADAR_SCR_ADDR = 49946
+CONST RADAR_SCR_ADDR = $c31a
 CONST RADAR_BITMAP_ADDR = $f8d0
 
 DIM PoiSx AS INT SHARED
@@ -16,38 +16,7 @@ DIM GeomAi AS BYTE @_GeomAi SHARED
 DIM GeomPortal AS BYTE @_GeomPortal SHARED
 DIM GeomMissileSilo AS BYTE @_GeomMissileSilo SHARED
 
-SUB LocalMap_AddRandom(Item AS BYTE) SHARED STATIC
-    DO
-        ZP_B0 = RNDB()
-        IF (ZP_B0 < 133 OR ZP_B0 > 136) AND (GameMap(ZP_B0) AND %11100111) = 0 THEN
-            GameMap(ZP_B0) = GameMap(ZP_B0) OR Item
-            EXIT SUB
-        END IF
-    LOOP
-END SUB
 
-SUB LocalMap_StartGame() SHARED STATIC
-    ASM
-        sei
-        dec 1
-        dec 1
-    END ASM
-    MEMCPY $df00, @GameMap, 256
-    ASM
-        inc 1
-        inc 1
-        cli
-    END ASM
-    ' ADD VERGE STATION 2
-    CALL LocalMap_AddRandom(%01000110)
-    FOR ZP_B1 = 0 TO 20
-        ' ADD STAR
-        CALL LocalMap_AddRandom(%00000101)
-        ' ADD SILO
-        CALL LocalMap_AddRandom(%00000111)
-    NEXT
-    'LocalMap(135) = %00000101
-END SUB
 
 SUB LocalMap_Launch() SHARED STATIC
     ZoneType = ZONE_NONE
@@ -101,18 +70,8 @@ SUB LocalMap_Basic() SHARED STATIC
 
             SELECT CASE ZP_B0
                 CASE ZONE_STAR
-                    ASM
-                        sei
-                        dec 1
-                        dec 1
-                    END ASM
-                    MEMSHIFT @_StarSpr, $ca80, 64
-                    MEMCPY $deab, $cac0, 64
-                    ASM
-                        inc 1
-                        inc 1
-                        cli
-                    END ASM
+                    MEMCPY @_StarSpr, $c680, 128
+
                     CALL SprDraw_SetClean(SPR_NR_POI)
                     Spr_EdgeWest(SPR_NR_POI) = 0
                     Spr_EdgeEast(SPR_NR_POI) = 0
@@ -225,7 +184,7 @@ SUB LocalMap_UpdateRadar() SHARED STATIC
         sta {ZP_B1}
     END ASM
 
-    ZP_W1 = $c31a
+    ZP_W1 = $cb1a
     FOR Y AS BYTE = 0 TO 4
         ZP_W0 = RadarBitmapAddr(Y)
         MEMSET ZP_W0, 40, 0
@@ -492,12 +451,12 @@ DATA AS BYTE $8e,$61,$b7,$b0,$01,$db,$80,$04
 DATA AS BYTE $ef,$20,$18,$ff,$18,$21,$3c,$84
 DATA AS BYTE $02,$00,$40,$04,$52,$20,$10,$89
 DATA AS BYTE $08,$00,$89,$00,$01,$08,$80,$07
-'
-'DATA AS BYTE $00,$00,$00,$00,$88,$00,$08,$48
-'DATA AS BYTE $80,$04,$49,$00,$02,$4a,$00,$01
-'DATA AS BYTE $00,$30,$00,$3c,$c0,$30,$ff,$0e
-'DATA AS BYTE $0c,$ff,$30,$01,$af,$80,$7d,$f7
-'DATA AS BYTE $80,$01,$bf,$bc,$05,$ff,$80,$08
-'DATA AS BYTE $b7,$20,$10,$ff,$1c,$21,$3c,$80
-'DATA AS BYTE $02,$40,$60,$04,$52,$10,$00,$92
-'DATA AS BYTE $00,$00,$91,$00,$00,$00,$00,$07
+
+DATA AS BYTE $00,$00,$00,$00,$88,$00,$08,$48
+DATA AS BYTE $80,$04,$49,$00,$02,$4a,$00,$01
+DATA AS BYTE $00,$30,$00,$3c,$c0,$30,$ff,$0e
+DATA AS BYTE $0c,$ff,$30,$01,$af,$80,$7d,$f7
+DATA AS BYTE $80,$01,$bf,$bc,$05,$ff,$80,$08
+DATA AS BYTE $b7,$20,$10,$ff,$1c,$21,$3c,$80
+DATA AS BYTE $02,$40,$60,$04,$52,$10,$00,$92
+DATA AS BYTE $00,$00,$91,$00,$00,$00,$00,$07

@@ -13,19 +13,16 @@ SUB BackgroundInit() SHARED STATIC
     FOR ZP_B0 = 0 TO NUM_STARS-1
         x(ZP_B0) = RNDB()
         y(ZP_B0) = RNDB()
-        addr_y_hi(ZP_B0) = bitmap_y_tbl_hi(255)
-        addr_y_lo(ZP_B0) = bitmap_y_tbl_lo(255)
+        addr_y_hi(ZP_B0) = _bitmap_y_tbl_hi(0)
+        addr_y_lo(ZP_B0) = _bitmap_y_tbl_lo(0)
         addr_x(ZP_B0) = 0
     NEXT ZP_B0
 END SUB
 
 SUB BackgroundUpdate() SHARED STATIC
     ASM
-        ldx #NUM_STARS                     ;init loop 23 to 0
+        ldx #NUM_STARS-1                     ;init loop 23 to 0
 background_update_loop
-        dex
-        bmi background_update_end
-
         stx {ZP_B0}                 ;loop counter
         lda {addr_y_lo},x                ;clear old location
         sta {ZP_W0}
@@ -40,9 +37,9 @@ background_update_loop
         sbc {PlayerY}+1
         tay
 
-        lda {bitmap_y_tbl_lo},y      ;addr by y
+        lda {_bitmap_y_tbl_lo},y      ;addr by y
         sta {ZP_W0}
-        lda {bitmap_y_tbl_hi},y
+        lda {_bitmap_y_tbl_hi},y
         sta {ZP_W0}+1
 
         sec                         ;x = player.x + star.x
@@ -58,7 +55,7 @@ background_update_loop
         and #%00000111
         tax
 
-        lda {hires_mask1},x
+        lda {_hires_mask1},x
         sta ({ZP_W0}),y
 
         ldx {ZP_B0}
@@ -68,7 +65,7 @@ background_update_loop
         lda {ZP_W0}+1
         sta {addr_y_hi},x
 
-        jmp background_update_loop
-background_update_end
+        dex
+        bpl background_update_loop
     END ASM
 END SUB

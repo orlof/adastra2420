@@ -1,111 +1,15 @@
-SHARED CONST NUM_ASTEROIDS = 12
-
-SHARED CONST SPR_NR_PLAYER = 0
-SHARED CONST SPR_NR_POI = 13
-SHARED CONST SPR_NR_BULLET = 14
-SHARED CONST SPR_NR_TORPEDO = 15
-
-SHARED CONST ZONE_NONE          = $00
-SHARED CONST ZONE_PORTAL        = $ee
-SHARED CONST ZONE_STAR          = $77
-SHARED CONST ZONE_MISSILE_SILO  = $aa
-SHARED CONST ZONE_AI            = $88
-
-SHARED CONST PLAYER_SX = 127
-SHARED CONST PLAYER_SY = 100
-
-SHARED CONST STATUS_GOLD = 1
-SHARED CONST STATUS_METAL = 2
-SHARED CONST STATUS_FUEL = 4
-SHARED CONST STATUS_OXYGEN = 8
-SHARED CONST STATUS_ARMOR = 16
-
-SUB time_pause(jiffys AS BYTE) SHARED STATIC
-    ASM
-        ldx {jiffys}
-time_pause_wait_positive
-        bit $d011
-        bmi time_pause_wait_positive
-time_pause_wait_negative
-        bit $d011
-        bpl time_pause_wait_negative
-
-        dex
-        bne time_pause_wait_positive
-    END ASM
-END SUB
-
-DIM GameTime AS BYTE FAST SHARED
-
-DIM AsteroidSpeedTitle(4) AS STRING * 5 @_AsteroidSpeedTitle
-
-DIM impulse_dx(32) AS BYTE @_impulse_dx SHARED
-DIM impulse_dy(32) AS BYTE @_impulse_dy SHARED
-
-DIM small_impulse_dx(32) AS BYTE @_small_impulse_dx SHARED
-DIM small_impulse_dy(32) AS BYTE @_small_impulse_dy SHARED
-
-DIM StatusFlag AS BYTE SHARED
-DIM PlayerDx AS LONG SHARED
-DIM PlayerDy AS LONG SHARED
-DIM PlayerSpeed AS BYTE SHARED
-
-DIM PlayerSectorMapX AS WORD
-DIM PlayerSectorMapY AS BYTE
-DIM PlayerSectorMapRestore AS BYTE
-
-DIM TorpedoFuel AS BYTE SHARED
-
-DIM BulletSource AS BYTE SHARED
-
-DIM ZoneType AS BYTE SHARED
-DIM PoiDistance AS BYTE SHARED
-DIM PoiHitPoints AS BYTE SHARED
-DIM ZoneAsteroidSpeed AS BYTE SHARED
-
-
-
-
-
-
-
-
-
-'INCLUDE "ext/lib_types.bas"
-'INCLUDE "ext/lib_color.bas"
-
-'INCLUDE "ext/lib_memory.bas"
-INCLUDE "../libs/lib_joy.bas"
-
-'INCLUDE "ext/lib_char.bas"
-'INCLUDE "ext/lib_scr.bas"
-'INCLUDE "ext/lib_mc.bas"
-INCLUDE "../libs/lib_gfx.bas"
-
-'INCLUDE "ext/lib_irq.bas"
-'INCLUDE "ext/lib_sid.bas"
-INCLUDE "../libs/lib_spr.bas"
-INCLUDE "../libs/lib_spr_shape.bas"
-INCLUDE "../libs/lib_spr_draw.bas"
-
-INCLUDE "../libs/lib_sfx.bas"
-
-
-CALL SprInit(3, 0)
-CALL SprDraw_Init()
-
-PlayerSectorMapX = 272
-PlayerSectorMapY = 96
-PlayerSectorMapRestore = 0
-
 RANDOMIZE TI()
 
-SUB UpdateDashboard(Title AS STRING * 1, Value AS WORD, Line AS BYTE, Col AS BYTE) SHARED STATIC
-    CALL StringBuilder_Clear(5)
-    CALL StringBuilder_Left(0, Title)
-    CALL StringBuilder_Right(4, Value)
-    CALL GameScreen.Text(34, Line, StringBuilder, Col)
-END SUB
+INCLUDE "../libs/lib_common.bas"
+INCLUDE "../libs/lib_joy.bas"
+INCLUDE "../libs/lib_space_gfx.bas"
+INCLUDE "../libs/lib_spr.bas"
+INCLUDE "../libs/lib_spr_draw.bas"
+INCLUDE "../libs/lib_sfx.bas"
+INCLUDE "../libs/lib_str.bas"
+
+INCLUDE "space_constants.bas"
+INCLUDE "space_state.bas"
 
 INCLUDE "direction.bas"
 INCLUDE "sounds.bas"
@@ -115,98 +19,84 @@ INCLUDE "poi.bas"
 INCLUDE "torpedo.bas"
 INCLUDE "bullet.bas"
 INCLUDE "player.bas"
-INCLUDE "background.bas"
+'INCLUDE "background.bas"
+
+CONST SPACE_CHARSET_NUM_LEFT = $be00
+CONST SPACE_CHARSET_NUM_RIGHT = $be40
+CONST SPACE_CHARSET_FIELD = $b1c0
+
+DECLARE SUB DrawDashboard() SHARED STATIC
+DECLARE SUB UpdateDashboard(Value AS WORD, Line AS BYTE, Col AS BYTE) SHARED STATIC
+DECLARE SUB time_pause(jiffys AS BYTE) SHARED STATIC
+
+DIM ZoneAsteroidSpeedColor(4) AS BYTE @_ZoneAsteroidSpeedColor
 
 ASM
-    ldx #15
-set_frames_loop:
-    txa
-    asl
-    adc #16
-    sta {SprFrame},x
-    dex
-    bpl set_frames_loop
+    lda #%01111111      ;CIA interrupt off
+    sta $dc0d
+    sta $dd0d
+    lda $dc0d           ;ACK interrupt
+    lda $dd0d
+
+    dec 1
+
+    lda #0          ;bank 0
+    sta $dd00
+
+    lda #%00101000  ;bitmap memory, screen memory
+    sta $d018
+
+    lda $d011
+    ora #%01100000  ;ECM and BMM
+    sta $d011
+
+    lda #0          ;vic interrupts off
+    sta $d01a
+
+    lda #$ff        ;ack vic interrupts
+    sta $d019
+
+    lda #<irq1
+    sta $fffe
+    lda #>irq1
+    sta $ffff
+
+    lda #$fb        ;set raster line
+    sta $d012
+
+    lda $d011
+    and #%01111111
+    sta $d011
+
+    lda #1          ;enable raster interrupt
+    sta $d01a
 END ASM
 
-RestartGame:
+SprColor(0) = COLOR_WHITE
 
-TimeLeft = 1000d
-LocalMapVergeStationId = 5
-PlayerCredit = 10000
+MEMCPY @SPACE_CHARSET_START, $be00, 512
+MEMSET $e000, 8000, 0                   'clear bitmap
+MEMSET $c800, 1000, %00010000           'clear screen ram
 
-
-FOR ZP_B0 = 0 TO 4
-    ComponentValue(ZP_B0) = ComponentInitialValue(ZP_B0)
-    ComponentCapacity(ZP_B0) = ComponentInitialCapacity(ZP_B0)
-NEXT
-
-FOR ZP_B0 = 0 TO 11
-    ArtifactLocation(ZP_B0) = LOC_SOURCE
-NEXT
-
-CALL TitleShow(@TITLE_COLOR_RAM)
-CALL MessageShow()
-CALL Player_StartGame()
-CALL LocalMap_StartGame()
 
 Launch:
-CALL VergeShow()
-
 GameTime = 0
 StatusFlag = $ff
 TorpedoFuel = 0
 BulletAlive = FALSE
 
-CALL Text.Fill(Color_BLACK, COLOR_BLACK)
-CALL GameScreen.Focus()
 
 CALL LocalMap_Launch()
 CALL LocalMap_Basic()
 CALL LocalMap_Screen()
 
-' WHOLE SCREEN
-CALL GameScreen.Clear(COLOR_BLACK, COLOR_WHITE)
-
-' DASHBOARD
-CALL GameScreen.Area(33, 0, 39, 24, %10101010)
-CALL GameScreen.ColorArea(33, 0, 39, 24, $e0)
-
-' MAP
-CALL GameScreen.Rect(271, 95, 312, 136, 1)
-CALL GameScreen.Rect(270, 94, 313, 137, 1)
-CALL GameScreen.Area(34, 12, 38, 16, 0)
-CALL GameScreen.ColorArea(34, 12, 38, 16, $10)
-CALL GameScreen.Rect(275, 99, 308, 132, 1)
-FOR ZP_B2 = 0 TO 255
-    IF ((GameMap(ZP_B2) AND %00000011) = 2) AND ((GameMap(ZP_B2) AND %11100000) <> %01000000) THEN
-        CALL GameScreen.Plot(276+SHL(CWORD(ZP_B2) MOD 16, 1), 100+SHL(ZP_B2 / 16, 1), 1)
-    END IF
-NEXT
-
-' RADAR
-CALL GameScreen.Rect(271, 151, 312, 192, 1)
-CALL GameScreen.Rect(270, 150, 313, 193, 1)
-CALL GameScreen.Area(34, 19, 38, 23, 0)
-CALL GameScreen.ColorArea(34, 19, 38, 23, $00)
-CALL GameScreen.ColorArea(35, 20, 37, 22, $0b)
-CALL GameScreen.ColorBlock(36, 21, COLOR_WHITE, COLOR_BLACK)
-
-' NUMBER PANEL
-CALL GameScreen.Rect(271, 7, 312, 72, 1)
-CALL GameScreen.Rect(270, 6, 313, 73, 1)
-CALL GameScreen.Area(34, 1, 38, 8, 0)
-
-CALL GameScreen.Text(35, 11, "MAP", $10)
-CALL GameScreen.Text(34, 18, "RADAR", $10)
-
-CALL GameScreen.Show()
+CALL DrawDashboard()
 
 CALL ParticleInit()
 CALL Bullet_Init()
 CALL Torpedo_Init()
 CALL AsteroidInit()
 CALL BackgroundInit()
-CALL SfxInstall()
 
 CALL SprUpdate(TRUE)
 
@@ -318,39 +208,66 @@ DO
         CASE 0
             IF StatusFlag AND STATUS_FUEL THEN
                 IF ComponentValue(COMP_FUEL) < 40 THEN
-                    CALL UpdateDashboard("F", ComponentValue(COMP_FUEL), 1, $07)
+                    CALL UpdateDashboard(ComponentValue(COMP_FUEL), 0, $07)
                 ELSE
-                    CALL UpdateDashboard("F", ComponentValue(COMP_FUEL), 1, $10)
+                    CALL UpdateDashboard(ComponentValue(COMP_FUEL), 0, $10)
                 END IF
                 StatusFlag = StatusFlag XOR STATUS_FUEL
             END IF
         CASE 8
             IF ComponentValue(COMP_OXYGEN) = 0 THEN
-                GameState = OUT_OF_OXYGEN
+                GameState = GAMESTATE_OUT_OF_OXYGEN
             END IF
             ComponentValue(COMP_OXYGEN) = ComponentValue(COMP_OXYGEN) - 1
             IF ComponentValue(COMP_OXYGEN) < 40 THEN
-                CALL UpdateDashboard("O", ComponentValue(COMP_OXYGEN), 2, $07)
+                CALL UpdateDashboard(ComponentValue(COMP_OXYGEN), 1, $07)
             ELSE
-                CALL UpdateDashboard("O", ComponentValue(COMP_OXYGEN), 2, $10)
+                CALL UpdateDashboard(ComponentValue(COMP_OXYGEN), 1, $10)
             END IF
         CASE 16
             IF StatusFlag AND STATUS_ARMOR THEN
                 IF ComponentValue(COMP_ARMOR) < 40 THEN
-                    CALL UpdateDashboard("A", ComponentValue(COMP_ARMOR), 5, $07)
+                    CALL UpdateDashboard(ComponentValue(COMP_ARMOR), 4, $07)
                 ELSE
-                    CALL UpdateDashboard("A", ComponentValue(COMP_ARMOR), 5, $10)
+                    CALL UpdateDashboard(ComponentValue(COMP_ARMOR), 4, $10)
                 END IF
                 StatusFlag = StatusFlag XOR STATUS_ARMOR
             END IF
         CASE 20 ' ASTEROID ENERGY
-            CALL GameScreen.Text(34, 7, AsteroidSpeedTitle(ZoneAsteroidSpeed), $10)
+            ASM
+                ;color
+                ldx {ZoneAsteroidSpeed}
+                lda {ZoneAsteroidSpeedColor},x
+
+                sta $d93a
+                sta $d93b
+                sta $d93c
+                sta $d93d
+                sta $d93e
+
+                ;text
+                lda {ZoneAsteroidSpeed}
+                asl
+
+                adc #<SPACE_CHARSET_FIELD
+                sta {ZP_W0}
+                lda #>SPACE_CHARSET_FIELD
+                adc #0
+                sta {ZP_W0} + 1
+
+                ldy #15
+_update_dashboard_loop
+                lda ({ZP_W0}),y
+                sta $d93d,y
+                dey
+                bpl _update_dashboard_loop
+            END ASM
         CASE 24 ' GOLD
             IF StatusFlag AND STATUS_GOLD THEN
                 IF ComponentValue(COMP_GOLD) = ComponentCapacity(COMP_GOLD) THEN
-                    CALL UpdateDashboard("G", ComponentValue(COMP_GOLD), 3, $05)
+                    CALL UpdateDashboard(ComponentValue(COMP_GOLD), 2, $05)
                 ELSE
-                    CALL UpdateDashboard("G", ComponentValue(COMP_GOLD), 3, $10)
+                    CALL UpdateDashboard(ComponentValue(COMP_GOLD), 2, $10)
                 END IF
                 StatusFlag = StatusFlag XOR STATUS_GOLD
             END IF
@@ -394,23 +311,24 @@ y_plus
 done
             END ASM
             PlayerSpeed = ZP_B1
-            CALL StringBuilder_Clear(5)
-            CALL StringBuilder_Left(0, "S")
-            CALL StringBuilder_Right(4, STR$(ZP_B1))
-            CALL GameScreen.Text(34, 6, StringBuilder, $10)
+            CALL UpdateDashboard(CWORD(PlayerSpeed), 5, $10)
         CASE 32 'METAL
             IF StatusFlag AND STATUS_METAL THEN
                 IF ComponentValue(COMP_METAL) = ComponentCapacity(COMP_METAL) THEN
-                    CALL UpdateDashboard("M", ComponentValue(COMP_METAL), 4, $05)
+                    CALL UpdateDashboard(ComponentValue(COMP_METAL), 3, $05)
                 ELSE
-                    CALL UpdateDashboard("M", ComponentValue(COMP_METAL), 4, $10)
+                    CALL UpdateDashboard(ComponentValue(COMP_METAL), 3, $10)
                 END IF
                 StatusFlag = StatusFlag XOR STATUS_METAL
             END IF
         CASE 40
             CALL LocalMap_UpdateRadar()
         CASE 44 ' UPDATE MAP
-            CALL GameScreen.Plot(PlayerSectorMapX, PlayerSectorMapY, PlayerSectorMapRestore)
+            IF PlayerSectorMapRestore THEN
+                CALL Plot(PlayerSectorMapX, PlayerSectorMapY)
+            ELSE
+                CALL UnPlot(PlayerSectorMapX, PlayerSectorMapY)
+            END IF
             ASM
                 lda {PlayerX} + 1
                 rol
@@ -433,20 +351,17 @@ done
                 sta {PlayerSectorMapY}
             END ASM
 
-            CALL GameScreen.Plot(PlayerSectorMapX, PlayerSectorMapY, 1)
-            PlayerSectorMapRestore = GameScreen.PlotRestore
+            PlayerSectorMapRestore = GetPixel(PlayerSectorMapX, PlayerSectorMapY)
+            CALL Plot(PlayerSectorMapX, PlayerSectorMapY)
         CASE 48
             IF ComponentValue(COMP_FUEL) = 0 AND PlayerDx = 0 AND PlayerDy = 0 AND GameState <> GAMESTATE_STATION THEN
-                GameState = OUT_OF_FUEL
+                GameState = GAMESTATE_OUT_OF_FUEL
             END IF
         CASE 52
-            CALL StringBuilder_Clear(5)
-            CALL StringBuilder_Left(0, "T")
-            CALL StringBuilder_Right(4, STR$(TimeLeft))
-            IF TimeLeft < 100d THEN
-                CALL GameScreen.Text(34, 8, StringBuilder, $07)
+            IF TimeLeft < 100 THEN
+                CALL UpdateDashboard(TimeLeft, 7, $07)
             ELSE
-                CALL GameScreen.Text(34, 8, StringBuilder, $10)
+                CALL UpdateDashboard(TimeLeft, 7, $10)
             END IF
     END SELECT
     'RegBorderColor = COLOR_BLACK
@@ -456,14 +371,14 @@ done
 
     GameTime = GameTime + 1
     IF GameTime = 0 THEN
-        TimeLeft = TimeLeft - 1d
-        IF TimeLeft = 0d THEN
-            GameState = OUT_OF_TIME
+        TimeLeft = TimeLeft - 1
+        IF TimeLeft = 0 THEN
+            GameState = GAMESTATE_OUT_OF_TIME
         END IF
     END IF
 LOOP UNTIL GameState
 
-IF GameState = EXPLOSION THEN
+IF GameState = GAMESTATE_EXPLOSION THEN
     CALL SfxStop(0)
     CALL SfxPlay(0, @SfxExplosion)
 
@@ -501,37 +416,15 @@ CALL time_pause(150)
 CALL SfxStop(0)
 CALL SfxStop(1)
 CALL SfxStop(2)
-CALL SfxUninstall()
 
 IF (GameState AND %10000000)=%10000000 THEN
-    CALL Image.Focus()
-    CALL Image.Clear(COLOR_BLACK, COLOR_BLACK, COLOR_BLACK)
-    CALL Image.Show()
+    CALL FillBitmap(0)
+    CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 
-    CALL Image.DrawIconFromDisc3(2, 12, 1)
+    'CALL Text(11, 2, 1, 0, TRUE, "game over", CHAR_MEMORY)
 
-    CALL Image.Centre(12, "We still Stare", COLOR_MIDDLEGRAY, COLOR_BLACK, 1)
-    CALL Image.Centre(13, "at the Heavens", COLOR_MIDDLEGRAY, COLOR_BLACK, 1)
-    CALL Image.Centre(14, "While we should", COLOR_MIDDLEGRAY, COLOR_BLACK, 1)
-    CALL Image.Centre(15, "Walk among the Stars", COLOR_MIDDLEGRAY, COLOR_BLACK, 1)
-
-    SELECT CASE GameState
-        CASE OUT_OF_FUEL
-            CALL Image.Centre(19, "Out of fuel", COLOR_RED, COLOR_BLACK, 1)
-        CASE OUT_OF_OXYGEN
-            CALL Image.Centre(19, "Out of oxygen", COLOR_RED, COLOR_BLACK, 1)
-        CASE OUT_OF_TIME
-            CALL Image.Centre(19, "Runaway", COLOR_RED, COLOR_BLACK, 1)
-            CALL Image.Centre(20, "singularity", COLOR_RED, COLOR_BLACK, 1)
-        CASE ELSE
-            CALL Image.Centre(19, "Ship exploded", COLOR_RED, COLOR_BLACK, 1)
-    END SELECT
-
-    CALL Image.Centre(24, "Press Fire", COLOR_DARKGRAY, COLOR_BLACK, 1)
-
-    CALL Joy1.WaitClick()
-
-    GOTO RestartGame
+    'CALL LoadProgram("gameover", CWORD(8192))
+    END
 END IF
 
 IF LocalMapVergeStationId = 5 AND _
@@ -540,49 +433,152 @@ IF LocalMapVergeStationId = 5 AND _
     ArtifactLocation(2) = LOC_PLAYER AND _
     ArtifactLocation(3) = LOC_PLAYER _
 THEN
-    CALL Image.Focus()
-    CALL Image.Clear(COLOR_DARKGRAY, COLOR_MIDDLEGRAY, COLOR_LIGHTGRAY)
-    CALL Image.Show()
-    CALL Image.DrawIconFromDisc3(1, 12, 1)
+    CALL FillBitmap(0)
+    CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 
-    CALL Image.Centre(13, "Well done Commander", COLOR_YELLOW, COLOR_BLACK, 1)
+    'CALL Text(11, 2, 1, 0, TRUE, "completed", CHAR_MEMORY)
 
-    CALL Image.Centre(15, "I am The President",   COLOR_YELLOW, COLOR_BLACK, 1)
-    CALL Image.Centre(16, "of United Planets",    COLOR_YELLOW, COLOR_BLACK, 1)
-    CALL Image.Centre(17, "The world is",         COLOR_YELLOW, COLOR_BLACK, 1)
-    CALL Image.Centre(18, "grateful for you",     COLOR_YELLOW, COLOR_BLACK, 1)
-
-    CALL Image.Centre(20, "I Congratulate you",   COLOR_YELLOW, COLOR_BLACK, 1)
-
-    CALL Image.Centre(23, "Press Fire",           COLOR_YELLOW, COLOR_BLACK, 1)
-
-    CALL Joy1.WaitClick()
-
-    GOTO RestartGame
+    'CALL LoadProgram("completed", CWORD(8192))
+    END
 END IF
 
-GOTO Launch
+CALL FillBitmap(0)
+CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 
-_impulse_dx:
-DATA AS BYTE 10,10,9,8,7,6,4,2
-DATA AS BYTE 0,254,252,250,249,248,247,246
-DATA AS BYTE 246,246,247,248,249,250,252,254
-DATA AS BYTE 0,2,4,6,7,8,9,10
-_impulse_dy:
-DATA AS BYTE 0,254,252,250,249,248,247,246
-DATA AS BYTE 246,246,247,248,249,250,252,254
-DATA AS BYTE 0,2,4,6,7,8,9,10
-DATA AS BYTE 10,10,9,8,7,6,4,2
-_small_impulse_dx:
-DATA AS BYTE 6,6,6,5,4,3,2,1
-DATA AS BYTE 0,255,254,253,252,251,250,250
-DATA AS BYTE 250,250,250,251,252,253,254,255
-DATA AS BYTE 0,1,2,3,4,5,6,6
-_small_impulse_dy:
-DATA AS BYTE 0,255,254,253,252,251,250,250
-DATA AS BYTE 250,250,250,251,252,253,254,255
-DATA AS BYTE 0,1,2,3,4,5,6,6
-DATA AS BYTE 6,6,6,5,4,3,2,1
+'CALL Text(11, 2, 1, 0, TRUE, "initiating docking sequence", CHAR_MEMORY)
 
-_AsteroidSpeedTitle:
-DATA AS STRING * 5 "E  NA", "E  Hi", "E Med", "E Low"
+'CALL LoadProgram("gameover", CWORD(8192))
+END
+
+SUB time_pause(jiffys AS BYTE) SHARED STATIC
+    ASM
+        ldx {jiffys}
+time_pause_wait_positive
+        bit $d011
+        bmi time_pause_wait_positive
+time_pause_wait_negative
+        bit $d011
+        bpl time_pause_wait_negative
+
+        dex
+        bne time_pause_wait_positive
+    END ASM
+END SUB
+
+SUB DrawDashboard() STATIC SHARED
+    ' DASHBOARD
+    CALL SetColorInRect(33, 0, 39, 24, 0, COLOR_MIDDLEGRAY)
+    CALL SetColorInRect(33, 0, 39, 24, 1, COLOR_DARKGRAY)
+
+    FOR W AS WORD = 264 TO 319 STEP 2
+        CALL VDraw(W, 0, 199, MODE_SET)
+    NEXT
+    FOR W = 0 TO 199 STEP 2
+        CALL HDraw(264, 319, W, MODE_SET)
+    NEXT
+
+    ' NUMBER PANEL
+    CALL SetColorInRect(34, 1, 38, 8, 1, COLOR_WHITE)
+    CALL Rect(270, 6, 313, 73, MODE_SET, MODE_CLEAR)
+
+    FOR ZP_B0 = 0 TO 7
+        MEMCPY $bf00 + CWORD(24) * ZP_B0, $e250 + 320 * ZP_B0, 24
+    NEXT
+
+    ' MAP
+    CALL SetColorInRect(34, 11, 38, 16, 1, COLOR_WHITE)
+    CALL Rect(270, 86, 313, 137, MODE_SET, MODE_CLEAR)
+    CALL Rect(275, 99, 308, 132, MODE_SET, MODE_CLEAR)
+
+    CALL CharacterAt(35, 11, "M")
+    CALL CharacterAt(36, 11, "A")
+    CALL CharacterAt(37, 11, "P")
+
+    CALL SetColorInRect(34, 12, 38, 16, 0, COLOR_YELLOW)
+    FOR ZP_B2 = 0 TO 255
+        IF ((GameMap(ZP_B2) AND %00000011) = 2) AND ((GameMap(ZP_B2) AND %11100000) <> %01000000) THEN
+            CALL Plot(276 + SHL(CWORD(ZP_B2) MOD 16, 1), 100 + SHL(ZP_B2 / 16, 1))
+        END IF
+    NEXT
+
+    ' RADAR
+    CALL SetColorInRect(34, 18, 38, 18, 1, COLOR_WHITE)
+    CALL SetColorInRect(35, 20, 37, 22, 0, COLOR_LIGHTGRAY)
+    CALL SetColorInRect(36, 21, 36, 21, 0, COLOR_MIDDLEGRAY)
+
+    CALL Rect(270, 142, 313, 193, MODE_SET, MODE_CLEAR)
+    'CALL Rect(271, 143, 312, 192, MODE_CLEAR, MODE_CLEAR)
+    'CALL SetColorInRect(34, 19, 38, 23, 0, COLOR_MIDDLEGRAY)
+
+    CALL CharacterAt(34, 18, "R")
+    CALL CharacterAt(35, 18, "A")
+    CALL CharacterAt(36, 18, "D")
+    CALL CharacterAt(37, 18, "A")
+    CALL CharacterAt(38, 18, "R")
+
+    'BORDER
+    CALL SetColorInRect(32, 0, 32, 24, 1, COLOR_BLACK)
+    CALL Rect(256, 0, 263, 199, MODE_SET, MODE_SET)
+END SUB
+
+
+SUB UpdateDashboard(Value AS WORD, Line AS BYTE, Col AS BYTE) SHARED STATIC
+    ZP_W0 = $d84d + 40 * Line
+    POKE ZP_W0, Col
+    POKE ZP_W0 + 1, Col
+    POKE ZP_W0 + 2, Col
+    POKE ZP_W0 + 3, Col
+    POKE ZP_W0 + 4, Col
+
+    CALL Word2String(Value, 10, 4, 0)
+
+    ZP_W0 = ZP_W0 - $1000 + 3
+    ZP_W1 = SPACE_CHARSET_NUM_LEFT + SHL(DecByte(0), 3)
+    ASM
+        ldy #7
+_update_dashboard_loop0
+        lda ({ZP_W1}),y
+        sta ({ZP_W0}),y
+        dey
+        bpl _update_dashboard_loop0
+    END ASM
+
+    ZP_W1 = SPACE_CHARSET_NUM_RIGHT + SHL(DecByte(1), 3)
+    ASM
+        ldy #7
+_update_dashboard_loop1
+        lda ({ZP_W1}),y
+        ora ({ZP_W0}),y
+        sta ({ZP_W0}),y
+        dey
+        bpl _update_dashboard_loop1
+    END ASM
+
+    ZP_W0 = ZP_W0 + 8
+    ZP_W1 = SPACE_CHARSET_NUM_LEFT + SHL(DecByte(2), 3)
+    ASM
+        ldy #7
+_update_dashboard_loop2
+        lda ({ZP_W1}),y
+        sta ({ZP_W0}),y
+        dey
+        bpl _update_dashboard_loop2
+    END ASM
+
+    ZP_W1 = SPACE_CHARSET_NUM_RIGHT + SHL(DecByte(3), 3)
+    ASM
+        ldy #7
+_update_dashboard_loop3
+        lda ({ZP_W1}),y
+        ora ({ZP_W0}),y
+        sta ({ZP_W0}),y
+        dey
+        bpl _update_dashboard_loop3
+    END ASM
+END SUB
+
+_ZoneAsteroidSpeedColor:
+DATA AS BYTE $10, $07, $07, $10
+
+SPACE_CHARSET_START:
+INCBIN "../gfx/space_charset.bin"

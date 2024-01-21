@@ -4,33 +4,35 @@ DECLARE SUB StringBuilder_AppendLong(Value AS LONG) STATIC SHARED
 DECLARE SUB StringBuilder_AppendWord(Value AS WORD) STATIC SHARED
 DECLARE SUB StringBuilder_AppendByte(Value AS BYTE) STATIC SHARED
 DECLARE SUB StringBuilder_AppendString(Value AS String*16) STATIC SHARED
-DECLARE SUB Byte2Str(Value AS Byte, Pad AS BYTE, MaxLen AS BYTE) STATIC
-DECLARE SUB Word2Str(Value AS WORD, Pad AS BYTE, MaxLen AS BYTE) STATIC
-DECLARE SUB Long2Str(Value AS LONG, Pad AS BYTE, MaxLen AS BYTE) STATIC
+DECLARE SUB Byte2String(Value AS Byte, Pad AS BYTE, MaxLen AS BYTE, ZeroOffset AS BYTE) STATIC SHARED
+DECLARE SUB Word2String(Value AS WORD, Pad AS BYTE, MaxLen AS BYTE, ZeroOffset AS BYTE) STATIC SHARED
+DECLARE SUB Long2String(Value AS LONG, Pad AS BYTE, MaxLen AS BYTE, ZeroOffset AS BYTE) STATIC SHARED
 DECLARE FUNCTION GetByte2String AS STRING*3(Value AS BYTE, MaxLen AS BYTE) STATIC SHARED
 DECLARE FUNCTION GetWord2String AS STRING*5(Value AS WORD, MaxLen AS BYTE) STATIC SHARED
 DECLARE FUNCTION GetLong2String AS STRING*8(Value AS LONG, MaxLen AS BYTE) STATIC SHARED
 
 DIM PrDecTens(7) AS LONG @_PrDecTens
-DIM DecStr AS STRING*8 SHARED
+DIM DecStr AS STRING*8 @_DecStr SHARED
+DIM DecByte(8) AS BYTE @_DecByte SHARED
 DIM StringBuilder AS STRING*40 SHARED
+DIM OriginalPad AS BYTE
 
 SUB StringBuilder_Init() STATIC SHARED
     StringBuilder = ""
 END SUB
 
 SUB StringBuilder_AppendLong(Value AS LONG) STATIC SHARED
-    CALL Long2Str(Value, 32, 7)
+    CALL Long2String(Value, 32, 7, $30)
     StringBuilder = StringBuilder + DecStr
 END SUB
 
 SUB StringBuilder_AppendWord(Value AS WORD) STATIC SHARED
-    CALL Word2Str(Value, 32, 5)
+    CALL Word2String(Value, 32, 5, $30)
     StringBuilder = StringBuilder + DecStr
 END SUB
 
 SUB StringBuilder_AppendByte(Value AS BYTE) STATIC SHARED
-    CALL Byte2Str(Value, 32, 3)
+    CALL Byte2String(Value, 32, 3, $30)
     StringBuilder = StringBuilder + DecStr
 END SUB
 
@@ -39,21 +41,22 @@ SUB StringBuilder_AppendString(Value AS String*16) STATIC SHARED
 END SUB
 
 FUNCTION GetByte2String AS STRING*3(Value AS BYTE, MaxLen AS BYTE) STATIC SHARED
-    CALL Byte2Str(Value, 32, MaxLen)
+    CALL Byte2String(Value, 32, MaxLen, $30)
     GetByte2String = DecStr
 END FUNCTION
 
 FUNCTION GetWord2String AS STRING*5(Value AS WORD, MaxLen AS BYTE) STATIC SHARED
-    CALL Word2Str(Value, 32, MaxLen)
+    CALL Word2String(Value, 32, MaxLen, $30)
     GetWord2String = DecStr
 END FUNCTION
 
 FUNCTION GetLong2String AS STRING*8(Value AS LONG, MaxLen AS BYTE) STATIC SHARED
-    CALL Long2Str(Value, 32, MaxLen)
+    CALL Long2String(Value, 32, MaxLen, $30)
     GetLong2String = DecStr
 END FUNCTION
 
-SUB Byte2Str(Value AS Byte, Pad AS BYTE, MaxLen AS BYTE) STATIC
+SUB Byte2String(Value AS Byte, Pad AS BYTE, MaxLen AS BYTE, ZeroOffset AS BYTE) STATIC SHARED
+    OriginalPad = Pad
     MaxLen = 3 * (MaxLen - 1)
     ASM
         ; ---------------------------
@@ -89,12 +92,14 @@ PrDec8Lp2
         bne PrDec8Digit                            ; Not zero, print it
 
         lda {Pad}
+        cmp #$ff
         bne PrDec8Print
         beq PrDec8Next                             ; {Pad}<>0, use it
 PrDec8Digit
-        ldx #$30
+        ldx #$ff
         stx {Pad}                                   ; No more zero padding
-        ora #$30                                     ; Print this digit
+        clc
+        adc {ZeroOffset}
 PrDec8Print
         ldx {DecStr}
         inx
@@ -108,15 +113,16 @@ PrDec8Next
 
         ldx {DecStr}
         lda {DecStr},x
-        cmp #$20
+        cmp {OriginalPad}
         bne PrDec8Done
-        lda #$30
+        lda {ZeroOffset}
         sta {DecStr},x
 PrDec8Done
     END ASM
 END SUB
 
-SUB Word2Str(Value AS WORD, Pad AS BYTE, MaxLen AS BYTE) STATIC
+SUB Word2String(Value AS WORD, Pad AS BYTE, MaxLen AS BYTE, ZeroOffset AS BYTE) STATIC SHARED
+    OriginalPad = Pad
     MaxLen = 3 * (MaxLen - 1)
     ASM
         ; ---------------------------
@@ -160,12 +166,14 @@ PrDec16Lp2
         bne PrDec16Digit                            ; Not zero, print it
 
         lda {Pad}
+        cmp #$ff
         bne PrDec16Print
         beq PrDec16Next                             ; {Pad}<>0, use it
 PrDec16Digit
-        ldx #$30
+        ldx #$ff
         stx {Pad}                                   ; No more zero padding
-        ora #$30                                     ; Print this digit
+        clc
+        adc {ZeroOffset}                                     ; Print this digit
 PrDec16Print
         ldx {DecStr}
         inx
@@ -179,15 +187,15 @@ PrDec16Next
 
         ldx {DecStr}
         lda {DecStr},x
-        cmp #$20
+        cmp {OriginalPad}
         bne PrDec16Done
-        lda #$30
+        lda {ZeroOffset}
         sta {DecStr},x
 PrDec16Done
     END ASM
 END SUB
 
-SUB Long2Str(Value AS LONG, Pad AS BYTE, MaxLen AS BYTE) STATIC
+SUB Long2String(Value AS LONG, Pad AS BYTE, MaxLen AS BYTE, ZeroOffset AS BYTE) STATIC SHARED
     MaxLen = 3 * (MaxLen - 1)
     ASM
         ; ---------------------------
@@ -239,12 +247,14 @@ PrDec24Lp2
         bne PrDec24Digit                            ; Not zero, print it
 
         lda {Pad}
+        cmp #$ff
         bne PrDec24Print
         beq PrDec24Next                             ; {Pad}<>0, use it
 PrDec24Digit
-        ldx #$30
+        ldx #$ff
         stx {Pad}                                   ; No more zero padding
-        ora #$30                                     ; Print this digit
+        clc
+        adc {ZeroOffset}                                     ; Print this digit
 PrDec24Print
         ldx {DecStr}
         inx
@@ -266,6 +276,11 @@ PrDec24Next
 PrDec24Done
     END ASM
 END SUB
+
+_DecStr:
+    DATA AS BYTE 0
+_DecByte:
+    DATA AS BYTE 0,0,0,0,0,0,0,0
 
 _PrDecTens:
     DATA AS LONG 1

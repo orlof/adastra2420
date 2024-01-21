@@ -21,13 +21,6 @@ DIM GeomShip AS BYTE @_GeomShip SHARED
 DIM GeomShipTurretDisable AS BYTE @_GeomShipTurretDisable SHARED
 DIM GeomShipTurret AS BYTE @_GeomShipTurret SHARED
 
-SUB Player_StartGame() SHARED STATIC
-    PlayerX = $068000
-    PlayerY = $088000
-
-    'SprFrame(0) = 16
-    SprColor(0) = COLOR_WHITE
-END SUB
 
 SUB Player_Launch() SHARED STATIC
     ASM
@@ -61,8 +54,7 @@ SUB Player_Launch() SHARED STATIC
 END SUB
 
 SUB Player_Basic() SHARED STATIC
-    CALL joy1.Update()
-    CALL joy2.Update()
+    CALL JoyUpdate()
 
     ASM
         ldx #$ff
@@ -86,11 +78,11 @@ SUB Player_Rotate() SHARED STATIC
 
 player_rotate_read_joy1
         ldx {PlayerRotatePowerLeft}
-        lda {Joy1}
+        lda {JoyValue}+1
         and #%00001000
         beq player_rotate_ship
         ldx {PlayerRotatePowerRight}
-        lda {Joy1}
+        lda {JoyValue}+1
         and #%00000100
         bne player_rotate_has_turret
 
@@ -103,12 +95,12 @@ player_rotate_ship
 player_rotate_has_turret
         ldx {PlayerRotatePowerLeft}
         dex
-        lda {Joy2}
+        lda {JoyValue}
         and #%00001000
         beq player_rotate_turret
         ldx {PlayerRotatePowerRight}
         inx
-        lda {Joy2}
+        lda {JoyValue}
         and #%00000100
         bne player_rotate_direction_changed
 
@@ -160,7 +152,7 @@ END SUB
 
 SUB Player_Accelerate() SHARED STATIC
     IF PlayerCanAccelerate THEN
-        IF Joy1.North() AND ComponentValue(COMP_FUEL) > 0 THEN
+        IF JoyUp(JOY2) AND ComponentValue(COMP_FUEL) > 0 THEN
             ComponentValue(COMP_FUEL) = ComponentValue(COMP_FUEL) - 1
             ASM
                 lda {PlayerDirection}
@@ -237,7 +229,7 @@ player_update_y_positive
             StatusFlag = StatusFlag OR STATUS_FUEL
         END IF
 
-        IF Joy1.South() THEN
+        IF JoyDown(JOY2) THEN
             IF PlayerDx < 0 THEN
                 PlayerDx = PlayerDx + 1
             END IF
@@ -409,12 +401,12 @@ END SUB
 SUB Player_Shoot() SHARED STATIC
     IF PlayerCanShoot AND ComponentValue(COMP_METAL) > 0 THEN
         ZP_B0 = FALSE
-        IF Joy1.Button() THEN
+        IF JoyFire(JOY2) THEN
             ZP_B0 = TRUE
             ZP_B1 = PlayerDirection
             BulletSource = 0
         END IF
-        IF Joy2.Button() THEN
+        IF JoyFire(JOY1) THEN
             IF GeomShipTurretDisable = $10 THEN
                 GeomShipTurretDisable = $20
                 GeomShipTurret = GeomShipTurret AND %00000111
@@ -497,7 +489,7 @@ SUB Player_Collision() SHARED STATIC
                             ComponentValue(COMP_ARMOR) = ComponentValue(COMP_ARMOR) - ZP_B1
                         ELSE
                             ComponentValue(COMP_ARMOR) = 0
-                            GameState = EXPLOSION
+                            GameState = GAMESTATE_EXPLOSION
                         END IF
                         StatusFlag = StatusFlag OR STATUS_ARMOR
                 END SELECT
@@ -513,7 +505,7 @@ SUB Player_Collision() SHARED STATIC
             ZP_B1 = (RNDB() AND %00111111) + 30
             IF ComponentValue(COMP_ARMOR) < ZP_B1 THEN
                 ComponentValue(COMP_ARMOR) = 0
-                GameState = EXPLOSION
+                GameState = GAMESTATE_EXPLOSION
             ELSE
                 ComponentValue(COMP_ARMOR) = ComponentValue(COMP_ARMOR) - ZP_B1
             END IF
@@ -536,7 +528,7 @@ SUB Player_Collision() SHARED STATIC
                         CALL SfxPlay(1, @SfxAsteroid)
                     END IF
                     'IF ComponentValue(COMP_ARMOR) <= 5 THEN
-                        GameState = EXPLOSION
+                        GameState = GAMESTATE_EXPLOSION
                         ComponentValue(COMP_ARMOR) = 0
                     'ELSE
                     '    ComponentValue(COMP_ARMOR) = ComponentValue(COMP_ARMOR) - 5

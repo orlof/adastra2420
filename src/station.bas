@@ -63,6 +63,7 @@ DECLARE SUB CreateSlotPanel(IsSave AS BYTE) STATIC
 DECLARE SUB AutoSave() STATIC
 DECLARE SUB SaveGame(FileNr AS BYTE) STATIC
 DECLARE SUB LoadGame(FileNr AS BYTE) STATIC
+DECLARE SUB Map_AddRandom(Item AS BYTE) SHARED STATIC
 DECLARE FUNCTION GetBuyAllPrice AS LONG(ComponentId AS BYTE) STATIC
 
 MEMCPY @SID_Driven_20, $1000, @SID_Driven_20_End - @SID_Driven_20
@@ -81,8 +82,16 @@ CALL SetupGraphics()
 IF Debug OR (GameState = GAMESTATE_STARTING) THEN
     CALL MissionBriefingHandler()
     GameState = GAMESTATE_STATION
-    PlayerCredit = 10000
+    TimeLeft = 1000
     LocalMapVergeStationId = 5
+    PlayerCredit = 10000
+    PlayerX = $068000
+    PlayerY = $088000
+
+    PlayerSectorMapX = 272
+    PlayerSectorMapY = 96
+    PlayerSectorMapRestore = 0
+
     MEMCPY @_GameMap, @GameMap, 256
     FOR ZP_B0 = 0 TO 11
         ArtifactLocation(ZP_B0) = LOC_SOURCE
@@ -94,6 +103,16 @@ IF Debug OR (GameState = GAMESTATE_STARTING) THEN
     PlayerSubSystem(SUBSYSTEM_WEAPON) = 0
     PlayerSubSystem(SUBSYSTEM_ENGINE) = 0
     PlayerSubSystem(SUBSYSTEM_GYRO)   = 0
+
+    ' ADD VERGE STATION 2
+    CALL Map_AddRandom(%01000110)
+    FOR ZP_B1 = 0 TO 20
+        ' ADD STAR
+        CALL Map_AddRandom(%00000101)
+        ' ADD SILO
+        CALL Map_AddRandom(%00000111)
+    NEXT
+    'LocalMap(135) = %00000101
 END IF
 
 CALL DrawDesktop($30+LocalMapVergeStationId)
@@ -657,6 +676,16 @@ SUB MissionBriefingHandler() STATIC
     CALL Panel.Center(19, "press fire", COLOR_LIGHTGRAY, TRUE)
 
     CALL Panel.WaitEvent(FALSE)
+END SUB
+
+SUB Map_AddRandom(Item AS BYTE) SHARED STATIC
+    DO
+        ZP_B0 = RNDB()
+        IF (ZP_B0 < 133 OR ZP_B0 > 136) AND (GameMap(ZP_B0) AND %11100111) = 0 THEN
+            GameMap(ZP_B0) = GameMap(ZP_B0) OR Item
+            EXIT SUB
+        END IF
+    LOOP
 END SUB
 
 

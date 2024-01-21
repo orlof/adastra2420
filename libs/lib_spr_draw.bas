@@ -1,9 +1,6 @@
-'INCLUDE "lib_memory.bas"
-'INCLUDE "lib_types.bas"
-'INCLUDE "lib_irq.bas"
+'INCLUDE "lib_common.bas"
+'INCLUDE "lib_sfx.bas"
 'INCLUDE "lib_spr.bas"
-
-DECLARE SUB SprDraw_Init() SHARED STATIC
 
 DECLARE SUB SprDraw_SetAngle(SprNr AS BYTE, Angle AS BYTE) SHARED STATIC
 DECLARE SUB SprDraw_SetGeometry(SprNr AS BYTE, GeometryAddr AS WORD) SHARED STATIC
@@ -48,23 +45,22 @@ REM CALL SprDrawInit()
 REM ****************************************************************************
 REM Call before using the library
 REM ****************************************************************************
-SUB SprDraw_Init() SHARED STATIC
-    ASM
-        lda #0
-        ldx #MAXSPR
+ASM
+    ldx #MAXSPR-1
 sprdraw_init_loop
-        dex
-        bmi sprdraw_init_end
+    lda #0
+    sta {_angle},x
+    sta {_spr_draw_dirty},x
+    sta {_geometry_addr_hi},x
+    sta {_geometry_addr_lo},x
 
-        sta {_angle},x
-        sta {_spr_draw_dirty},x
-        sta {_geometry_addr_hi},x
-        sta {_geometry_addr_lo},x
+    txa
+    asl
+    sta {SprFrame},x
 
-        jmp sprdraw_init_loop
-sprdraw_init_end
-    END ASM
-END SUB
+    dex
+    bpl sprdraw_init_loop
+END ASM
 
 SUB SprDraw_SetAngle(SprNr AS BYTE, Angle AS BYTE) SHARED STATIC
     ASM
@@ -281,7 +277,7 @@ SUB SprDraw_DrawGeometry(SprNr AS BYTE, FramePtr AS BYTE) SHARED STATIC
         ror {ZP_W0}
 
         clc
-        adc {spr_vic_bank_addr}+1
+        adc #>VIC_BANK_ADDR
         sta {ZP_W0}+1
 
         ldx {SprNr}
@@ -475,14 +471,10 @@ sprdraw_end
     END ASM
 END SUB
 
-GOTO THE_END
-
 _RotX:
-INCLUDE "ext/x_rotation_table.bas"
+INCLUDE "../libs/x_rotation_table.bas"
 _RotY:
-INCLUDE "ext/y_rotation_table.bas"
+INCLUDE "../libs/y_rotation_table.bas"
 
 _pixel_mask:
 DATA AS BYTE $80, $40, $20, $10, $08, $04, $02, $01
-
-THE_END:

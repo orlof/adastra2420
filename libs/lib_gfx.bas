@@ -209,7 +209,7 @@ END SUB
 
 SUB FillBitmap(Value AS BYTE) SHARED STATIC
     ASM
-        OPEN_BANK3
+        ;OPEN_BANK3
 
         lda {_dbuf_nr}
         eor {_dbuf_on}
@@ -225,7 +225,7 @@ _clear_buffer_choose1
         jsr _clear_buffer1
 
 _clear_buffer_end
-        CLOSE_BANK3
+        ;CLOSE_BANK3
     END ASM
 END SUB
 

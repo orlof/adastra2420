@@ -1,6 +1,11 @@
+'INCLUDE "../libs/lib_common.bas"
+'INCLUDE "../libs/lib_space_gfx.bas"
+'DIM GameTime AS BYTE
+
 CONST NUM_PARTICLES = 16
-DIM asm_num_particles AS BYTE
-    asm_num_particles = NUM_PARTICLES
+ASM
+NUM_PARTICLES = 16
+END ASM
 
 DIM ParticleX(NUM_PARTICLES) AS BYTE
 DIM ParticleY(NUM_PARTICLES) AS BYTE
@@ -23,9 +28,9 @@ SUB ParticleInit() SHARED STATIC
         ParticleDY(ZP_B0) = 0
         ParticleTTL(ZP_B0) = 0
         ParticleAlive(ZP_B0) = FALSE
-        
-        ParticleAddrHi(ZP_B0) = bitmap_y_tbl_hi(255)
-        ParticleAddrLo(ZP_B0) = bitmap_y_tbl_lo(255)
+
+        ParticleAddrHi(ZP_B0) = _bitmap_y_tbl_hi(0)
+        ParticleAddrLo(ZP_B0) = _bitmap_y_tbl_lo(0)
         ParticleAddrY(ZP_B0) = 0
     NEXT ZP_B0
     NextParticle = 0
@@ -46,7 +51,7 @@ END SUB
 
 SUB ParticleUpdate() SHARED STATIC
     ASM
-        ldx {asm_num_particles}
+        ldx #NUM_PARTICLES
 particle_update_loop:
         dex
         bpl particle_update_continue
@@ -105,23 +110,17 @@ particle_update_update_dy:
         lda {ParticleY},x
         sec
         sbc {ParticleDY},x
-
-        ldy {ParticleDY},x
-        bpl particle_update_dy_positive
-particle_update_dy_negative:
+        cmp #200
         bcs particle_update_disable
-        jmp particle_update_update_addr
-particle_update_dy_positive:
-        bcc particle_update_disable
 
 particle_update_update_addr:
         sta {ParticleY},x
 
         tay
-        lda {bitmap_y_tbl_lo},y
+        lda {_bitmap_y_tbl_lo},y
         sta {ZP_W0}
         sta {ParticleAddrLo},x
-        lda {bitmap_y_tbl_hi},y
+        lda {_bitmap_y_tbl_hi},y
         sta {ZP_W0}+1
         sta {ParticleAddrHi},x
         lda {ParticleX},x
@@ -131,7 +130,7 @@ particle_update_update_addr:
         lda {ParticleX},x
         and #%00000111
         tay
-        lda {hires_mask1},y
+        lda {_hires_mask1},y
         ldy {ParticleAddrY},x
         sta ({ZP_W0}),y
 

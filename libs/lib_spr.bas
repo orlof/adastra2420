@@ -1,35 +1,16 @@
-'INCLUDE "lib_memory.bas"
-'INCLUDE "lib_types.bas"
-'INCLUDE "lib_irq.bas"
+'INCLUDE "lib_common.bas"
+'INCLUDE "lib_sfx.bas"
 
 REM **************************************
 REM 16 / 24 / 32 (only 16 tested)
 REM You must also update MAXSPR in ASM code
 REM **************************************
 SHARED CONST MAX_NUM_SPRITES = 16
+
 ASM
 MAXSPR          = 16
+SPRITE_FP       = $cbf8
 END ASM
-
-REM ****************************************************************************
-REM Initialise Sprite System
-REM 
-REM Must be called BEFORE any other methods are used.
-REM 
-REM  - Invidividual sprite's MultiColorMode, Priority, DoubleWidth or
-REM    DoubleHeight can only be set in 8 sprite mode. e.g.
-REM     - SprDoubleX(0) = TRUE
-REM  - 16 sprite mode can use only:
-REM     - SprDoubleXAll(TRUE)
-REM     - SprDoubleYAll(TRUE)
-REM     - SprMultiColorAll(TRUE)
-REM     - SprPriorityAll(TRUE)
-REM 
-REM NOTE Both modes intialise a raster interrupt that updates sprite data
-REM      from cache arrays to IO registers during off-screen. Update is
-REM      triggered with SprUpdate.
-REM ****************************************************************************
-DECLARE SUB SprInit(VicBankPtr AS BYTE, ScreenMemPtr AS BYTE) SHARED STATIC
 
 REM ****************************************************************************
 REM Commit all changes from cache arrays to IO registers.
@@ -47,17 +28,17 @@ REM CALL SprXY(0, 0, 0)
 REM ****************************************************************************
 REM Set sprite's top left corner to screen pixel (x, y).
 REM Bits [8:0] are used for x coordinate.
-REM 
+REM
 REM                 left border   fully visible   right border
 REM x normal          x <= -24    0 <= x < 296      x >= 320
 REM x expanded        x <= -48    0 <= x < 272      x >= 320
-REM 
+REM
 REM                  top border   fully visible   bottom border
 REM y normal          y <= -21    0 <= y < 235      y >= 200
 REM y expanded        y <= -42    0 <= y < 214      y >= 200
-REM 
+REM
 REM ****************************************************************************
-REM NOTE If you need collision detection, you MUST ALWAYS use this method to 
+REM NOTE If you need collision detection, you MUST ALWAYS use this method to
 REM set sprite position!
 REM ****************************************************************************
 DECLARE SUB SprXY(SprNr AS BYTE, x AS INT, y AS INT) SHARED STATIC
@@ -75,7 +56,7 @@ DECLARE SUB SprMultiColor(Value AS BYTE) SHARED STATIC
 REM ****************************************************************************
 REM Update SprCollision array with TRUE/FALSE values to identify which
 REM sprites collide with SprNr
-REM 
+REM
 REM CALL SprRecordCollisions(0)
 REM FOR t AS BYTE = 1 TO 7
 REM     PRINT t, SprCollision(t)
@@ -89,7 +70,7 @@ REM **************************************
 
 REM ****************************************************************************
 REM Collision data (TRUE/FALSE) for each sprite
-REM Update by "CALL SprRecordCollisions(SprNr)" 
+REM Update by "CALL SprRecordCollisions(SprNr)"
 REM ****************************************************************************
 DIM SHARED SprCollision(MAX_NUM_SPRITES) AS BYTE
 
@@ -111,12 +92,6 @@ DIM SHARED Spr_EdgeWest(MAX_NUM_SPRITES) AS BYTE
 DIM SHARED Spr_EdgeEast(MAX_NUM_SPRITES) AS BYTE
 DIM SHARED Spr_EdgeNorth(MAX_NUM_SPRITES) AS BYTE
 DIM SHARED Spr_EdgeSouth(MAX_NUM_SPRITES) AS BYTE
-
-DIM spr_ptrs AS WORD
-    spr_ptrs = 2040
-
-DIM SHARED spr_vic_bank_ptr AS BYTE
-DIM SHARED spr_vic_bank_addr AS WORD
 
 DIM spr_reg_mc AS BYTE @$d01c
 DIM spr_reg_dx AS BYTE @$d01d
@@ -159,34 +134,7 @@ SUB SprPriority(Value AS BYTE) SHARED STATIC
     spr_reg_bg = Value
 END SUB
 
-SUB SprInit(VicBankPtr AS BYTE, ScreenMemPtr AS BYTE) SHARED STATIC
     ASM
-        ;spr_vic_bank_ptr = VicBankPtr
-        lda {VicBankPtr}
-        sta {spr_vic_bank_ptr}
-
-        ;spr_vic_bank_addr = 16384 * CWORD(VicBankPtr)
-        lda #0
-        sta {spr_vic_bank_addr}
-
-        lda {VicBankPtr}        ;16384 * CWORD(VicBankPtr)
-        lsr
-        ror
-        ror
-        sta {spr_vic_bank_addr}+1
-
-        ; spr_ptrs = spr_vic_bank_addr + SHL(CWORD(ScreenMemPtr), 10) + 1016
-        lda {ScreenMemPtr}      ;vic_bank_addr + 1024 * ScreenMemPtr
-        asl
-        asl
-
-        clc
-        adc {spr_vic_bank_addr}+1
-        adc #3
-        sta {spr_ptrs}+1
-        lda #$f8
-        sta {spr_ptrs}
-
         ;-----------------------------
         ;init sprite properties
         ldx #MAXSPR
@@ -217,41 +165,39 @@ spr_init_loop
 
         jmp spr_init_loop
 spr_init_end
-    END ASM
 
-    ASM
 IRQ1LINE        = $fb                           ;This is the place on screen where the sorting IRQ happens
         lda #0
         sta {sortedsprites}
         sta {sprupdateflag}
 
-        ldx #MAXSPR
+        ldx #MAXSPR-1
 spr_mode16_init_loop
-        dex
-        bmi spr_mode16_init_loop_break
-
         txa
         sta {sortorder},x
-        jmp spr_mode16_init_loop
 
-spr_mode16_init_loop_break
-        lda {spr_ptrs}
-        sta irq2_sprf+1
-        lda {spr_ptrs}+1
-        sta irq2_sprf+2
+        dex
+        bpl spr_mode16_init_loop
+    END ASM
 
-        lda #<mode16_irq
-        sta {ZP_W0}
-        lda #>mode16_irq
-        sta {ZP_W0}+1
+GOTO SkipAsm
 
-        jmp mode16_end
-
+StartIRQ:
+ASM
 ;Raster interrupt 1. This is where sorting happens.
 ;-----------------------------------
-mode16_irq
+irq1:
 ;-----------------------------------
-;                dec $d019                       ;Acknowledge raster interrupt
+                pha        ;store register A in stack
+                txa
+                pha        ;store register X in stack
+                tya
+                pha        ;store register Y in stack
+
+                dec $d019                       ;Acknowledge raster interrupt
+
+                jsr sfx_play
+
                 lda #$ff                        ;Move all sprites
                 sta $d001                       ;to the bottom to prevent
                 sta $d003                       ;weird effects when sprite
@@ -283,12 +229,19 @@ irq1_notmorethan8:
                 lda #$00                        ;for the actual sprite display
                 sta {sprirqcounter}             ;routine
                 lda #<irq2                      ;Set up the sprite display IRQ
-                sta $0314
+                sta $fffe
                 lda #>irq2
-                sta $0315
+                sta $ffff
                 jmp irq2_direct                 ;Go directly; we might be late
+
 irq1_nospritesatall:
-                jmp $ea81
+                pla
+                tay        ;restore register Y from stack
+                pla
+                tax        ;restore register X from stack
+                pla        ;restore register A from stack
+
+                rti
 
 irq1_beginsort:
                 ;inc $d020                      ; debug
@@ -343,6 +296,12 @@ irq1_sortloop3: ldy {sortorder},x               ;Final loop:
 ;-----------------------------------
 irq2:
 ;-----------------------------------
+                pha        ;store register A in stack
+                txa
+                pha        ;store register X in stack
+                tya
+                pha        ;store register Y in stack
+
                 dec $d019                       ;Acknowledge raster interrupt
 irq2_direct:
                 ldy {sprirqcounter}             ;Take next sorted sprite number
@@ -372,14 +331,13 @@ irq2_spriteloop:lda sortspry,y
 irq2_lowmsb:    lda $d010
                 and andtbl,x
                 sta $d010
-irq2_msbok:     
+irq2_msbok:
                 ldx physicalsprtbl1,y           ;Physical sprite number x 1
                 lda sortsprf,y
-irq2_sprf:
-                sta $dead,x                     ;for color & frame
+                sta SPRITE_FP,x                     ;for color & frame
                 lda sortsprc,y
                 sta $d027,x
-                
+
                 iny
                 bne irq2_spriteloop
 irq2_endspr:    cmp #$ff                        ;Was it the endmark?
@@ -390,14 +348,16 @@ irq2_endspr:    cmp #$ff                        ;Was it the endmark?
                 cmp $d012                       ;Already late from that?
                 bcc irq2_direct                 ;Then go directly to next IRQ
                 sta $d012
-                jmp $ea81
-irq2_lastspr:   lda {IrqHandler}               ;Was the last sprite,
-                sta $0314                       ;go back to irq1
-                lda {IrqHandler}+1               ;(sorting interrupt)
-                sta $0315
+                jmp irq1_nospritesatall
+
+irq2_lastspr:   lda #<irq1               ;Was the last sprite,
+                sta $fffe                       ;go back to irq1
+                lda #>irq1               ;(sorting interrupt)
+                sta $ffff
                 lda #IRQ1LINE
                 sta $d012
-                jmp $ea81
+
+                jmp irq1_nospritesatall
 
 
 sortsprxlo:     ds.b MAXSPR,0                   ;Sorted sprite table
@@ -442,17 +402,16 @@ ortbl:          dc.b 1
                 dc.b 64
                 dc.b 255-128
                 dc.b 128
-mode16_end
-    END ASM
-    CALL IrqSpr(ZP_W0)
-END SUB
+END ASM
+
+SkipAsm:
 
 SUB SprStop() SHARED STATIC
-    CALL IrqSpr(0)
+    RASTER INTERRUPT OFF
 END SUB
 
 SUB SprClearFrame(FramePtr AS BYTE) SHARED STATIC
-    MEMSET spr_vic_bank_addr + SHL(CWORD(FramePtr), 6), 63, 0
+    MEMSET VIC_BANK_ADDR + SHL(CWORD(FramePtr), 6), 63, 0
 END SUB
 
 SUB SprXY(SprNr AS BYTE, x AS INT, y AS INT) SHARED STATIC
@@ -608,7 +567,7 @@ END FUNCTION
 
 REM **************************************
 REM Spritemultiplexer adaptation
-REM 
+REM
 REM Based on:
 REM Spritemultiplexing example V2.1
 REM by Lasse Öörni (loorni@gmail.com)

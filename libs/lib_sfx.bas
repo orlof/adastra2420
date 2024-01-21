@@ -1,6 +1,5 @@
-'INCLUDE "lib_memory.bas"
-'INCLUDE "lib_types.bas"
-'INCLUDE "lib_irq.bas"
+'INCLUDE "lib_common.bas"
+
 
 SHARED CONST NOISE = 128
 SHARED CONST PULSE = 64
@@ -47,8 +46,7 @@ sfx_stop_loop
     END ASM
 END SUB
 
-SUB SfxUninstall() SHARED STATIC
-    CALL InstallIrqRoutine(4, $ffff)
+SUB SfxReset() SHARED STATIC
     ASM
 sid = $d400
 sfx_reset
@@ -61,7 +59,6 @@ sfx_reset_loop
     END ASM
 END SUB
 
-SUB SfxInstall() SHARED STATIC
     ASM
 sid = $d400
 initsfx
@@ -74,13 +71,11 @@ initsfx_reset_loop
 
         lda #$0f
         sta $d418
+END ASM
 
-        lda #<sfx_play
-        sta {ZP_W0}
-        lda #>sfx_play
-        sta {ZP_W0}+1
+GOTO SkipAsm
 
-        jmp initsfx_end
+ASM
 
 sfx_duration            = 0
 sfx_waveform            = 1
@@ -108,7 +103,7 @@ sfx_loop_1
 sfx_loop_2
         lda sid_duration,x
         beq sfx_loop
-        
+
         cmp #$ff
         beq sfx_continue
         dec sid_duration,x        ;sound still playing
@@ -141,9 +136,9 @@ sfx_frequency_slide_effect
         adc sid_frequency_slide0,x
         sta sid,y
         sta sid_frequency_lo,x
-        
+
         lda sid_frequency_hi,x        ;get voice freq hi byte and add
-        adc sid_frequency_slide1,x  
+        adc sid_frequency_slide1,x
         sta sid+1,y
         sta sid_frequency_hi,x
 
@@ -217,7 +212,7 @@ sfx_new
         iny
         lda ({ptr}),y
         sta sid_frequency_slide2,x
-        
+
         ldy #sfx_frequency
         lda ({ptr}),y
         sta sid_frequency_lo,x
@@ -299,5 +294,4 @@ sid_voice_offset
 
 initsfx_end
     END ASM
-    CALL InstallIrqRoutine(4, ZP_W0)
-END SUB
+SkipAsm:

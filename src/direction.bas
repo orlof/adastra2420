@@ -1,14 +1,14 @@
-'INCLUDE "ext/lib_memory.bas"
+'INCLUDE "../libs/lib_common.bas"
 
 FUNCTION AngleToOrigo AS BYTE(x AS BYTE, y AS BYTE) SHARED STATIC
     ASM
         lda  {x}
         bpl x_abs_done
-        
+
         eor #$ff
         clc
         adc #1
-        
+
         bpl x_abs_done
         lda #127
 
@@ -17,11 +17,11 @@ x_abs_done
 
         lda  {y}
         bpl y_abs_done
-        
+
         eor #$ff
         clc
         adc #1
-        
+
         bpl y_abs_done
         lda #127
 
@@ -85,7 +85,7 @@ _8x_gt_y
 
 _8x_lt_y
         lda #8
-        
+
 angle_done
         bit  {x}
         bmi left_quadrant

@@ -1,3 +1,6 @@
+'INCLUDE "../libs/lib_common.bas"
+'INCLUDE "../libs/lib_sfx.bas"
+
 DIM SHARED SfxGameStart AS SFX
     SfxGameStart.Duration = 70
     SfxGameStart.Waveform = TRIANGLE

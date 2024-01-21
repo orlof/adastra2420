@@ -183,4 +183,35 @@ This will show you the compilation targets.
 | 0910 | 0919 | ComponentValue    | W(5)  |
 | 091a | 0923 | ComponentCapacity | W(5)  |
 | 0924 | 092f | ArtifactLocation  | B(12) |
- 
+| 0930 | 0931 | PlayerSectorMapX  | W     |
+| 0932 | 0932 | PlayerSectorMapY  | B     |
+| 0933 | 0933 | PlayerSectorMapRestore | B     |
+
+
+MAP data format:
+<pre>
+    Map size: 16 * 16 = 256 bytes
+    Byte format: vvvaaott
+        vvv: Verge station id
+            000 0
+            001 1
+            010 2
+            011 3
+            100 4
+            101 5
+            110 6
+            111 7
+        aa: asteroid field
+            00  no asteroids
+            01  high energy asteroids
+            10  medium energy asteroids
+            11  low energy asteroids
+        o: stationary object on/off
+            0   no stationary object
+            1   stationary object
+        tt: stationary object type
+            00  AI
+            01  star
+            10  Verge station
+            11  missile silo
+</pre>
