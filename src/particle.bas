@@ -1,6 +1,6 @@
 'INCLUDE "../libs/lib_common.bas"
 'INCLUDE "../libs/lib_space_gfx.bas"
-'DIM GameTime AS BYTE
+'INCLUDE "space_state.bas"
 
 CONST NUM_PARTICLES = 16
 ASM

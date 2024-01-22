@@ -1,3 +1,21 @@
+'INCLUDE "../libs/lib_common.bas"
+'INCLUDE "../libs/lib_joy.bas"
+'INCLUDE "../libs/lib_spr.bas"
+'INCLUDE "../libs/lib_spr_draw.bas"
+'INCLUDE "../libs/lib_space_gfx.bas"
+'INCLUDE "../libs/lib_sfx.bas"
+'INCLUDE "space_constants.bas"
+'INCLUDE "space_state.bas"
+'INCLUDE "space_helper.bas"
+'INCLUDE "direction.bas"
+'INCLUDE "sounds.bas"
+'INCLUDE "particle.bas"
+'INCLUDE "asteroid.bas"
+'INCLUDE "poi.bas"
+'INCLUDE "torpedo.bas"
+'INCLUDE "bullet.bas"
+
+
 CONST TURRET_LENGTH = 4
 
 DIM PlayerDirection AS BYTE
@@ -45,8 +63,7 @@ SUB Player_Launch() SHARED STATIC
     PlayerRotatePowerLeft  = (PlayerRotatePowerRight XOR $ff) + 1
     GeomShipTurretDisable = $10
 
-    CALL SprClearFrame(16)
-    CALL SprClearFrame(17)
+    CALL SprClearSprite(SPR_NR_PLAYER)
 
     CALL SprDraw_UpdateSprite(SPR_NR_PLAYER, @GeomShip, 0)
 

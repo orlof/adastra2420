@@ -1,3 +1,18 @@
+'INCLUDE "../libs/lib_common.bas"
+'INCLUDE "../libs/lib_spr.bas"
+'INCLUDE "../libs/lib_spr_draw.bas"
+'INCLUDE "../libs/lib_space_gfx.bas"
+'INCLUDE "../libs/lib_sfx.bas"
+'INCLUDE "space_constants.bas"
+'INCLUDE "space_state.bas"
+'INCLUDE "space_helper.bas"
+'INCLUDE "sounds.bas"
+'INCLUDE "direction.bas"
+'INCLUDE "particle.bas"
+'INCLUDE "asteroid.bas"
+'INCLUDE "poi.bas"
+'INCLUDE "torpedo.bas"
+
 DIM CannonBulletDamage(10) AS BYTE @_CannonBulletDamage
 
 DIM BulletX AS LONG
@@ -10,17 +25,16 @@ DIM BulletAlive AS BYTE SHARED
 DIM BulletTTL AS BYTE
 
 SUB Bullet_Init() SHARED STATIC
-    CALL SprClearFrame(44)
-    CALL SprClearFrame(45)
+    CALL SprClearSprite(SPR_NR_BULLET)
     ASM
         lda #%00010100
-        sta 51999
-        sta 52005
-        sta 52066
+        sta $c3a2
+        sta $c39c
+        sta $c3df
         lda #%00001000
-        sta 52002
-        sta 52063
-        sta 52069
+        sta $c39f
+        sta $c3dc
+        sta $c3e2
     END ASM
 
     'SprFrame(SPR_NR_BULLET) = 44
@@ -47,7 +61,7 @@ SUB Bullet_Spawn(Direction AS BYTE) SHARED STATIC
         cmp #$80
         bcc bullet_spawn_dx_positive
         dey
-bullet_spawn_dx_positive        
+bullet_spawn_dx_positive
         sty {BulletDx}+1
         sty {BulletDx}+2
 
@@ -62,7 +76,7 @@ bullet_spawn_dx_positive
         cmp #$80
         bcc bullet_spawn_dy_positive
         dey
-bullet_spawn_dy_positive        
+bullet_spawn_dy_positive
         sty {BulletDy}+1
         sty {BulletDy}+2
 

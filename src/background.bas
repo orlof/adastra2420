@@ -1,3 +1,7 @@
+'INCLUDE "../libs/lib_common.bas"
+'INCLUDE "../libs/lib_space_gfx.bas"
+
+
 CONST NUM_STARS = 24
 ASM
 NUM_STARS = 24

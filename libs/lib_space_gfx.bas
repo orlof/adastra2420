@@ -67,7 +67,15 @@ REM **********************
 REM *     FUNCTIONS      *
 REM **********************
 SUB CharacterAt(x AS BYTE, y AS BYTE, Char AS STRING*1) SHARED STATIC
-    MEMCPY $c000 + ASC(Char) * 8, $e000 + CWORD(y) * 320 + CWORD(x) * 8, 8
+    ASM
+        sei
+        dec 1
+    END ASM
+    MEMCPY $d000 + ASC(Char) * 8, $e000 + CWORD(y) * 320 + CWORD(x) * 8, 8
+    ASM
+        inc 1
+        cli
+    END ASM
 END SUB
 
 SUB FillBitmap(Value AS BYTE) SHARED STATIC

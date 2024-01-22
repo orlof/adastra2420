@@ -9,7 +9,7 @@
             "dependsOn": [
                 "Build aileon.d64",
                 "EXOMIZE Intro",
-                "EXOMIZE Flight",
+                "EXOMIZE Space",
                 "EXOMIZE Station"
             ],
             "group": {
@@ -75,23 +75,23 @@
             }
         },
         {
-            "label": "Run Flight",
+            "label": "Run Space",
             "type": "shell",
             "osx": {
                 "command": "open",
                 "args": [
-                    "build/_flight.prg"
+                    "build/_space.prg"
                 ]
             },
             "windows": {
                 "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
                 "args": [
-                    "build/_flight.prg"
+                    "build/_space.prg"
                 ]
             },
             "dependsOrder": "sequence",
             "dependsOn": [
-                "EXOMIZE Flight"
+                "EXOMIZE Space"
             ],
             "group": {
                 "kind": "build",
@@ -147,8 +147,8 @@
                     "build/intro.prg",
                     "intro",
                     "-write",
-                    "build/flight.prg",
-                    "flight",
+                    "build/space.prg",
+                    "space",
                     "-write",
                     "data/savefile.prg",
                     "autosave",
@@ -188,8 +188,8 @@
                     "build/intro.prg",
                     "intro",
                     "-write",
-                    "build/flight.prg",
-                    "flight",
+                    "build/space.prg",
+                    "space",
                     "-write",
                     "build/station.prg",
                     "station"
@@ -199,7 +199,7 @@
             "dependsOn": [
                 "EXOMIZE Loader",
                 "XCB3 Intro",
-                "XCB3 Flight",
+                "XCB3 Space",
                 "XCB3 Station"
             ],
             "group": {
@@ -255,17 +255,18 @@
             }
         },
         {
-            "label": "EXOMIZE Flight",
+            "label": "EXOMIZE Space",
             "type": "shell",
             "osx": {
                 "command": "${config:xcbasic3.packer}/exomizer",
                 "args": [
                     "sfx",
                     "4096",
-                    "build/flight.prg",
+                    "data/test_map.prg",
+                    "build/space.prg",
                     "gfx/generic_charset.prg",
                     "-o",
-                    "build/_flight.prg",
+                    "build/_space.prg",
                     "-x",
                     "'inc $d020'"
                 ]
@@ -275,17 +276,18 @@
                 "args": [
                     "sfx",
                     "4096",
-                    "build/flight.prg",
+                    "data/test_map.prg",
+                    "build/space.prg",
                     "gfx/generic_charset.prg",
                     "-o",
-                    "build/_flight.prg",
+                    "build/_space.prg",
                     "-x",
                     "'inc $d020'"
                 ]
             },
             "dependsOrder": "sequence",
             "dependsOn": [
-                "XCB3 Flight"
+                "XCB3 Space"
             ],
             "group": {
                 "kind": "build",
@@ -423,15 +425,15 @@
             "problemMatcher": []
         },
         {
-            "label": "XCB3 Flight",
+            "label": "XCB3 Space",
             "type": "shell",
             "osx": {
                 "command": "${config:xcbasic3.basefolder}/bin/macOS/xcbasic3",
                 "args": [
                     "-b=False",
                     "-o=4096",
-                    "src/flight.bas",
-                    "build/flight.prg"
+                    "src/space.bas",
+                    "build/space.prg"
                 ]
             },
             "windows": {
@@ -439,8 +441,8 @@
                 "args": [
                     "-b=False",
                     "-o=4096",
-                    "src/flight.bas",
-                    "build/flight.prg"
+                    "src/space.bas",
+                    "build/space.prg"
                 ]
             },
             "problemMatcher": []

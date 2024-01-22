@@ -1,3 +1,14 @@
+'INCLUDE "../libs/lib_common.bas"
+'INCLUDE "../libs/lib_spr.bas"
+'INCLUDE "../libs/lib_sfx.bas"
+'INCLUDE "sounds.bas"
+'INCLUDE "../libs/lib_spr_draw.bas"
+'INCLUDE "../libs/lib_space_gfx.bas"
+'INCLUDE "space_constants.bas"
+'INCLUDE "space_state.bas"
+'INCLUDE "direction.bas"
+'INCLUDE "particle.bas"
+
 CONST MISSILE_SILO_ARMOR = 21
 
 CONST RADAR_SCR_ADDR = $c31a
@@ -15,8 +26,6 @@ DIM PoiMap(8) AS BYTE @_PoiMap SHARED
 DIM GeomAi AS BYTE @_GeomAi SHARED
 DIM GeomPortal AS BYTE @_GeomPortal SHARED
 DIM GeomMissileSilo AS BYTE @_GeomMissileSilo SHARED
-
-
 
 SUB LocalMap_Launch() SHARED STATIC
     ZoneType = ZONE_NONE

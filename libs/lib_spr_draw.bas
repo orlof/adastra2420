@@ -277,7 +277,7 @@ SUB SprDraw_DrawGeometry(SprNr AS BYTE, FramePtr AS BYTE) SHARED STATIC
         ror {ZP_W0}
 
         clc
-        adc #>VIC_BANK_ADDR
+        adc #>$c000
         sta {ZP_W0}+1
 
         ldx {SprNr}

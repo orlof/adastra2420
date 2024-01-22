@@ -1,3 +1,13 @@
+'INCLUDE "../libs/lib_common.bas"
+'INCLUDE "../libs/lib_sfx.bas"
+'INCLUDE "../libs/lib_spr.bas"
+'INCLUDE "../libs/lib_spr_draw.bas"
+'INCLUDE "../libs/lib_space_gfx.bas"
+'INCLUDE "space_constants.bas"
+'INCLUDE "space_state.bas"
+'INCLUDE "particle.bas"
+'INCLUDE "sounds.bas"
+
 CONST STATION_SAFE_ZONE = $40
 CONST NUM_VERTEX = 6
 

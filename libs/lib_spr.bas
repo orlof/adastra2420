@@ -188,6 +188,7 @@ ASM
 ;-----------------------------------
 irq1:
 ;-----------------------------------
+                sta $400
                 pha        ;store register A in stack
                 txa
                 pha        ;store register X in stack
@@ -195,7 +196,7 @@ irq1:
                 pha        ;store register Y in stack
 
                 dec $d019                       ;Acknowledge raster interrupt
-
+irq1_direct:
                 jsr sfx_play
 
                 lda #$ff                        ;Move all sprites
@@ -244,7 +245,7 @@ irq1_nospritesatall:
                 rti
 
 irq1_beginsort:
-                ;inc $d020                      ; debug
+                inc $d020                      ; debug
                 ldx #$00
 irq1_sortloop:
                 ldy {sortorder}+1,x             ;Sorting code. Algorithm

@@ -1,3 +1,17 @@
+'INCLUDE "../libs/lib_common.bas"
+'INCLUDE "../libs/lib_space_gfx.bas"
+'INCLUDE "../libs/lib_spr.bas"
+'INCLUDE "../libs/lib_sfx.bas"
+'INCLUDE "../libs/lib_spr_draw.bas"
+'INCLUDE "sounds.bas"
+'INCLUDE "space_constants.bas"
+'INCLUDE "space_state.bas"
+'INCLUDE "space_helper.bas"
+'INCLUDE "direction.bas"
+'INCLUDE "particle.bas"
+'INCLUDE "poi.bas"
+'INCLUDE "asteroid.bas"
+
 DIM TorpedoX AS LONG SHARED
 DIM TorpedoY AS LONG SHARED
 DIM TorpedoDx AS LONG SHARED
@@ -12,8 +26,7 @@ DIM TorpedoSpawnTime AS BYTE SHARED
 DIM GeomTorpedo AS BYTE @_GeomTorpedo SHARED
 
 SUB Torpedo_Init() SHARED STATIC
-    CALL SprClearFrame(46)
-    CALL SprClearFrame(47)
+    CALL SprClearSprite(SPR_NR_TORPEDO)
     CALL SprDraw_SetGeometry(SPR_NR_TORPEDO, @GeomTorpedo)
     'SprFrame(SPR_NR_TORPEDO) = 46
     SprColor(SPR_NR_TORPEDO) = COLOR_RED

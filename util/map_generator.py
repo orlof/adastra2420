@@ -18,6 +18,26 @@ m[0x0d] = " .............  "
 m[0x0e] = "  ........ZZZ.  "
 m[0x0f] = "          Z3Z   "
 
+test_map = [""] * 16
+test_map[0x00] = "    ......ZZZ.  "
+test_map[0x01] = "  ....:::...... "
+test_map[0x02] = " ..0..:1::::... "
+test_map[0x03] = " .....:::===:..."
+test_map[0x04] = ".....:::==7=:..."
+test_map[0x05] = "...::::::===::.."
+test_map[0x06] = "..:::....::=::.."
+test_map[0x07] = "..:::...*.:::..."
+test_map[0x08] = "..::..5........."
+test_map[0x09] = "...::...Z...... "
+test_map[0x0a] = "....::......... "
+test_map[0x0b] = ".....:.......4. "
+test_map[0x0c] = " ..6........... "
+test_map[0x0d] = " .............  "
+test_map[0x0e] = "  ........ZZZ.  "
+test_map[0x0f] = "          Z3Z   "
+
+m = test_map
+
 startx=0
 starty=0
 bvalues = []
@@ -52,7 +72,7 @@ for count, row in enumerate(m):
             data = (data & 0b00011000) | 0b11000110
         elif v == "7":
             data = (data & 0b00011000) | 0b11100110
-        
+
         elif v == "*":
             data = (data & 0b00011000) | 0b00000101
 
@@ -63,7 +83,8 @@ for count, row in enumerate(m):
         bvalues.append(data)
     print(", ".join(values))
 
-with open("map.bin", "wb") as f:
+with open("data/test_map.prg", "wb") as f:
+    f.write(bytes([0x800 % 256, 0x800 // 256]))
     f.write(bytes(bvalues))
 
 print ("PlayerX = $%s8000" % '{:02x}'.format(startx))
