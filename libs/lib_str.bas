@@ -96,7 +96,7 @@ PrDec8Lp2
         bne PrDec8Print
         beq PrDec8Next                             ; {Pad}<>0, use it
 PrDec8Digit
-        ldx #$ff
+        ldx #$00
         stx {Pad}                                   ; No more zero padding
         clc
         adc {ZeroOffset}
@@ -170,7 +170,7 @@ PrDec16Lp2
         bne PrDec16Print
         beq PrDec16Next                             ; {Pad}<>0, use it
 PrDec16Digit
-        ldx #$ff
+        ldx #$00
         stx {Pad}                                   ; No more zero padding
         clc
         adc {ZeroOffset}                                     ; Print this digit
@@ -251,7 +251,7 @@ PrDec24Lp2
         bne PrDec24Print
         beq PrDec24Next                             ; {Pad}<>0, use it
 PrDec24Digit
-        ldx #$ff
+        ldx #$00
         stx {Pad}                                   ; No more zero padding
         clc
         adc {ZeroOffset}                                     ; Print this digit

@@ -106,14 +106,13 @@ SUB Rect(x0 AS WORD, y0 AS BYTE, x1 AS WORD, y1 AS BYTE, Mode AS BYTE, FillMode 
     IF FillMode <> MODE_TRANSPARENT THEN
         ASM
             inc {x0}
-            bne _rect_no_inc
+            bne *+4
                 inc {x0}+1
-_rect_no_inc
 
             lda {x1}
-            bne _rect_no_dec
+            bne *+4
                 dec {x1}+1
-_rect_no_dec
+
             dec {x1}
 
             inc {y0}
@@ -213,12 +212,12 @@ FUNCTION GetPixel AS BYTE(x AS WORD, y AS BYTE) SHARED STATIC
         eor {x}
         tay
 
-        ldx #0
         lda {_hires_mask1},x
+        ldx #0
 
         and ({ZP_W0}),y
         beq *+3
-            dey
+            dex
 
         stx {GetPixel}
     END ASM

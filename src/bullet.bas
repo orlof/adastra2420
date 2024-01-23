@@ -27,14 +27,17 @@ DIM BulletTTL AS BYTE
 SUB Bullet_Init() SHARED STATIC
     CALL SprClearSprite(SPR_NR_BULLET)
     ASM
-        lda #%00010100
-        sta $c3a2
-        sta $c39c
-        sta $c3df
         lda #%00001000
-        sta $c39f
-        sta $c3dc
-        sta $c3e2
+        sta $c71f
+
+        sta $c75c
+        sta $c762
+
+        lda #%00010100
+        sta $c71c
+        sta $c722
+
+        sta $c75f
     END ASM
 
     'SprFrame(SPR_NR_BULLET) = 44
