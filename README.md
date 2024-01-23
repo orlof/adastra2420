@@ -151,7 +151,11 @@ This will show you the compilation targets.
 | 2    | $B000 | $B3FF |        |          | CODE     |          |          |
 | 2    | $B400 | $B7FF |        |          | CODE     |          |          |
 | 2    | $B800 | $BBFF |        |          |          |          |          |
-| 2    | $BC00 | $BFFF |        |          |          |          |          |
+| 2    | $BC00 |       |        |          |          |          |          |
+|      | $BC00 | $BCFF |        |          |          |          | DUMMY    |
+|      | $BD00 | $BDFF |        |          |          |          | DUMMY    |
+|      | $BE00 | $BEFF |        |          |          |          | CHARSET2 |
+|      | $BF00 | $BFFF |        |          |          |          | CHARSET2 |
 | 3    | $C000 | $C3FF |        |          |          |          | SPRITE   |
 | 3    | $C400 | $C7FF |        |          |          |          | SPRITE   |
 | 3    | $C800 | $CBFF |        | SCREEN   | SCREEN   | SCREEN   | SCREEN   |

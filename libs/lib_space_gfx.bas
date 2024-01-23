@@ -538,6 +538,15 @@ DATA AS BYTE $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb
 DATA AS BYTE $fc, $fc, $fc, $fc, $fc, $fc, $fc, $fc
 DATA AS BYTE $fe, $fe, $fe, $fe, $fe, $fe, $fe, $fe
 
+DATA AS BYTE $bc, $bc, $bc, $bc, $bc, $bc, $bc, $bc
+DATA AS BYTE $bc, $bc, $bc, $bc, $bc, $bc, $bc, $bc
+DATA AS BYTE $bc, $bc, $bc, $bc, $bc, $bc, $bc, $bc
+DATA AS BYTE $bc, $bc, $bc, $bc, $bc, $bc, $bc, $bc
+DATA AS BYTE $bc, $bc, $bc, $bc, $bc, $bc, $bc, $bc
+DATA AS BYTE $bc, $bc, $bc, $bc, $bc, $bc, $bc, $bc
+DATA AS BYTE $bc, $bc, $bc, $bc, $bc, $bc, $bc, $bc
+DATA AS BYTE $bc, $bc, $bc, $bc, $bc, $bc, $bc, $bc
+
 __bitmap_y_tbl_lo:
 DATA AS BYTE $00, $01, $02, $03, $04, $05, $06, $07
 DATA AS BYTE $40, $41, $42, $43, $44, $45, $46, $47
@@ -571,11 +580,18 @@ DATA AS BYTE $c0, $c1, $c2, $c3, $c4, $c5, $c6, $c7
 
 DATA AS BYTE $00, $01, $02, $03, $04, $05, $06, $07
 
+DATA AS BYTE $00, $00, $00, $00, $00, $00, $00, $00
+DATA AS BYTE $00, $00, $00, $00, $00, $00, $00, $00
+DATA AS BYTE $00, $00, $00, $00, $00, $00, $00, $00
+DATA AS BYTE $00, $00, $00, $00, $00, $00, $00, $00
+DATA AS BYTE $00, $00, $00, $00, $00, $00, $00, $00
+DATA AS BYTE $00, $00, $00, $00, $00, $00, $00, $00
+DATA AS BYTE $00, $00, $00, $00, $00, $00, $00, $00
+DATA AS BYTE $00, $00, $00, $00, $00, $00, $00, $00
+
 __screen_y_tbl_hi:
 DATA AS BYTE $c8, $c8, $c8, $c8, $c8, $c8, $c8, $c9, $c9, $c9, $c9, $c9, $c9, $ca, $ca, $ca
 DATA AS BYTE $ca, $ca, $ca, $ca, $cb, $cb, $cb, $cb, $cb
 __screen_y_tbl_lo:
 DATA AS BYTE $00, $28, $50, $78, $a0, $c8, $f0, $18, $40, $68, $90, $b8, $e0, $08, $30, $58
 DATA AS BYTE $80, $a8, $d0, $f8, $20, $48, $70, $98, $c0
-
-

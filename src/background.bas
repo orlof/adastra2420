@@ -15,8 +15,8 @@ DIM addr_x(NUM_STARS) AS BYTE
 
 SUB BackgroundInit() SHARED STATIC
     FOR ZP_B0 = 0 TO NUM_STARS-1
-        x(ZP_B0) = RNDB()
-        y(ZP_B0) = RNDB()
+        x(ZP_B0) = RndQByte()
+        y(ZP_B0) = RndQByte()
         addr_y_hi(ZP_B0) = _bitmap_y_tbl_hi(0)
         addr_y_lo(ZP_B0) = _bitmap_y_tbl_lo(0)
         addr_x(ZP_B0) = 0
@@ -43,8 +43,10 @@ background_update_loop
 
         lda {_bitmap_y_tbl_lo},y      ;addr by y
         sta {ZP_W0}
+        sta {addr_y_lo},x
         lda {_bitmap_y_tbl_hi},y
         sta {ZP_W0}+1
+        sta {addr_y_hi},x
 
         sec                         ;x = player.x + star.x
         lda {x},x
@@ -55,20 +57,14 @@ background_update_loop
         sta {addr_x},x              ;addr offset by x
         tay
 
-        lda {ZP_B1}
-        and #%00000111
+        eor {ZP_B1}
+        ;and #%00000111
         tax
 
         lda {_hires_mask1},x
         sta ({ZP_W0}),y
 
         ldx {ZP_B0}
-
-        lda {ZP_W0}
-        sta {addr_y_lo},x
-        lda {ZP_W0}+1
-        sta {addr_y_hi},x
-
         dex
         bpl background_update_loop
     END ASM
