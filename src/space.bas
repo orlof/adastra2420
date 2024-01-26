@@ -47,6 +47,8 @@ END IF
 
 DIM ZoneAsteroidSpeedColor(4) AS BYTE @_ZoneAsteroidSpeedColor
 
+CALL GraphicsModeInvalid()
+
 ASM
     sei
 
@@ -70,10 +72,6 @@ ASM
     lda #$ff
     sta $d01b
 
-    lda $d011
-    ora #%01100000  ;ECM and BMM
-    sta $d011
-
     lda #0          ;vic interrupts off
     sta $d01a
 
@@ -87,10 +85,6 @@ ASM
 
     lda #$fb        ;set raster line
     sta $d012
-
-    lda $d011
-    and #%01111111
-    sta $d011
 
     lda #1          ;enable raster interrupt
     sta $d01a
@@ -111,6 +105,7 @@ TorpedoFuel = 0
 BulletAlive = FALSE
 
 CALL DrawDashboard()
+CALL GraphicsModeValid()
 
 ASM
     lda $d011
@@ -414,7 +409,7 @@ done
             GameState = GAMESTATE_OUT_OF_TIME
         END IF
     END IF
-LOOP UNTIL GameState
+LOOP UNTIL TRUE  ' GameState
 
 IF GameState = GAMESTATE_EXPLOSION THEN
     CALL SfxStop(0)
@@ -455,12 +450,33 @@ CALL SfxStop(0)
 CALL SfxStop(1)
 CALL SfxStop(2)
 
-IF (GameState AND %10000000)=%10000000 THEN
-    CALL FillBitmap(0)
-    CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
+BORDER COLOR_BLACK
+CALL GraphicsModeInvalid()
 
-    'CALL Text(11, 2, 1, 0, TRUE, "game over", CHAR_MEMORY)
+CALL FillBitmap(0)
+CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 
+ASM
+    sei
+
+    inc 1
+
+    lda #0          ;vic interrupts off
+    sta $d01a
+
+    lda #$ff        ;ack vic interrupts
+    sta $d019
+
+    lda #<$ff48      ;restore default irq vector
+    sta $fffe
+    lda #>$ff48
+    sta $ffff
+
+    cli
+END ASM
+
+IF (GameState AND GAMESTATE_GAMEOVER) THEN
+    CALL Text(11, 2, TRUE, "game over")
     'CALL LoadProgram("gameover", CWORD(8192))
     END
 END IF
@@ -471,21 +487,18 @@ IF LocalMapVergeStationId = 5 AND _
     ArtifactLocation(2) = LOC_PLAYER AND _
     ArtifactLocation(3) = LOC_PLAYER _
 THEN
-    CALL FillBitmap(0)
-    CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
-
     'CALL Text(11, 2, 1, 0, TRUE, "completed", CHAR_MEMORY)
-
     'CALL LoadProgram("completed", CWORD(8192))
     END
 END IF
 
-CALL FillBitmap(0)
-CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
+CALL Text(7, 2, TRUE, "verge station")
+CALL Text(13, 4, TRUE, "network")
+CALL Text(15, 7, FALSE, "connecting")
 
-'CALL Text(11, 2, 1, 0, TRUE, "initiating docking sequence", CHAR_MEMORY)
+CALL GraphicsModeValid()
+CALL LoadProgram("station", CWORD(8192))
 
-'CALL LoadProgram("gameover", CWORD(8192))
 END
 
 SUB time_pause(jiffys AS BYTE) SHARED STATIC
@@ -588,8 +601,6 @@ END SUB
 SUB UpdateDashboard(Value AS WORD, Line AS BYTE, FgColor AS BYTE) SHARED STATIC
     ZP_W0 = $c84a + CWORD(40) * Line
     ASM
-        lda {Value}
-        sta $400
         ldy #4
         lda {FgColor}
         asl

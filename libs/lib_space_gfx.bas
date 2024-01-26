@@ -50,6 +50,9 @@ DIM _screen_y_tbl_hi(25) AS BYTE @__screen_y_tbl_hi
 DIM _color_y_tbl_hi(25) AS BYTE @ __color_y_tbl_hi
 DIM _color_y_tbl_lo(25) AS BYTE @ __color_y_tbl_lo
 
+DIM _nible_to_byte(16) AS BYTE @ __nible_to_byte
+DIM _petscii_to_screencode(8) AS BYTE @ __petscii_to_screencode
+
 REM **********************
 REM *    DECLARATIONS    *
 REM **********************
@@ -66,6 +69,24 @@ DECLARE SUB WaitRasterLine256() SHARED STATIC
 REM **********************
 REM *     FUNCTIONS      *
 REM **********************
+SUB GraphicsModeInvalid() SHARED STATIC
+    ASM
+        lda $d011       ;ECM on, BMM on
+        and #%00001111
+        ora #%01110000
+        sta $d011
+    END ASM
+END SUB
+
+SUB GraphicsModeValid() SHARED STATIC
+    ASM
+        lda $d011       ;ECM off, BMM on
+        and #%00001111
+        ora #%00110000
+        sta $d011
+    END ASM
+END SUB
+
 SUB CharacterAt(x AS BYTE, y AS BYTE, Char AS STRING*1) SHARED STATIC
     ASM
         sei
@@ -92,7 +113,7 @@ SUB FillColors(BgColor AS BYTE, FgColor AS BYTE) SHARED STATIC
         ora {BgColor}
         sta {BgColor}
     END ASM
-    MEMSET $d800, 1000, BgColor
+    MEMSET $c800, 1000, BgColor
 END SUB
 
 SUB Rect(x0 AS WORD, y0 AS BYTE, x1 AS WORD, y1 AS BYTE, Mode AS BYTE, FillMode AS BYTE) SHARED STATIC
@@ -106,11 +127,11 @@ SUB Rect(x0 AS WORD, y0 AS BYTE, x1 AS WORD, y1 AS BYTE, Mode AS BYTE, FillMode 
     IF FillMode <> MODE_TRANSPARENT THEN
         ASM
             inc {x0}
-            bne *+4
+            bne *+5
                 inc {x0}+1
 
             lda {x1}
-            bne *+4
+            bne *+5
                 dec {x1}+1
 
             dec {x1}
@@ -268,6 +289,159 @@ SUB UnPlot(x AS WORD, y AS BYTE) SHARED STATIC
         lda {_hires_mask0},x
         and ({ZP_W0}),y
         sta ({ZP_W0}),y
+    END ASM
+END SUB
+
+SUB Text(Col AS BYTE, Row AS BYTE, Double AS BYTE, Text AS STRING * 40) SHARED STATIC
+    ' BITMAP_BASE:  ZP_W0
+    ' FONT_BASE:    ZP_W1
+    ' TEXT_POS:     ZP_B0
+    ' FONT_POS:     ZP_B1
+    ' FONT_BYTE:    ZP_B2
+    ' SCREEN_BYTE:  ZP_B3
+    ' BG_BYTE:      ZP_B4
+    ' FG_BYTE:      ZP_B5
+    ASM
+        sei
+        dec 1
+        dec 1
+
+_text_init
+        ;init bitmap pointer
+        lda {Row}
+        asl
+        asl
+        asl
+        tay
+        lda {_bitmap_y_tbl_lo},y
+        sta {ZP_W0}
+        lda {_bitmap_y_tbl_hi},y
+        sta {ZP_W0}+1
+
+        lda {Col}
+        asl
+        asl
+        asl
+        bcc text_add_col_to_base
+        inc {ZP_W0}+1
+        clc
+text_add_col_to_base
+        adc {ZP_W0}
+        sta {ZP_W0}
+        bcc _text_init_text_pointer
+        inc {ZP_W0}+1
+
+_text_init_text_pointer
+        ;init text pointer
+        lda #0
+        sta {ZP_B0}
+
+text_loop_text
+        ldy {ZP_B0}         ;str char counter
+        cpy {Text}
+        bne text_loop_read_char
+        jmp text_end
+text_loop_read_char
+        iny
+        sty {ZP_B0}
+
+        ;petscii to screen code
+        lda {Text},y
+        ldx #$5e
+        cmp #255
+        beq _text_init_font_base
+        lsr
+        lsr
+        lsr
+        lsr
+        lsr
+        tax
+        clc
+        lda {_petscii_to_screencode},x
+        adc {Text},y
+        tax
+
+_text_init_font_base
+        lda #0
+        sta {ZP_W1}+1
+
+        txa
+        asl
+        rol {ZP_W1}+1
+        asl
+        rol {ZP_W1}+1
+        asl
+        rol {ZP_W1}+1
+
+        sta {ZP_W1}
+
+        lda {ZP_W1}+1
+        ora #$d0
+        sta {ZP_W1}+1
+
+        ;init font loop
+        ldy #7
+text_font_loop
+        lda {Double}
+        bne _text_char_double
+
+_text_char_single
+        lda ({ZP_W1}),y
+        sta ({ZP_W0}),y
+
+        dey
+        bpl _text_char_single
+
+_text_char_next
+        ;next char
+        lda {ZP_W0}
+        clc
+        adc #8
+        sta {ZP_W0}
+        bcc *+4
+            inc {ZP_W0}+1
+        jmp text_loop_text
+
+_text_char_double
+_text_char_double_left_loop
+        ;process left nible
+        lda ({ZP_W1}),y
+        lsr
+        lsr
+        lsr
+        lsr
+        tax
+        lda {_nible_to_byte},x
+        sta ({ZP_W0}),y
+
+        dey
+        bpl _text_char_double_left_loop
+
+        lda {ZP_W0}
+        clc
+        adc #8
+        sta {ZP_W0}
+        bcc *+4
+            inc {ZP_W0}+1
+
+        ldy #7
+_text_char_double_right_loop
+        ;process right nible
+        lda ({ZP_W1}),y
+        and #%00001111
+        tax
+        lda {_nible_to_byte},x
+        sta ({ZP_W0}),y
+
+        dey
+        bpl _text_char_double_right_loop
+
+        jmp _text_char_next
+
+text_end
+        inc 1
+        inc 1
+        cli
     END ASM
 END SUB
 
@@ -440,7 +614,9 @@ _hdraw_start_mask
 
         ; load counter
         ldx {ZP_B3}
-        beq _hdraw_end
+        bne _hdraw_start_loop
+
+        and {ZP_B4}
 
 _hdraw_start_loop
         ; draw byte
@@ -594,3 +770,9 @@ DATA AS BYTE $ca, $ca, $ca, $ca, $cb, $cb, $cb, $cb, $cb
 __screen_y_tbl_lo:
 DATA AS BYTE $00, $28, $50, $78, $a0, $c8, $f0, $18, $40, $68, $90, $b8, $e0, $08, $30, $58
 DATA AS BYTE $80, $a8, $d0, $f8, $20, $48, $70, $98, $c0
+
+__nible_to_byte:
+DATA AS BYTE %00000000, %00000011, %00001100, %00001111
+DATA AS BYTE %00110000, %00110011, %00111100, %00111111
+DATA AS BYTE %11000000, %11000011, %11001100, %11001111
+DATA AS BYTE %11110000, %11110011, %11111100, %11111111

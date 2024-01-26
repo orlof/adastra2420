@@ -676,6 +676,7 @@ SUB MissionBriefingHandler() STATIC
     CALL Panel.Center(19, "press fire", COLOR_LIGHTGRAY, TRUE)
 
     CALL Panel.WaitEvent(FALSE)
+    RANDOMIZE TI()
 END SUB
 
 SUB Map_AddRandom(Item AS BYTE) SHARED STATIC
