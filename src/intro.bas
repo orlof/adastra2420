@@ -1,8 +1,11 @@
 OPTION FASTINTERRUPT
 
+DIM Debug AS BYTE
+Debug = (PEEK($441) <> $ee)
+
 CONST MSGBOX_ADDR = $cb48
 CONST TEXTBOX_LINE = 217
-CONST CURTAIN_LINE = 198
+CONST CURTAIN_LINE = 197
 
 CONST COLOR_NARRATOR    = $f    'COLOR_LIGHTGRAY
 CONST COLOR_YOU         = $e    'COLOR_LIGHTBLUE
@@ -61,10 +64,10 @@ RASTER INTERRUPT ON
 
 CALL ShowImage(@Encounter003_Bitmap, @Encounter003_Screen, @Encounter003_Color, $03)
 
-CALL Center(2, COLOR_NARRATOR, "this is your ship - worluk")
+CALL Center(2, COLOR_NARRATOR, "this is your ship - moonwraith")
 CALL ChangePage()
 
-CALL Center(2, COLOR_NARRATOR, "worluk pierces the atmosphere")
+CALL Center(2, COLOR_NARRATOR, "moonwraith pierces the atmosphere")
 CALL ChangePage()
 
 CALL Center(2, COLOR_NARRATOR, "celestial savior on a rescue mission")
@@ -72,7 +75,7 @@ CALL ChangePage()
 
 CALL ShowImage(@Encounter002_Bitmap, @Encounter002_Screen, @Encounter002_Color, $0b)
 
-CALL Center(2, COLOR_NARRATOR, "this is you, commander max power")
+CALL Center(2, COLOR_NARRATOR, "this is you, commander jameson")
 CALL Center(3, COLOR_NARRATOR, "a ranger from federation of free traders")
 CALL ChangePage()
 
@@ -82,12 +85,12 @@ CALL ChangePage()
 
 CALL ShowImage(@Encounter001_Bitmap, @Encounter001_Screen, @Encounter001_Color, $00)
 
-CALL Left(0, COLOR_COLONEL, "colonel jameson")
-CALL Center(2, COLOR_COLONEL, "commander max power, thanks for coming")
+CALL Left(0, COLOR_COLONEL, "colonel rockford")
+CALL Center(2, COLOR_COLONEL, "commander jameson, thanks for coming")
 
 CALL ChangePage()
 
-CALL Left(0, COLOR_COLONEL, "colonel jameson")
+CALL Left(0, COLOR_COLONEL, "colonel rockford")
 CALL Center(2, COLOR_COLONEL, "elvin atombender has captured")
 CALL Center(3, COLOR_COLONEL, "the singularity generator")
 
@@ -98,13 +101,13 @@ CALL Center(2, COLOR_YOU, "that is both stupid and dangerous")
 
 CALL ChangePage()
 
-CALL Left(0, COLOR_COLONEL, "colonel jameson")
+CALL Left(0, COLOR_COLONEL, "colonel rockford")
 CALL Center(2, COLOR_COLONEL, "yes, but he still dreams of")
 CALL Center(3, COLOR_COLONEL, "world domination")
 
 CALL ChangePage()
 
-CALL Left(0, COLOR_COLONEL, "colonel jameson")
+CALL Left(0, COLOR_COLONEL, "colonel rockford")
 CALL Center(2, COLOR_COLONEL, "we must stop him before runaway")
 CALL Center(3, COLOR_COLONEL, "singularity destroys spacetime")
 
@@ -115,18 +118,18 @@ CALL Center(2, COLOR_YOU, "i am ready to deploy sir")
 
 CALL ChangePage()
 
-CALL Left(0, COLOR_COLONEL, "colonel jameson")
+CALL Left(0, COLOR_COLONEL, "colonel rockford")
 CALL Center(2, COLOR_COLONEL, "that's music to my ears")
 
 CALL ChangePage()
 
-CALL Left(0, COLOR_COLONEL, "colonel jameson")
+CALL Left(0, COLOR_COLONEL, "colonel rockford")
 CALL Center(2, COLOR_COLONEL, "this is my daughter,")
-CALL Center(3, COLOR_COLONEL, "lieutenant sarah jameson")
+CALL Center(3, COLOR_COLONEL, "lieutenant mariah rockford")
 
 CALL ChangePage()
 
-CALL Left(0, COLOR_COLONEL, "colonel jameson")
+CALL Left(0, COLOR_COLONEL, "colonel rockford")
 CALL Center(2, COLOR_COLONEL, "she will be your liaison officer")
 CALL Center(3, COLOR_COLONEL, "and brief you to the mission")
 
@@ -136,23 +139,23 @@ CALL Left(0, COLOR_YOU, "you")
 CALL Center(2, COLOR_YOU, "lieutenant, good to meet you")
 CALL ChangePage()
 
-CALL Left(0, COLOR_LIEUTENANT, "lieutenant sarah jameson")
+CALL Left(0, COLOR_LIEUTENANT, "lieutenant mariah rockford")
 CALL Center(2, COLOR_LIEUTENANT, "good to meet you too, sir")
 CALL Center(3, COLOR_LIEUTENANT, "your reputation has preceded you")
 CALL ChangePage()
 
-CALL Left(0, COLOR_LIEUTENANT, "lieutenant sarah jameson")
+CALL Left(0, COLOR_LIEUTENANT, "lieutenant mariah rockford")
 CALL Center(2, COLOR_LIEUTENANT, "i'll show you to the mission control")
 
 CALL ChangePage()
 
 CALL ShowImage(@Encounter004_Bitmap, @Encounter004_Screen, @Encounter004_Color, $00)
 
-CALL Left(0, COLOR_LIEUTENANT, "lieutenant sarah jameson")
+CALL Left(0, COLOR_LIEUTENANT, "lieutenant mariah rockford")
 CALL Center(2, COLOR_LIEUTENANT, "commander power, situation is dire")
 CALL ChangePage()
 
-CALL Left(0, COLOR_LIEUTENANT, "lieutenant sarah jameson")
+CALL Left(0, COLOR_LIEUTENANT, "lieutenant mariah rockford")
 CALL Center(2, COLOR_LIEUTENANT, "our only hope is to build")
 CALL Center(3, COLOR_LIEUTENANT, "a singularity diffuser")
 CALL ChangePage()
@@ -162,16 +165,16 @@ CALL Center(2, COLOR_YOU, "gathering components for the diffuser")
 CALL Center(3, COLOR_YOU, "will be an extremely dangerous task")
 CALL ChangePage()
 
-CALL Left(0, COLOR_LIEUTENANT, "lieutenant sarah jameson")
+CALL Left(0, COLOR_LIEUTENANT, "lieutenant mariah rockford")
 CALL Center(2, COLOR_LIEUTENANT, "that's why you are here, sir")
 CALL ChangePage()
 
-CALL Left(0, COLOR_LIEUTENANT, "lieutenant sarah jameson")
+CALL Left(0, COLOR_LIEUTENANT, "lieutenant mariah rockford")
 CALL Center(2, COLOR_LIEUTENANT, "negotiate the components from nearby")
 CALL Center(3, COLOR_LIEUTENANT, "space stations and bring them to us")
 CALL ChangePage()
 
-CALL Left(0, COLOR_LIEUTENANT, "lieutenant sarah jameson")
+CALL Left(0, COLOR_LIEUTENANT, "lieutenant mariah rockford")
 CALL Center(2, COLOR_LIEUTENANT, "but be careful, elvin has deployed")
 CALL Center(3, COLOR_LIEUTENANT, "ai missile silos to block interception")
 CALL ChangePage()
@@ -200,57 +203,41 @@ CALL SidStop()
 
 GameState = GAMESTATE_STARTING
 
-CALL LoadProgram("station", CWORD(8192))
+IF NOT Debug THEN CALL LoadProgram("station", CWORD(8192))
 
 END
 
 IRQ:
     ASM
-        lda $dd00       ;bank
-        and #%00000011
+        lda $d021
         pha
-
-        lda $d018       ;charmem, bitmapmem, scrmem
-        pha
-
-        lda $d021       ;bgcolor
-        pha
-
         ;-----------------
-        lda #0          ;bank=3
-        sta $dd00
-
         lda #%00100100  ;screen_memory=2, character_memory=2
         sta $d018
 
-        lda #$1b        ;bim_map_mode=0
-        sta $d011
+        lda #%00011011
+        sta $d011       ;bmm off
 
-        lda #$c8        ;multi_color_mode=0
-        sta $d016
+        lda #%11001000
+        sta $d016       ;mcm off
 
         lda #0
-        sta $d021       ;background=black
-
+        sta $d021       ;background black
         ;-----------------
         bit $d011
         bpl *-3
-
         ;-----------------
-        pla
-        sta $d021
-
-        pla
+        lda #%00101000  ;screen_memory=2, bitmap_memory=1
         sta $d018
 
+        lda #%00111011
+        sta $d011       ;bmm on
+
+        lda #%11011000
+        sta $d016       ;mcm on
+
         pla
-        sta $dd00
-
-        lda #$3b
-        sta $d011
-
-        lda #$d8
-        sta $d016
+        sta $d021
 
         jsr $1003
     END ASM

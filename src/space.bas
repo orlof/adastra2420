@@ -477,7 +477,19 @@ END ASM
 
 IF (GameState AND GAMESTATE_GAMEOVER) THEN
     CALL Text(11, 2, TRUE, "game over")
-    'CALL LoadProgram("gameover", CWORD(8192))
+    SELECT CASE GameState
+        CASE GAMESTATE_OUT_OF_FUEL
+            CALL Text(13, 7, FALSE, "lost in space")
+        CASE GAMESTATE_OUT_OF_OXYGEN
+            CALL Text(10, 7, FALSE, "life support failure")
+        CASE GAMESTATE_OUT_OF_TIME
+            CALL Text(10, 7, FALSE, "runaway singularity")
+            CALL Text(10, 9, FALSE, "destroyed spacetime")
+        CASE GAMESTATE_EXPLOSION
+            CALL Text(10, 7, FALSE, "moonwraith was destroyed")
+            CALL Text(13, 9, FALSE, "in an explosion")
+    END SELECT
+    IF NOT Debug THEN CALL LoadProgram("gameover", CWORD(8192))
     END
 END IF
 
@@ -487,8 +499,8 @@ IF LocalMapVergeStationId = 5 AND _
     ArtifactLocation(2) = LOC_PLAYER AND _
     ArtifactLocation(3) = LOC_PLAYER _
 THEN
-    'CALL Text(11, 2, 1, 0, TRUE, "completed", CHAR_MEMORY)
-    'CALL LoadProgram("completed", CWORD(8192))
+    CALL Text(10, 2, TRUE, "denouement")
+    IF NOT DEBUG THEN CALL LoadProgram("denouement", CWORD(8192))
     END
 END IF
 
@@ -497,8 +509,7 @@ CALL Text(13, 4, TRUE, "network")
 CALL Text(15, 7, FALSE, "connecting")
 
 CALL GraphicsModeValid()
-CALL LoadProgram("station", CWORD(8192))
-
+IF NOT Debug THEN CALL LoadProgram("station", CWORD(8192))
 END
 
 SUB time_pause(jiffys AS BYTE) SHARED STATIC

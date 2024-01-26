@@ -160,18 +160,21 @@ LeftPanelHandler:
                 CALL DiscPanel.SetSelected(1)
                 GOTO DiscPanelHandler
             CASE 19 ' launch
-                'CALL SetBitmapMemory(1)
+                CALL SetGraphicsMode(INVALID_MODE)
+                CALL SetBitmapMemory(1)
+                CALL SetScreenMemory(2)
                 CALL FillBitmap(0)
                 CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
-                CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
 
-                CALL Text(7, 2, 1, 0, TRUE, "worluk", CHAR_MEMORY)
-                CALL Text(13, 5, 1, 0, TRUE, "launch sequence", CHAR_MEMORY)
+                CALL Text(10, 2, 1, 0, TRUE, "moonwraith", CHAR_MEMORY)
+                CALL Text(5, 5, 1, 0, TRUE, "launch sequence", CHAR_MEMORY)
                 CALL Text(15, 7, 1, 0, FALSE, "initiated", CHAR_MEMORY)
+
+                CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
 
                 CALL SidStop()
 
-                'CALL LoadProgram("space", CWORD(4096))
+                IF NOT Debug THEN CALL LoadProgram("space", CWORD(4096))
                 END
         END SELECT
     LOOP
