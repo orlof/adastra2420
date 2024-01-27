@@ -50,6 +50,10 @@ DIM ZoneAsteroidSpeedColor(4) AS BYTE @_ZoneAsteroidSpeedColor
 CALL GraphicsModeInvalid()
 
 ASM
+    lda #0
+    sta $d017
+    sta $d01d
+
     sei
 
     lda #%01111111      ;CIA interrupt off
@@ -99,6 +103,7 @@ MEMSET $e000, 8000, 0                   'clear bitmap
 MEMSET $c800, 1000, %00010000           'init screen ram
 
 Launch:
+GameState = GAMESTATE_SPACE
 GameTime = 0
 StatusFlag = $ff
 TorpedoFuel = 0
@@ -409,7 +414,7 @@ done
             GameState = GAMESTATE_OUT_OF_TIME
         END IF
     END IF
-LOOP UNTIL TRUE  ' GameState
+LOOP UNTIL GameState
 
 IF GameState = GAMESTATE_EXPLOSION THEN
     CALL SfxStop(0)
@@ -489,6 +494,7 @@ IF (GameState AND GAMESTATE_GAMEOVER) THEN
             CALL Text(10, 7, FALSE, "moonwraith was destroyed")
             CALL Text(13, 9, FALSE, "in an explosion")
     END SELECT
+    CALL GraphicsModeValid()
     IF NOT Debug THEN CALL LoadProgram("gameover", CWORD(8192))
     END
 END IF
@@ -500,6 +506,7 @@ IF LocalMapVergeStationId = 5 AND _
     ArtifactLocation(3) = LOC_PLAYER _
 THEN
     CALL Text(10, 2, TRUE, "denouement")
+    CALL GraphicsModeValid()
     IF NOT DEBUG THEN CALL LoadProgram("denouement", CWORD(8192))
     END
 END IF

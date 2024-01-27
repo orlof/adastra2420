@@ -10,7 +10,8 @@
                 "Build aileon.d64",
                 "EXOMIZE Intro",
                 "EXOMIZE Space",
-                "EXOMIZE Station"
+                "EXOMIZE Station",
+                "EXOMIZE Gameover"
             ],
             "group": {
                 "kind": "build",
@@ -65,6 +66,33 @@
             "dependsOrder": "sequence",
             "dependsOn": [
                 "EXOMIZE Intro"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Run Gameover",
+            "type": "shell",
+            "osx": {
+                "command": "open",
+                "args": [
+                    "build/_gameover.prg"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
+                "args": [
+                    "build/_gameover.prg"
+                ]
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "EXOMIZE Gameover"
             ],
             "group": {
                 "kind": "build",
@@ -146,6 +174,9 @@
                     "-write",
                     "build/intro.prg",
                     "intro",
+                    "-write",
+                    "build/gameover.prg",
+                    "gameover",
                     "-write",
                     "build/space.prg",
                     "space",
@@ -378,6 +409,46 @@
             "options": {
                 "cwd": "${workspaceFolder}"
             }
+        },        {
+            "label": "EXOMIZE Gameover",
+            "type": "shell",
+            "osx": {
+                "command": "${config:xcbasic3.packer}/exomizer",
+                "args": [
+                    "sfx",
+                    "8192",
+                    "build/gameover.prg",
+                    "gfx/generic_charset.prg",
+                    "-o",
+                    "build/_gameover.prg",
+                    "-x",
+                    "'inc $d020'"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.packer}/exomizer.exe",
+                "args": [
+                    "sfx",
+                    "8192",
+                    "build/gameover.prg",
+                    "gfx/generic_charset.prg",
+                    "-o",
+                    "build/_gameover.prg",
+                    "-x",
+                    "'inc $d020'"
+                ]
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "XCB3 Gameover"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
         },
         {
             "label": "XCB3",
@@ -420,6 +491,28 @@
                     "-o=8192",
                     "src/intro.bas",
                     "build/intro.prg"
+                ]
+            },
+            "problemMatcher": []
+        },        {
+            "label": "XCB3 Gameover",
+            "type": "shell",
+            "osx": {
+                "command": "${config:xcbasic3.basefolder}/bin/macOS/xcbasic3",
+                "args": [
+                    "-b=False",
+                    "-o=8192",
+                    "src/gameover.bas",
+                    "build/gameover.prg"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.basefolder}/bin/Windows/xcbasic3.exe",
+                "args": [
+                    "-b=False",
+                    "-o=8192",
+                    "src/gameover.bas",
+                    "build/gameover.prg"
                 ]
             },
             "problemMatcher": []

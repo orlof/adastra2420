@@ -1,6 +1,6 @@
 import os
 
-FILENAME = "sfx/Driven_20.sid"
+FILENAME = "sfx/Pucker_Up.sid"
 
 
 def main():

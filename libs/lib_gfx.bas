@@ -286,7 +286,7 @@ END SUB
 SUB ScreenOff() SHARED STATIC
     ASM
         lda $d011
-        and #%11101111
+        and #%01101111
         sta $d011
     END ASM
 END SUB
@@ -294,6 +294,7 @@ END SUB
 SUB ScreenOn() SHARED STATIC
     ASM
         lda $d011
+        and #%01111111
         ora #%00010000
         sta $d011
     END ASM
@@ -1026,9 +1027,10 @@ _set_video_bank_double
         jmp _set_video_bank_end
 
 _set_video_bank_single
-        lda $dd00
-        and #%11111100
-        ora {BankNumber}
+        ;lda $dd00
+        ;and #%11111100
+        ;ora {BankNumber}
+        lda {BankNumber}
         eor #%00000011
         sta $dd00
 

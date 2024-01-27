@@ -70,6 +70,13 @@ MEMCPY @SID_Driven_20, $1000, @SID_Driven_20_End - @SID_Driven_20
 ASM
     lda #0
     jsr $1000
+
+    lda #125
+    sta {ZP_B0}
+sid_fwd_loop
+    jsr $1003
+    dec {ZP_B0}
+    bne sid_fwd_loop
 END ASM
 
 ON TIMER 17095 GOSUB InterruptHandlerPlaySid
@@ -172,6 +179,7 @@ LeftPanelHandler:
 
                 CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
 
+                TIMER INTERRUPT OFF
                 CALL SidStop()
 
                 IF NOT Debug THEN CALL LoadProgram("space", CWORD(4096))
