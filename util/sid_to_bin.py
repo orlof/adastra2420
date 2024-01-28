@@ -1,6 +1,6 @@
 import os
 
-FILENAME = "sfx/Pucker_Up.sid"
+FILENAME = "sfx/Stylerock.sid"
 
 
 def main():

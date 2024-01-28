@@ -11,7 +11,8 @@
                 "EXOMIZE Intro",
                 "EXOMIZE Space",
                 "EXOMIZE Station",
-                "EXOMIZE Gameover"
+                "EXOMIZE Gameover",
+                "EXOMIZE Denouement"
             ],
             "group": {
                 "kind": "build",
@@ -103,6 +104,33 @@
             }
         },
         {
+            "label": "Run Denouement",
+            "type": "shell",
+            "osx": {
+                "command": "open",
+                "args": [
+                    "build/_denouement.prg"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
+                "args": [
+                    "build/_denouement.prg"
+                ]
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "EXOMIZE Denouement"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
             "label": "Run Space",
             "type": "shell",
             "osx": {
@@ -178,6 +206,9 @@
                     "build/gameover.prg",
                     "gameover",
                     "-write",
+                    "build/denouement.prg",
+                    "gameover",
+                    "-write",
                     "build/space.prg",
                     "space",
                     "-write",
@@ -219,8 +250,32 @@
                     "build/intro.prg",
                     "intro",
                     "-write",
+                    "build/gameover.prg",
+                    "gameover",
+                    "-write",
+                    "build/denouement.prg",
+                    "gameover",
+                    "-write",
                     "build/space.prg",
                     "space",
+                    "-write",
+                    "data/savefile.prg",
+                    "autosave",
+                    "-write",
+                    "data/savefile.prg",
+                    "save0001",
+                    "-write",
+                    "data/savefile.prg",
+                    "save0002",
+                    "-write",
+                    "data/savefile.prg",
+                    "save0003",
+                    "-write",
+                    "data/savefile.prg",
+                    "save0004",
+                    "-write",
+                    "data/savefile.prg",
+                    "save0005",
                     "-write",
                     "build/station.prg",
                     "station"
@@ -231,7 +286,9 @@
                 "EXOMIZE Loader",
                 "XCB3 Intro",
                 "XCB3 Space",
-                "XCB3 Station"
+                "XCB3 Station",
+                "XCB3 Gameover",
+                "XCB Denouement"
             ],
             "group": {
                 "kind": "build",
@@ -409,7 +466,8 @@
             "options": {
                 "cwd": "${workspaceFolder}"
             }
-        },        {
+        },
+        {
             "label": "EXOMIZE Gameover",
             "type": "shell",
             "osx": {
@@ -441,6 +499,47 @@
             "dependsOrder": "sequence",
             "dependsOn": [
                 "XCB3 Gameover"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "EXOMIZE Denouement",
+            "type": "shell",
+            "osx": {
+                "command": "${config:xcbasic3.packer}/exomizer",
+                "args": [
+                    "sfx",
+                    "8192",
+                    "build/denouement.prg",
+                    "gfx/generic_charset.prg",
+                    "-o",
+                    "build/_denouement.prg",
+                    "-x",
+                    "'inc $d020'"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.packer}/exomizer.exe",
+                "args": [
+                    "sfx",
+                    "8192",
+                    "build/denouement.prg",
+                    "gfx/generic_charset.prg",
+                    "-o",
+                    "build/_denouement.prg",
+                    "-x",
+                    "'inc $d020'"
+                ]
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "XCB3 Denouement"
             ],
             "group": {
                 "kind": "build",
@@ -494,7 +593,8 @@
                 ]
             },
             "problemMatcher": []
-        },        {
+        },
+        {
             "label": "XCB3 Gameover",
             "type": "shell",
             "osx": {
@@ -513,6 +613,29 @@
                     "-o=8192",
                     "src/gameover.bas",
                     "build/gameover.prg"
+                ]
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "XCB3 Denouement",
+            "type": "shell",
+            "osx": {
+                "command": "${config:xcbasic3.basefolder}/bin/macOS/xcbasic3",
+                "args": [
+                    "-b=False",
+                    "-o=8192",
+                    "src/denouement.bas",
+                    "build/denouement.prg"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.basefolder}/bin/Windows/xcbasic3.exe",
+                "args": [
+                    "-b=False",
+                    "-o=8192",
+                    "src/denouement.bas",
+                    "build/denouement.prg"
                 ]
             },
             "problemMatcher": []
