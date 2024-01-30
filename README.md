@@ -151,13 +151,13 @@ This will show you the compilation targets.
 | 2    | $B000 | $B3FF |        |          | CODE     |          |          |
 | 2    | $B400 | $B7FF |        |          | CODE     |          |          |
 | 2    | $B800 | $BBFF |        |          |          |          |          |
-| 2    | $BC00 |       |        |          |          |          |          |
-|      | $BC00 | $BCFF |        |          |          |          | DUMMY    |
-|      | $BD00 | $BDFF |        |          |          |          | DUMMY    |
-|      | $BE00 | $BEFF |        |          |          |          | CHARSET2 |
-|      | $BF00 | $BFFF |        |          |          |          | CHARSET2 |
-| 3    | $C000 | $C3FF |        |          |          |          | SPRITE   |
-| 3    | $C400 | $C7FF |        |          |          |          | SPRITE   |
+|      | $BB00 |       |        |          |          | SAVE     |          |
+|      | $BC00 | $BCFF |        |          |          | SAVE     | DrawBuf  |
+|      | $BD00 | $BDFF |        |          |          | SAVE     | DrawBuf  |
+|      | $BE00 | $BEFF |        |          |          | SAVE     | CHARSET2 |
+|      | $BF00 | $BFFF |        |          |          | SAVE     | CHARSET2 |
+| 3    | $C000 | $C3FF |        |          |          | SAVE     | SPRITE   |
+| 3    | $C400 | $C7FF |        |          |          | SAVE     | SPRITE   |
 | 3    | $C800 | $CBFF |        | SCREEN   | SCREEN   | SCREEN   | SCREEN   |
 | 3    | $CC00 | $CFFF |        | XCBASIC  | XCBASIC  | XCBASIC  | XCBASIC  |
 | 3    | $D000 | $D3FF | IO     | FONT     | FONT     | FONT     | FONT     |

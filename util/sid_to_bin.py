@@ -1,6 +1,6 @@
 import os
 
-FILENAME = "sfx/Stylerock.sid"
+FILENAME = "sfx/Syncosmic.sid"
 
 
 def main():

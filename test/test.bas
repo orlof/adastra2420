@@ -1,25 +1,12 @@
-INCLUDE "../libs/lib_common.bas"
-INCLUDE "../libs/lib_space_gfx.bas"
+
+MEMCPY @SPRITES, $3000, 2048
+
+BACKGROUND 0
+SPRITE MULTICOLOR $b, $c
+SPRITE 0 AT 100,100 COLOR $f SHAPE 192 MULTI XYSIZE 1,1 ON
 
 
 
 
-
-ASM
-    lda $d011
-    and #%10111111
-    sta $d011
-END ASM
-
-FOR W = 0 TO 199
-    CALL HDraw(0, 255, W, MODE_FLIP)
-    CALL HDraw(0, 255, 199-W, MODE_FLIP)
-NEXT
-
-DO
-LOOP
-
-
-
-GENERIC_CHARSET_START:
-INCBIN "../gfx/generic_charset.bin"
+SPRITES:
+INCBIN "../gfx/sprite_font.bin"

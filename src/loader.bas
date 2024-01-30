@@ -25,7 +25,7 @@ CALL Text(2, 17, 1, 0, FALSE, "xc=basic3                fekete csaba", CHAR_MEMO
 CALL InstallDriveCode()
 CALL InstallLoaderCode()
 
-CALL LoadProgram("intro", CWORD(8192))
+CALL LoadProgram("menu", CWORD(8192))
 
 SUB InstallLoaderCode() STATIC
     MEMCPY @LOADER_START, $440, @LOADER_END - @LOADER_START

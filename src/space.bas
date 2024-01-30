@@ -1,8 +1,5 @@
 RANDOMIZE TI()
 
-DIM Debug AS BYTE
-Debug = (PEEK($441) <> $ee)
-
 INCLUDE "../libs/lib_common.bas"
 INCLUDE "../libs/lib_joy.bas"
 INCLUDE "../libs/lib_rnd.bas"
@@ -507,7 +504,7 @@ IF LocalMapVergeStationId = 5 AND _
 THEN
     CALL Text(10, 2, TRUE, "denouement")
     CALL GraphicsModeValid()
-    IF NOT DEBUG THEN CALL LoadProgram("denouement", CWORD(8192))
+    IF NOT Debug THEN CALL LoadProgram("denouement", CWORD(8192))
     END
 END IF
 

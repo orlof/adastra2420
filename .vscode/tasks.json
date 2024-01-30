@@ -12,7 +12,8 @@
                 "EXOMIZE Space",
                 "EXOMIZE Station",
                 "EXOMIZE Gameover",
-                "EXOMIZE Denouement"
+                "EXOMIZE Denouement",
+                "EXOMIZE Menu"
             ],
             "group": {
                 "kind": "build",
@@ -94,6 +95,33 @@
             "dependsOrder": "sequence",
             "dependsOn": [
                 "EXOMIZE Gameover"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Run Menu",
+            "type": "shell",
+            "osx": {
+                "command": "open",
+                "args": [
+                    "build/_menu.prg"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
+                "args": [
+                    "build/_menu.prg"
+                ]
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "EXOMIZE Menu"
             ],
             "group": {
                 "kind": "build",
@@ -200,6 +228,9 @@
                     "build/loader.prg",
                     "loader",
                     "-write",
+                    "build/menu.prg",
+                    "menu",
+                    "-write",
                     "build/intro.prg",
                     "intro",
                     "-write",
@@ -246,6 +277,9 @@
                     "-write",
                     "build/loader.prg",
                     "loader",
+                    "-write",
+                    "build/menu.prg",
+                    "menu",
                     "-write",
                     "build/intro.prg",
                     "intro",
@@ -509,13 +543,54 @@
             }
         },
         {
-            "label": "EXOMIZE Denouement",
+            "label": "EXOMIZE Menu",
             "type": "shell",
             "osx": {
                 "command": "${config:xcbasic3.packer}/exomizer",
                 "args": [
                     "sfx",
                     "8192",
+                    "build/menu.prg",
+                    "gfx/generic_charset.prg",
+                    "-o",
+                    "build/_menu.prg",
+                    "-x",
+                    "'inc $d020'"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.packer}/exomizer.exe",
+                "args": [
+                    "sfx",
+                    "8192",
+                    "build/menu.prg",
+                    "gfx/generic_charset.prg",
+                    "-o",
+                    "build/_menu.prg",
+                    "-x",
+                    "'inc $d020'"
+                ]
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "XCB3 Menu"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "EXOMIZE Denouement",
+            "type": "shell",
+            "osx": {
+                "command": "${config:xcbasic3.packer}/exomizer",
+                "args": [
+                    "sfx",
+                    "3072",
                     "build/denouement.prg",
                     "gfx/generic_charset.prg",
                     "-o",
@@ -556,6 +631,7 @@
                 "command": "${config:xcbasic3.basefolder}/bin/macOS/xcbasic3",
                 "args": [
                     "${file}",
+                    "-k",
                     "build/_${fileBasenameNoExtension}.prg"
                 ]
             },
@@ -563,6 +639,7 @@
                 "command": "${config:xcbasic3.basefolder}/bin/Windows/xcbasic3.exe",
                 "args": [
                     "${file}",
+                    "-k",
                     "${fileDirname}\\${fileBasenameNoExtension}.prg"
                 ]
             },
@@ -618,13 +695,37 @@
             "problemMatcher": []
         },
         {
-            "label": "XCB3 Denouement",
+            "label": "XCB3 Menu",
             "type": "shell",
             "osx": {
                 "command": "${config:xcbasic3.basefolder}/bin/macOS/xcbasic3",
                 "args": [
                     "-b=False",
                     "-o=8192",
+                    "src/menu.bas",
+                    "build/menu.prg"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.basefolder}/bin/Windows/xcbasic3.exe",
+                "args": [
+                    "-b=False",
+                    "-o=8192",
+                    "src/menu.bas",
+                    "build/menu.prg"
+                ]
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "XCB3 Denouement",
+            "type": "shell",
+            "osx": {
+                "command": "${config:xcbasic3.basefolder}/bin/macOS/xcbasic3",
+                "args": [
+                    "-o=3072",
+                    "-b=False",
+                    "-i=True",
                     "src/denouement.bas",
                     "build/denouement.prg"
                 ]
@@ -633,7 +734,7 @@
                 "command": "${config:xcbasic3.basefolder}/bin/Windows/xcbasic3.exe",
                 "args": [
                     "-b=False",
-                    "-o=8192",
+                    "-i=True",
                     "src/denouement.bas",
                     "build/denouement.prg"
                 ]

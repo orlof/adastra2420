@@ -1,7 +1,12 @@
 OPTION FASTINTERRUPT
 
-DIM Debug AS BYTE
-Debug = (PEEK($441) <> $ee)
+GOTO START
+
+ORIGIN $1000
+INCBIN "../sfx/Stylerock.bin"
+
+ORIGIN $2000
+START:
 
 CONST MSGBOX_ADDR = $cb48
 CONST TEXTBOX_LINE = 217
@@ -30,7 +35,7 @@ DECLARE SUB ChangePage() STATIC
 DIM PETSCII(8) AS BYTE @ _PETSCII
 
 'Setup music
-MEMCPY @SID, $1000, @SID_END - @SID
+'MEMCPY @SID, $1000, @SID_END - @SID
 
 ASM
     lda #0
@@ -68,7 +73,7 @@ ON RASTER TEXTBOX_LINE GOSUB IRQ
 
 CALL SetGraphicsMode(MULTICOLOR_BITMAP_MODE)
 CALL ScreenOn()
-'RASTER INTERRUPT ON
+RASTER INTERRUPT ON
 
 CALL ShowImage(@Image001_Bitmap, @Image001_Screen, @Image001_Color, $00)
 
@@ -132,6 +137,14 @@ CALL Center(2, COLOR_PRESIDENT, "i congratulate you commander jameson")
 CALL Center(3, COLOR_PRESIDENT, "and now on it will be captain")
 CALL ChangePage()
 
+CALL Center(2, COLOR_NARRATOR, "after the ceremonies you head to")
+CALL Center(3, COLOR_NARRATOR, "a well deserved holiday")
+CALL ChangePage()
+
+CALL ShowImage(@Image006_Bitmap, @Image006_Screen, @Image006_Color, $03)
+
+CALL ChangePage()
+
 RASTER INTERRUPT OFF
 
 POKE $d015, 0
@@ -155,6 +168,10 @@ END
 
 IRQ:
     ASM
+        lda $d011
+        and #%00010000
+        beq IRQ_Exit
+
         lda $d021
         pha
         ;-----------------
@@ -189,6 +206,7 @@ IRQ:
         pla
         sta $d021
 
+IRQ_Exit
         jsr $1003
     END ASM
 RETURN
@@ -245,39 +263,22 @@ SUB Right(LineNr AS BYTE, ColorNr AS BYTE, Msg AS STRING*40) STATIC
 END SUB
 
 SUB ShowImage(BitmapAddr AS WORD, ScreenAddr AS WORD, ColorAddr AS WORD, BgColor AS BYTE) STATIC
-    POKE $400,0
+    CALL WaitRasterLine256()
+    CALL ScreenOff()
+
     CALL DecompressZX0_Unsafe(BitmapAddr, $a000)
-    'CALL DecompressZX0_Unsafe(ScreenAddr, $8800)
-    CALL DecompressZX0_Unsafe(ScreenAddr, $9c00)
-    CALL DecompressZX0_Unsafe(ColorAddr, $9800)
-    POKE $400,1
+    MEMCPY $a000, $e000, 8000
+    CALL DecompressZX0_Unsafe(ColorAddr, $c800)
+    MEMCPY $c800, $d800, 1000
+    CALL DecompressZX0_Unsafe(ScreenAddr, $c800)
 
     CALL WaitRasterLine256()
-    ASM
-        lda #1
-        sta $dd00
 
-        lda #%01111000  ;screen_memory=7, bitmap_memory=1
-        sta $d018
-    END ASM
     BACKGROUND BgColor
 
-    MEMCPY $9800, $d800, 1000
-    MEMCPY $a000, $e000, 8000
-    MEMCPY $9c00, $c800, 1000
-
     CALL WaitRasterLine256()
-    POKE $400,0
+    CALL ScreenOn()
 
-    ASM
-        lda #0
-        sta $dd00
-
-        lda #%00101000  ;screen_memory=2, bitmap_memory=1
-        sta $d018
-    END ASM
-    DO
-    LOOP
 END SUB
 
 SUB ChangePage() STATIC
@@ -341,6 +342,12 @@ Image005_Screen:
 Image005_Color:
     INCBIN "../gfx/denouement005_color.zx0"
 
-SID:
-INCBIN "../sfx/Stylerock.zx0"
-SID_END:
+'BgColor = $00
+'holiday
+Image006_Bitmap:
+    INCBIN "../gfx/denouement006_bitmap.zx0"
+Image006_Screen:
+    INCBIN "../gfx/denouement006_screen.zx0"
+Image006_Color:
+    INCBIN "../gfx/denouement006_color.zx0"
+
