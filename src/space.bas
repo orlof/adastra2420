@@ -67,7 +67,7 @@ ASM
     lda #%00101000  ;bitmap memory, screen memory
     sta $d018
 
-    lda #9          ;background brown
+    lda #0          ;background black
     sta $d020
 
     lda #$ff
@@ -478,18 +478,19 @@ ASM
 END ASM
 
 IF (GameState AND GAMESTATE_GAMEOVER) THEN
-    CALL Text(11, 2, TRUE, "game over")
+    CALL Text(8, 5, TRUE, "final chapter")
     SELECT CASE GameState
         CASE GAMESTATE_OUT_OF_FUEL
-            CALL Text(13, 7, FALSE, "lost in space")
+            CALL Text(7, 10, FALSE, "moonwraith was lost in the")
+            CALL Text(9, 12, FALSE, "dark between the stars")
         CASE GAMESTATE_OUT_OF_OXYGEN
-            CALL Text(10, 7, FALSE, "life support failure")
+            CALL Text(10, 11, FALSE, "life support failed")
         CASE GAMESTATE_OUT_OF_TIME
-            CALL Text(10, 7, FALSE, "runaway singularity")
-            CALL Text(10, 9, FALSE, "destroyed spacetime")
+            CALL Text(5, 10, FALSE, "not enough time left to build")
+            CALL Text(8, 12, FALSE, "the singularity diffuser")
         CASE GAMESTATE_EXPLOSION
-            CALL Text(10, 7, FALSE, "moonwraith was destroyed")
-            CALL Text(13, 9, FALSE, "in an explosion")
+            CALL Text(8, 10, FALSE, "moonwraith was destroyed")
+            CALL Text(12, 12, FALSE, "in an explosion")
     END SELECT
     CALL GraphicsModeValid()
     IF NOT Debug THEN CALL LoadProgram("gameover", CWORD(8192))
@@ -502,15 +503,14 @@ IF LocalMapVergeStationId = 5 AND _
     ArtifactLocation(2) = LOC_PLAYER AND _
     ArtifactLocation(3) = LOC_PLAYER _
 THEN
-    CALL Text(10, 2, TRUE, "denouement")
+    CALL Text(12, 2, TRUE, "epilogue")
     CALL GraphicsModeValid()
     IF NOT Debug THEN CALL LoadProgram("denouement", CWORD(8192))
     END
 END IF
 
-CALL Text(7, 2, TRUE, "verge station")
-CALL Text(13, 4, TRUE, "network")
-CALL Text(15, 7, FALSE, "connecting")
+CALL Text(7, 5, TRUE, "verge station")
+CALL Text(11, 10, FALSE, "network connecting")
 
 CALL GraphicsModeValid()
 IF NOT Debug THEN CALL LoadProgram("station", CWORD(8192))
@@ -563,7 +563,13 @@ SUB DrawDashboard() STATIC SHARED
     CALL SetColorInRect(34, 12, 38, 16, 1, COLOR_YELLOW)
     FOR ZP_B2 = 0 TO 255
         IF ((GameMap(ZP_B2) AND %00000011) = 2) AND ((GameMap(ZP_B2) AND %11100000) <> %01000000) THEN
-            CALL Plot(276 + SHL(CWORD(ZP_B2) MOD 16, 1), 100 + SHL(ZP_B2 / 16, 1))
+            ZP_W1 = 276 + SHL(CWORD(ZP_B2) MOD 16, 1)
+            ZP_B0 = 100 + SHL(ZP_B2 / 16, 1)
+            CALL Plot(ZP_W1, ZP_B0)
+            CALL Plot(ZP_W1+1, ZP_B0)
+            CALL Plot(ZP_W1, ZP_B0+1)
+            CALL Plot(ZP_W1-1, ZP_B0)
+            CALL Plot(ZP_W1, ZP_B0-1)
         END IF
     NEXT
 

@@ -188,7 +188,7 @@ ASM
 ;-----------------------------------
 irq1:
 ;-----------------------------------
-                inc $d020
+                ;inc $d020
                 pha        ;store register A in stack
                 txa
                 pha        ;store register X in stack
@@ -242,7 +242,7 @@ irq1_nospritesatall:
                 tax        ;restore register X from stack
                 pla        ;restore register A from stack
 
-                dec $d020
+                ;dec $d020
 
                 rti
 
@@ -298,7 +298,7 @@ irq1_sortloop3: ldy {sortorder},x               ;Final loop:
 ;-----------------------------------
 irq2:
 ;-----------------------------------
-                inc $d020
+                ;inc $d020
                 pha        ;store register A in stack
                 txa
                 pha        ;store register X in stack

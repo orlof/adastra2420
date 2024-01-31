@@ -32,7 +32,7 @@ DIM AsteroidSpawnTime(NUM_ASTEROIDS) AS BYTE @_AsteroidSpawnTime
 DIM AsteroidSx(NUM_ASTEROIDS) AS BYTE SHARED
 DIM AsteroidSy(NUM_ASTEROIDS) AS BYTE SHARED
 
-DIM AsteroidGeom(112) AS BYTE
+DIM AsteroidGeom(192) AS BYTE
 
 TYPE TypeCoordinate
     x AS INT
@@ -50,7 +50,7 @@ DIM LastAsteroid AS BYTE
 SUB AsteroidInit() SHARED STATIC
     FOR ZP_B0 = 0 TO LastAsteroid
         'SprFrame(ZP_B0 + 1) = 18 + 2 * ZP_B0
-        CALL SprDraw_SetGeometry(ZP_B0 + 1, @AsteroidGeom(8 * ZP_B0))
+        CALL SprDraw_SetGeometry(ZP_B0 + 1, @AsteroidGeom(SHL(ZP_B0, 4)))
         CALL Asteroid_Destruct(ZP_B0)
     NEXT
 END SUB
@@ -96,7 +96,7 @@ asteroid_move_next:
 END SUB
 
 SUB Asteroid_CreateGeometry(AsteroidNr AS BYTE) SHARED STATIC
-    ZP_B1 = SHL(AsteroidNr, 3)
+    ZP_B1 = SHL(AsteroidNr, 4)
     FOR ZP_B2 = 0 TO NUM_VERTEX - 1
         ZP_B3 = (RNDB() AND %00011111) + ((ZP_B2 * 42) AND %11111000)
         IF (ZP_B3 AND %00000111) < 2 THEN ZP_B3 = ZP_B3 + 4
@@ -286,8 +286,48 @@ spawn_asteroid_compare_ok
     SELECT CASE ZP_B1
         CASE 0
             ZP_B1 = COLOR_YELLOW
+            ASM
+                lda {AsteroidNr}
+                asl
+                asl
+                asl
+                asl
+                tax
+                lda #$20 ; NO_DRAW
+                sta {AsteroidGeom}+7,x
+                lda #%01000010
+                sta {AsteroidGeom}+8,x
+                lda #%10100001
+                sta {AsteroidGeom}+9,x
+                lda #%11100001
+                sta {AsteroidGeom}+10,x
+                lda #%01000010
+                sta {AsteroidGeom}+11,x
+                lda #$10 ; END_SHAPE
+                sta {AsteroidGeom}+12,x
+            END ASM
         CASE 1
             ZP_B1 = COLOR_LIGHTGREEN
+            ASM
+                lda {AsteroidNr}
+                asl
+                asl
+                asl
+                asl
+                tax
+                lda #$20 ; NO_DRAW
+                sta {AsteroidGeom}+7,x
+                lda #%11000010
+                sta {AsteroidGeom}+8,x
+                lda #%00100001
+                sta {AsteroidGeom}+9,x
+                lda #%01100001
+                sta {AsteroidGeom}+10,x
+                lda #%11000010
+                sta {AsteroidGeom}+11,x
+                lda #$10 ; END_SHAPE
+                sta {AsteroidGeom}+12,x
+            END ASM
         CASE IS < 6
             ZP_B1 = COLOR_DARKGRAY
         CASE IS < 11
@@ -331,7 +371,7 @@ END SUB
 
 SUB AsteroidReduce(AsteroidNr AS BYTE, Force AS BYTE) SHARED STATIC
     'IF ZP_B2 > 4 THEN ZP_B2 = ZP_B2 - 4
-    ZP_B2 = SHL(AsteroidNr, 3) + (RNDB() AND %11) + 1
+    ZP_B2 = SHL(AsteroidNr, 4) + (RNDB() AND %11) + 1
 
     ZP_B1 = AsteroidGeom(ZP_B2) AND %00000111
     IF ZP_B1 > Force THEN

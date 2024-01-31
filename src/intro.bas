@@ -25,13 +25,14 @@ DECLARE SUB ChangePage() STATIC
 DIM PETSCII(8) AS BYTE @ _PETSCII
 
 'Setup music
-MEMCPY @Hellrider_SID_ZX0, $1000, @Hellrider_SID_ZX0_END - @Hellrider_SID_ZX0
+CALL DecompressZX0_Unsafe(@Hellrider_SID_ZX0, $1000)
 
 ASM
     lda #0
     jsr $1000
 END ASM
 
+POKE $d015,0
 'Setup graphics
 CALL ScreenOff()
 
@@ -192,9 +193,8 @@ CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 
 CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
 
-CALL Text(7, 2, 1, 0, TRUE, "verge station", CHAR_MEMORY)
-CALL Text(13, 4, 1, 0, TRUE, "network", CHAR_MEMORY)
-CALL Text(15, 7, 1, 0, FALSE, "connecting", CHAR_MEMORY)
+CALL Text(7, 5, 1, 0, TRUE, "verge station", CHAR_MEMORY)
+CALL Text(11, 10, 1, 0, FALSE, "network connecting", CHAR_MEMORY)
 
 CALL SidStop()
 
@@ -356,11 +356,5 @@ Encounter004_Screen:
 Encounter004_Color:
     INCBIN "../gfx/encounter004_color_bin.zx0"
 
-'Charset:
-'    INCBIN "../gfx/army_moves.64c"
-'    INCBIN "../gfx/generic_charset.bin"
-
-
 Hellrider_SID_ZX0:
-INCBIN "../sfx/Hellrider.bin"
-Hellrider_SID_ZX0_END:
+INCBIN "../sfx/Hellrider.zx0"

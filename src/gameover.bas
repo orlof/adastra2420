@@ -90,15 +90,13 @@ CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 
 CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
 
-CALL Text(7, 2, 1, 0, TRUE, "verge station", CHAR_MEMORY)
-CALL Text(13, 4, 1, 0, TRUE, "network", CHAR_MEMORY)
-CALL Text(15, 7, 1, 0, FALSE, "connecting", CHAR_MEMORY)
+CALL Text(13, 5, 1, 0, TRUE, "the end", CHAR_MEMORY)
 
 CALL SidStop()
 
 'GameState = GAMESTATE_STARTING
 
-IF NOT Debug THEN CALL LoadProgram("intro", CWORD(8192))
+IF NOT Debug THEN CALL LoadProgram("menu", CWORD(8192))
 
 END
 

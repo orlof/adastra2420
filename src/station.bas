@@ -27,7 +27,7 @@ SaveParams.Length = $800
 SaveParams.LoadAddress = $0800
 SaveParams.DriveCodeBuffer = $b300
 
-DIM SaveFileName(5) AS STRING * 9 @_SaveFileName
+DIM SaveFileName(4) AS STRING * 9 @_SaveFileName
 
 DIM ArtifactTitle(12) AS STRING * 15 @_ArtifactTitle
 DIM ComponentTitle(5) AS STRING * 6 @_ComponentTitle
@@ -65,6 +65,8 @@ DECLARE SUB SaveGame(FileNr AS BYTE) STATIC
 DECLARE SUB LoadGame(FileNr AS BYTE) STATIC
 DECLARE SUB Map_AddRandom(Item AS BYTE) SHARED STATIC
 DECLARE FUNCTION GetBuyAllPrice AS LONG(ComponentId AS BYTE) STATIC
+
+POKE $d015,0
 
 MEMCPY @SID_Driven_20, $1000, @SID_Driven_20_End - @SID_Driven_20
 ASM
@@ -173,9 +175,9 @@ LeftPanelHandler:
                 CALL FillBitmap(0)
                 CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 
-                CALL Text(10, 2, 1, 0, TRUE, "moonwraith", CHAR_MEMORY)
-                CALL Text(5, 5, 1, 0, TRUE, "launch sequence", CHAR_MEMORY)
-                CALL Text(15, 7, 1, 0, FALSE, "initiated", CHAR_MEMORY)
+                CALL Text(10, 5, 1, 0, TRUE, "moonwraith", CHAR_MEMORY)
+                CALL Text(13, 8, 1, 0, false, "launch sequence", CHAR_MEMORY)
+                CALL Text(15, 10, 1, 0, FALSE, "initiated", CHAR_MEMORY)
 
                 CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
 
@@ -191,7 +193,7 @@ SUB AutoSave() STATIC
     CALL NotifyPanel.Init("", 13, 10, 14, 5, TRUE)
     CALL NotifyPanel.Center(1, "autosaving", COLOR_BLUE, TRUE)
 
-    CALL SaveGame(5)
+    CALL SaveGame(3)
 
     CALL NotifyPanel.Dispose()
 END SUB
@@ -221,15 +223,11 @@ SUB LoadGame(FileNr AS BYTE) STATIC
 
     IF NOT Debug THEN
         ASM
-            sta $40
             ldx {ZP_W0}
             ldy {ZP_W0}+1
             jsr $440
-            bcs load_failed
-            lda #0
 load_failed
-            sta $40
-            jmp load_failed
+            bcs load_failed
         END ASM
     END IF
 END SUB
@@ -308,7 +306,7 @@ DiscPanelHandler:
             CASE EVENT_LEFT
                 CALL DiscPanel.Dispose()
                 GOTO LeftPanelHandler
-            CASE EVENT_FIRE
+            CASE EVENT_FIRE, EVENT_RIGHT
                 CALL DiscPanel.SetFocus(FALSE)
                 IF DiscPanel.Selected = 1 THEN
                     CALL CreateSlotPanel(0)
@@ -575,7 +573,7 @@ END SUB
 
 SUB CreateDiscPanel() STATIC
     CALL DiscPanel.Init("disc", 16, 14, 8, 6, TRUE)
-    CALL DiscPanel.SetEvents(EVENT_FIRE OR EVENT_LEFT)
+    CALL DiscPanel.SetEvents(EVENT_FIRE OR EVENT_LEFT OR EVENT_RIGHT)
 
     CALL DiscPanel.Left(1, 1, "load", COLOR_LIGHTGRAY, TRUE)
     CALL DiscPanel.Left(1, 2, "save", COLOR_LIGHTGRAY, TRUE)
@@ -583,18 +581,16 @@ END SUB
 
 SUB CreateSlotPanel(IsSave AS BYTE) STATIC
     IF IsSave THEN
-        CALL SlotPanel.Init("save", 24, 12, 12, 9, TRUE)
+        CALL SlotPanel.Init("save", 24, 12, 12, 7, TRUE)
     ELSE
-        CALL SlotPanel.Init("load", 24, 12, 12, 10, TRUE)
-        CALL SlotPanel.Left(1, 6, "autosave", COLOR_LIGHTGRAY, TRUE)
+        CALL SlotPanel.Init("load", 24, 12, 12, 8, TRUE)
+        CALL SlotPanel.Left(1, 4, "autosave", COLOR_LIGHTGRAY, TRUE)
     END IF
     CALL SlotPanel.SetEvents(EVENT_FIRE OR EVENT_LEFT)
 
     CALL SlotPanel.Left(1, 1, "slot 1", COLOR_LIGHTGRAY, TRUE)
     CALL SlotPanel.Left(1, 2, "slot 2", COLOR_LIGHTGRAY, TRUE)
     CALL SlotPanel.Left(1, 3, "slot 3", COLOR_LIGHTGRAY, TRUE)
-    CALL SlotPanel.Left(1, 4, "slot 4", COLOR_LIGHTGRAY, TRUE)
-    CALL SlotPanel.Left(1, 5, "slot 5", COLOR_LIGHTGRAY, TRUE)
 END SUB
 
 SUB CreateTradePanel(ComponentId AS BYTE) STATIC
@@ -742,10 +738,6 @@ DATA AS BYTE 0
 DATA AS STRING*8 "save0002"
 DATA AS BYTE 0
 DATA AS STRING*8 "save0003"
-DATA AS BYTE 0
-DATA AS STRING*8 "save0004"
-DATA AS BYTE 0
-DATA AS STRING*8 "save0005"
 DATA AS BYTE 0
 DATA AS STRING*8 "autosave"
 DATA AS BYTE 0

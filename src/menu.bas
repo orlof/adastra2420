@@ -14,8 +14,10 @@ DIM NumLetters AS BYTE
 DIM _SprX(8) AS INT, _SprY(8) AS INT
 DIM _SprDX(8) AS INT, _SprDY(8) AS INT
 DIM _SprDistance(8) AS INT
+DIM SaveFileName(4) AS STRING * 9 @_SaveFileName
 
 DECLARE FUNCTION Sleep AS BYTE(jiffys AS WORD) SHARED STATIC
+DECLARE SUB LoadGame(FileNr AS BYTE) STATIC
 DECLARE SUB AddLetter(Letter AS STRING*1, X AS INT, Y AS INT, SprColor AS BYTE) STATIC OVERLOAD
 DECLARE SUB AddLetter(Letter AS STRING*1, X AS BYTE, Y AS INT, SprColor AS BYTE) STATIC OVERLOAD
 DECLARE SUB AddLetter(Letter AS STRING*1, X AS INT, Y AS BYTE, SprColor AS BYTE) STATIC OVERLOAD
@@ -26,15 +28,16 @@ DECLARE FUNCTION Scroller AS BYTE(Text AS STRING*96, Y AS BYTE, Speed AS BYTE, C
 
 SYSTEM INTERRUPT OFF
 
-MEMCPY @SID, $1000, @SID_END - @SID
+CALL DecompressZX0_Unsafe(@SID, $1000)
+'MEMCPY @SID, $1000, @SID_END - @SID
 ASM
 ;LIB_GFX_DISABLE_BANK_3
     lda #0
     jsr $1000
 END ASM
 
-ON RASTER $fb GOSUB IRQ
-RASTER INTERRUPT ON
+ON TIMER 17095 GOSUB IRQ
+TIMER INTERRUPT ON
 
 BACKGROUND COLOR_BLACK
 BORDER COLOR_BLACK
@@ -70,6 +73,7 @@ SCREEN 2
 'SPRITE XY EXPAND
 POKE $d017,%11111111
 POKE $d01d,%11111111
+POKE $d01b,%00000000
 
 NumLetters = 0
 
@@ -108,12 +112,15 @@ IF Sleep(100) THEN GOTO MainMenu
 'IF Scroller("", 208, 2, COLOR_BLUE) THEN GOTO MainMenu
 
 MainMenu:
+POKE $d015,0
 CALL SetVideoBank(2)
 DIM Selected AS INT
 Selected = 0
 
 CONST BAR_TOP = 92
 CONST BAR_BOTTOM = 108
+CONST SAVE_BAR_TOP = 60
+CONST SAVE_BAR_BOTTOM = 76
 CALL RectMC(40, BAR_TOP + SHL(Selected, 4), 120, BAR_BOTTOM + SHL(Selected, 4), 2, MODE_TRANSPARENT)
 
 DO
@@ -141,22 +148,88 @@ LOOP
 
 
 LoadGame:
+CALL RectMC(32, 40, 127, 159, 1, 0)
 
+CALL TextMC(12, 8, 1, 0, TRUE, "main menu", CHAR_MEMORY)
+CALL TextMC(14, 10, 1, 0, TRUE, "slot 1", CHAR_MEMORY)
+CALL TextMC(14, 12, 1, 0, TRUE, "slot 2", CHAR_MEMORY)
+CALL TextMC(14, 14, 1, 0, TRUE, "slot 3", CHAR_MEMORY)
+CALL TextMC(12, 16, 1, 0, TRUE, "autosave", CHAR_MEMORY)
 
-NewGame:
-CALL ScreenOff()
+Selected = 0
+CALL RectMC(40, SAVE_BAR_TOP + SHL(Selected, 4), 120, SAVE_BAR_BOTTOM + SHL(Selected, 4), 2, MODE_TRANSPARENT)
+
+DO
+    CALL JoyUpdate()
+    IF JoySame(JOY2) THEN CONTINUE DO
+    IF JoyDown(JOY2) THEN
+        CALL RectMC(40, SAVE_BAR_TOP + SHL(Selected, 4), 120, SAVE_BAR_BOTTOM + SHL(Selected, 4), 0, MODE_TRANSPARENT)
+        Selected = Selected + 1
+        IF Selected > 4 THEN Selected = 0
+        CALL RectMC(40, SAVE_BAR_TOP + SHL(Selected, 4), 120, SAVE_BAR_BOTTOM + SHL(Selected, 4), 2, MODE_TRANSPARENT)
+    END IF
+    IF JoyUp(JOY2) THEN
+        CALL RectMC(40, SAVE_BAR_TOP + SHL(Selected, 4), 120, SAVE_BAR_BOTTOM + SHL(Selected, 4), 0, MODE_TRANSPARENT)
+        Selected = Selected - 1
+        IF Selected < 0 THEN
+            Selected = 4
+        END IF
+        CALL RectMC(40, SAVE_BAR_TOP + SHL(Selected, 4), 120, SAVE_BAR_BOTTOM + SHL(Selected, 4), 2, MODE_TRANSPARENT)
+    END IF
+    IF JoyFire(JOY2) THEN
+        IF Selected = 0 THEN
+            CALL RectMC(32, 40, 127, 159, 1, 0)
+            CALL TextMC(16, 8, 1, 0, TRUE, "menu", CHAR_MEMORY)
+            CALL TextMC(12, 12, 1, 0, TRUE, "new game", CHAR_MEMORY)
+            CALL TextMC(16, 14, 1, 0, TRUE, "load", CHAR_MEMORY)
+            GOTO MainMenu
+        END IF
+        GOTO Resume
+    END IF
+LOOP
+
+Resume:
+CALL LoadGame(Selected - 1)
+
 CALL SetVideoBank(3)
-
+CALL SetGraphicsMode(INVALID_MODE)
+CALL SetBitmapMemory(1)
+CALL SetScreenMemory(2)
 CALL FillBitmap(0)
-CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
-CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
+CALL FillColors(COLOR_BLACK, COLOR_LIGHTRED)
 
-CALL Text(10, 2, 1, 0, TRUE, "exposition", CHAR_MEMORY)
-CALL ScreenOn()
+CALL Text(7, 5, 1, 0, TRUE, "verge station", CHAR_MEMORY)
+CALL Text(11, 10, 1, 0, FALSE, "network connecting", CHAR_MEMORY)
 
 CALL SidStop()
 
-IF NOT Debug THEN CALL LoadProgram("intro", CWORD(8192))
+IF NOT Debug THEN CALL LoadProgram("station", CWORD(8192))
+END
+
+NewGame:
+CALL SetVideoBank(3)
+CALL SetGraphicsMode(INVALID_MODE)
+CALL SetBitmapMemory(1)
+CALL SetScreenMemory(2)
+CALL FillBitmap(0)
+CALL FillColors(COLOR_BLACK, COLOR_LIGHTRED)
+
+CALL Text(12, 18, 1, 0, TRUE, "prologue", CHAR_MEMORY)
+CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
+
+SPRITE 0 AT 160,100 SHAPE 0 COLOR COLOR_RED XYSIZE 0,0 ON
+SPRITE 1 AT 185,100 SHAPE 3 COLOR COLOR_RED XYSIZE 0,0 ON
+SPRITE 2 AT 60,130 SHAPE 0 COLOR COLOR_RED XYSIZE 1,1 ON
+SPRITE 3 AT 110,130 SHAPE 18 COLOR COLOR_RED XYSIZE 1,1 ON
+SPRITE 4 AT 160,130 SHAPE 19 COLOR COLOR_RED XYSIZE 1,1 ON
+SPRITE 5 AT 210,130 SHAPE 17 COLOR COLOR_RED XYSIZE 1,1 ON
+SPRITE 6 AT 260,130 SHAPE 0 COLOR COLOR_RED XYSIZE 1,1 ON
+
+TIMER INTERRUPT OFF
+CALL SidStop()
+IF NOT Debug THEN
+    CALL LoadProgram("intro", CWORD(8192))
+END IF
 
 END
 
@@ -165,13 +238,6 @@ IRQ:
         ;lda $d027
         ;eor #%00001000
 
-        ;sta $d027
-        ;sta $d028
-        ;sta $d029
-        ;sta $d02a
-        ;sta $d02b
-        ;sta $d02c
-        ;sta $d02d
 
         jsr $1003
     END ASM
@@ -331,9 +397,23 @@ FUNCTION Scroller AS BYTE(Text AS STRING*96, Y AS BYTE, Speed AS BYTE, Color0 AS
     RETURN FALSE
 END FUNCTION
 
+SUB LoadGame(FileNr AS BYTE) STATIC
+    POKE $fff,FileNr
+    ZP_W0 = @SaveFileName(FileNr) + 1
+
+    IF NOT Debug THEN
+        ASM
+            ldx {ZP_W0}
+            ldy {ZP_W0}+1
+            jsr $440
+load_failed
+            bcs load_failed
+        END ASM
+    END IF
+END SUB
+
 SID:
-INCBIN "../sfx/Syncosmic.bin"
-SID_END:
+INCBIN "../sfx/Syncosmic.zx0"
 
 'BgColor = $00
 Image001_Bitmap:
@@ -343,8 +423,17 @@ Image001_Screen:
 Image001_Color:
     INCBIN "../gfx/title001_color.zx0"
 
-SPRITE_DATA:
+_SaveFileName:
+DATA AS STRING*8 "save0001"
+DATA AS BYTE 0
+DATA AS STRING*8 "save0002"
+DATA AS BYTE 0
+DATA AS STRING*8 "save0003"
+DATA AS BYTE 0
+DATA AS STRING*8 "autosave"
+DATA AS BYTE 0
 
+SPRITE_DATA:
 DATA AS BYTE $01, $FF, $FF
 DATA AS BYTE $07, $FF, $FF
 DATA AS BYTE $1F, $FF, $FF

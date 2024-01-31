@@ -537,8 +537,12 @@ SUB Player_Collision() SHARED STATIC
                         GameState = GAMESTATE_STATION
                     END IF
                 CASE ZONE_AI
-                    ArtifactLocation(8) = LOC_PLAYER 'GET POSITRONIC AI
-                    CALL Map_SetCurrentZone(ZONE_NONE)
+                    IF ArtifactLocation(8) = LOC_SOURCE THEN
+                        ArtifactLocation(8) = LOC_PLAYER 'GET POSITRONIC AI
+                        CALL Map_SetCurrentZone(ZONE_NONE)
+                    ELSE
+                        TimeLeft = TimeLeft + 50
+                    END IF
                 CASE ELSE
                     'MISSILE_SILO STAR
                     IF (GameTime AND %00001110) = 0 THEN

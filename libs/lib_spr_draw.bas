@@ -231,19 +231,19 @@ REM    7     10 px
 REM
 REM Angular (point's direction) 0-31 about 11.6 deg/step:
 REM Value  Direction
-REM    0     EAST
+REM    0     E
 REM    2     ENE
 REM    4     NE
 REM    6     NNE
-REM    8     NORT
+REM    8     N
 REM   10     NNW
 REM   12     NW
 REM   14     WNW
-REM   16     WEST
+REM   16     W
 REM   18     WSW
 REM   20     SW
 REM   22     SSW
-REM   24     SOUTH
+REM   24     S
 REM   26     SSE
 REM   28     SE
 REM   30     ESE
