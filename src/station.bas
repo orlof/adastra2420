@@ -103,7 +103,8 @@ IF Debug OR (GameState = GAMESTATE_STARTING) THEN
 
     MEMCPY @_GameMap, @GameMap, 256
     FOR ZP_B0 = 0 TO 11
-        ArtifactLocation(ZP_B0) = LOC_SOURCE
+        'ArtifactLocation(ZP_B0) = LOC_SOURCE
+        ArtifactLocation(ZP_B0) = LOC_PLAYER
     NEXT
     FOR ZP_B0 = 0 TO 4
         ComponentCapacity(ZP_B0) = ComponentInitialCapacity(ZP_B0)
@@ -176,7 +177,7 @@ LeftPanelHandler:
                 CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 
                 CALL Text(10, 5, 1, 0, TRUE, "moonwraith", CHAR_MEMORY)
-                CALL Text(13, 8, 1, 0, false, "launch sequence", CHAR_MEMORY)
+                CALL Text(12, 8, 1, 0, FALSE, "launch sequence", CHAR_MEMORY)
                 CALL Text(15, 10, 1, 0, FALSE, "initiated", CHAR_MEMORY)
 
                 CALL SetGraphicsMode(STANDARD_BITMAP_MODE)

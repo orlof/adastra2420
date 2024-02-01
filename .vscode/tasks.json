@@ -325,6 +325,37 @@
             }
         },
         {
+            "label": "Extract Autosave",
+            "type": "shell",
+            "osx": {
+                "command": "${config:xcbasic3.vice}/bin/c1541",
+                "args": [
+                    "-attach",
+                    "build/aileon.d64",
+                    "-read",
+                    "autosave",
+                    "data/savefile.prg"
+                ]
+            },
+            "windows": {
+                "command": "${config:xcbasic3.vice}/bin/c1541.exe",
+                "args": [
+                    "-attach",
+                    "build/aileon.d64",
+                    "-read",
+                    "autosave",
+                    "data/savefile.prg"
+                ]
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
             "label": "EXOMIZE Loader",
             "type": "shell",
             "osx": {

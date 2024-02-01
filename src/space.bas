@@ -478,7 +478,7 @@ ASM
 END ASM
 
 IF (GameState AND GAMESTATE_GAMEOVER) THEN
-    CALL Text(8, 5, TRUE, "final chapter")
+    CALL Text(12, 5, TRUE, "epilogue")
     SELECT CASE GameState
         CASE GAMESTATE_OUT_OF_FUEL
             CALL Text(7, 10, FALSE, "moonwraith was lost in the")
@@ -503,9 +503,9 @@ IF LocalMapVergeStationId = 5 AND _
     ArtifactLocation(2) = LOC_PLAYER AND _
     ArtifactLocation(3) = LOC_PLAYER _
 THEN
-    CALL Text(12, 2, TRUE, "epilogue")
+    CALL Text(12, 5, TRUE, "epilogue")
     CALL GraphicsModeValid()
-    IF NOT Debug THEN CALL LoadProgram("denouement", CWORD(8192))
+    IF NOT Debug THEN CALL LoadProgram("denouement", CWORD(3072))
     END
 END IF
 
