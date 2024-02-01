@@ -53,11 +53,7 @@ CALL SetScreenMemory(2)
 MEMSET $c800, 1000, 32
 MEMSET $d800, 1000, 0
 MEMSET $e000, 8000, 0
-'MEMSET $cbf8, 8, 254
-'MEMSET $8bf8, 8, 254
 
-'MEMSET $bf80, 64, 255
-'MEMSET $ff80, 64, 255
 MEMCPY @CoverSprite, $bf80, 64
 MEMCPY @CoverSprite, $ff80, 64
 FOR T AS BYTE = 0 TO 6
@@ -134,7 +130,6 @@ CALL ChangePage()
 
 CALL Left(0, COLOR_PRESIDENT, "president")
 CALL Center(2, COLOR_PRESIDENT, "i congratulate you commander jameson")
-CALL Center(3, COLOR_PRESIDENT, "and now on it will be captain")
 CALL ChangePage()
 
 CALL Center(2, COLOR_NARRATOR, "after the ceremonies you head to")
@@ -142,6 +137,8 @@ CALL Center(3, COLOR_NARRATOR, "a well deserved holiday")
 CALL ChangePage()
 
 CALL ShowImage(@Image006_Bitmap, @Image006_Screen, @Image006_Color, $03)
+
+CALL DecompressZX0_Unsafe(@Sprite_Font, $c000)
 
 CALL ChangePage()
 
@@ -154,11 +151,9 @@ CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 
 CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
 
-CALL Text(6, 5, 1, 0, TRUE, "game completed", CHAR_MEMORY)
+CALL Text(13, 5, 1, 0, TRUE, "the end", CHAR_MEMORY)
 
 CALL SidStop()
-
-'GameState = GAMESTATE_STARTING
 
 IF NOT Debug THEN CALL LoadProgram("menu", CWORD(8192))
 
@@ -276,7 +271,6 @@ SUB ShowImage(BitmapAddr AS WORD, ScreenAddr AS WORD, ColorAddr AS WORD, BgColor
 
     CALL WaitRasterLine256()
     CALL ScreenOn()
-
 END SUB
 
 SUB ChangePage() STATIC
@@ -349,3 +343,5 @@ Image006_Screen:
 Image006_Color:
     INCBIN "../gfx/denouement006_color.zx0"
 
+Sprite_Font:
+    INCBIN "../gfx/sprite_font.zx0"

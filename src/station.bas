@@ -23,7 +23,7 @@ END TYPE
 DIM SaveParams AS SaveParamsType
 SaveParams.FileName = $0000
 SaveParams.From = $0800
-SaveParams.Length = $800
+SaveParams.Length = 500
 SaveParams.LoadAddress = $0800
 SaveParams.DriveCodeBuffer = $b300
 

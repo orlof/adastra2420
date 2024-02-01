@@ -150,7 +150,7 @@ CALL ChangePage()
 CALL ShowImage(@Encounter004_Bitmap, @Encounter004_Screen, @Encounter004_Color, $00)
 
 CALL Left(0, COLOR_LIEUTENANT, "lieutenant mariah rockford")
-CALL Center(2, COLOR_LIEUTENANT, "commander power, situation is dire")
+CALL Center(2, COLOR_LIEUTENANT, "commander jameson, situation is dire")
 CALL ChangePage()
 
 CALL Left(0, COLOR_LIEUTENANT, "lieutenant mariah rockford")
@@ -159,7 +159,7 @@ CALL Center(3, COLOR_LIEUTENANT, "a singularity diffuser")
 CALL ChangePage()
 
 CALL Left(0, COLOR_YOU, "you")
-CALL Center(2, COLOR_YOU, "gathering components for the diffuser")
+CALL Center(2, COLOR_YOU, "gathering components for it")
 CALL Center(3, COLOR_YOU, "will be an extremely dangerous task")
 CALL ChangePage()
 
