@@ -122,6 +122,23 @@ player_rotate_has_turret
         bne player_rotate_direction_changed
 
 player_rotate_turret
+        lda #$10
+        cmp {GeomShipTurretDisable}
+        bne player_rotate_turret_2
+
+        lda #$20
+        sta {GeomShipTurretDisable}
+        lda {GeomShipTurret}
+        and #%00000111
+        sta {GeomShipTurret}
+        txa
+        clc
+        adc {PlayerDirection}
+        sta {PlayerTurretDirection}
+        ldx #1 ; redraw = true
+        jmp player_rotate_direction_changed2
+
+player_rotate_turret_2
         txa
         clc
         adc {PlayerTurretDirection}
@@ -129,6 +146,7 @@ player_rotate_turret
 
 player_rotate_direction_changed
         ldx #0 ; redraw = false
+player_rotate_direction_changed2
         lda {PlayerDirection}
         and #%11111000
         cmp {PlayerDirectionPrev}
