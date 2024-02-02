@@ -1,8 +1,14 @@
-with open("gfx/space_charset3.64c", "rb") as f:
+with open("gfx/c64_uppercase.64c", "rb") as f:
     generic = bytearray(f.read())
 
+with open("gfx/generic_charset.64c", "rb") as f:
+    generic2 = bytearray(f.read())
+
 generic[0] = 0x00
-generic[1] = 0xbe
+generic[1] = 0xd0
+
+for x in range(0, 8*64):
+    generic[x+2] = generic2[x+2]
 
 #with open("gfx/army_moves.64c", "rb") as f:
 #    army = bytearray(f.read())
@@ -14,5 +20,5 @@ generic[1] = 0xbe
 #with open("gfx/generic_charset.prg", "wb") as f:
 #    f.write(bytes(generic))
 
-with open("gfx/space_charset.bin", "wb") as f:
-    f.write(bytes(generic[2:514]))
+with open("gfx/generic_charset.prg", "wb") as f:
+    f.write(bytes(generic))

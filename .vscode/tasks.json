@@ -7,7 +7,7 @@
             "label": "Build All",
             "dependsOrder": "sequence",
             "dependsOn": [
-                "Build aileon.d64",
+                "Build adastra.d64",
                 "EXOMIZE Intro",
                 "EXOMIZE Space",
                 "EXOMIZE Station",
@@ -24,23 +24,23 @@
             }
         },
         {
-            "label": "Run Aileon",
+            "label": "Run adastra.d64",
             "type": "shell",
             "osx": {
                 "command": "open",
                 "args": [
-                    "build/aileon.d64"
+                    "build/adastra.d64"
                 ]
             },
             "windows": {
                 "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
                 "args": [
-                    "build/aileon.d64"
+                    "build/adastra.d64"
                 ]
             },
             "dependsOrder": "sequence",
             "dependsOn": [
-                "Build aileon.d64"
+                "Build adastra.d64"
             ],
             "group": {
                 "kind": "build",
@@ -213,17 +213,17 @@
             }
         },
         {
-            "label": "Build aileon.d64",
+            "label": "Build adastra.d64",
             "type": "shell",
             "osx": {
                 "command": "${config:xcbasic3.vice}/bin/c1541",
                 "args": [
                     "-format",
-                    "aileon,of",
+                    "adastra,of",
                     "d64",
-                    "build/aileon.d64",
+                    "build/adastra.d64",
                     "-attach",
-                    "build/aileon.d64",
+                    "build/adastra.d64",
                     "-write",
                     "build/loader.prg",
                     "loader",
@@ -263,11 +263,11 @@
                 "command": "${config:xcbasic3.vice}/bin/c1541.exe",
                 "args": [
                     "-format",
-                    "aileon,of",
+                    "adastra,of",
                     "d64",
-                    "build/aileon.d64",
+                    "build/adastra.d64",
                     "-attach",
-                    "build/aileon.d64",
+                    "build/adastra.d64",
                     "-write",
                     "build/loader.prg",
                     "loader",
@@ -331,7 +331,7 @@
                 "command": "${config:xcbasic3.vice}/bin/c1541",
                 "args": [
                     "-attach",
-                    "build/aileon.d64",
+                    "build/adastra.d64",
                     "-read",
                     "autosave",
                     "data/savefile.prg"
@@ -341,7 +341,7 @@
                 "command": "${config:xcbasic3.vice}/bin/c1541.exe",
                 "args": [
                     "-attach",
-                    "build/aileon.d64",
+                    "build/adastra.d64",
                     "-read",
                     "autosave",
                     "data/savefile.prg"
