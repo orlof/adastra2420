@@ -241,9 +241,11 @@ SUB Torpedo_Collision() SHARED STATIC
             END IF
         NEXT ZP_B0
         IF SprCollision(SPR_NR_POI) AND (ZoneType = ZONE_MISSILE_SILO) AND (TorpedoFuel < 3) THEN
-            CALL MissileSilo_Destruct(MISSILE_SILO_KILL)
-            CALL Torpedo_Destruct()
-            CALL Map_SetCurrentZone(%100)
+            IF (TorpedoFuel > 0) AND (TorpedoFuel < 3) THEN
+                CALL MissileSilo_Destruct(MISSILE_SILO_KILL)
+                CALL Torpedo_Destruct()
+                CALL Map_SetCurrentZone(%100)
+            END IF
         END IF
     END IF
 END SUB

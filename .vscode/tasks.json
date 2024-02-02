@@ -772,6 +772,7 @@
                 "args": [
                     "-b=False",
                     "-o=4096",
+                    "-s=space.txt",
                     "src/space.bas",
                     "build/space.prg"
                 ]

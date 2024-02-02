@@ -497,16 +497,16 @@ IF (GameState AND GAMESTATE_GAMEOVER) THEN
     END
 END IF
 
-IF LocalMapVergeStationId = 5 AND _
-    ArtifactLocation(0) = LOC_PLAYER AND _
-    ArtifactLocation(1) = LOC_PLAYER AND _
-    ArtifactLocation(2) = LOC_PLAYER AND _
-    ArtifactLocation(3) = LOC_PLAYER _
-THEN
-    CALL Text(12, 5, TRUE, "epilogue")
-    CALL GraphicsModeValid()
-    IF NOT Debug THEN CALL LoadProgram("denouement", CWORD(3072))
-    END
+IF (LocalMapVergeStationId = 5) AND (ArtifactLocation(1) = LOC_PLAYER) THEN
+    IF (GameLevel = 0) OR ((GameLevel = 1) AND _
+    (ArtifactLocation(0) = LOC_PLAYER) AND _
+    (ArtifactLocation(2) = LOC_PLAYER) AND _
+    (ArtifactLocation(3) = LOC_PLAYER)) THEN
+        CALL Text(12, 5, TRUE, "epilogue")
+        CALL GraphicsModeValid()
+        IF NOT Debug THEN CALL LoadProgram("denouement", CWORD(3072))
+        END
+    END IF
 END IF
 
 CALL Text(7, 5, TRUE, "verge station")

@@ -60,6 +60,10 @@ FUNCTION JoySame AS BYTE(JoyNr AS BYTE) STATIC SHARED
     RETURN (JoyValue(JoyNr) = JoyPrev(JoyNr)) AND (JoyValue(JoyNr) < JOY_ANY)
 END FUNCTION
 
+FUNCTION JoyIdle AS BYTE(JoyNr AS BYTE) STATIC SHARED
+    RETURN JoyValue(JoyNr) = JOY_ANY
+END FUNCTION
+
 ' Check if fire button state has changed
 FUNCTION JoyFirePressed AS BYTE(JoyNr AS BYTE) STATIC SHARED
     RETURN ((JoyPrev(JoyNr) AND JOY_FIRE) > 0) AND ((JoyValue(JoyNr) AND JOY_FIRE) = 0)

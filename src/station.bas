@@ -11,6 +11,7 @@ INCLUDE "../libs/lib_joy.bas"
 INCLUDE "../libs/lib_ui.bas"
 INCLUDE "../libs/lib_rnd.bas"
 INCLUDE "../libs/lib_sid.bas"
+INCLUDE "../libs/lib_zx0.bas"
 
 TYPE SaveParamsType
     FileName AS WORD
@@ -68,7 +69,8 @@ DECLARE FUNCTION GetBuyAllPrice AS LONG(ComponentId AS BYTE) STATIC
 
 POKE $d015,0
 
-MEMCPY @SID_Driven_20, $1000, @SID_Driven_20_End - @SID_Driven_20
+CALL DecompressZX0_Unsafe(@SID, $1000)
+
 ASM
     lda #0
     jsr $1000
@@ -84,11 +86,12 @@ END ASM
 ON TIMER 17095 GOSUB InterruptHandlerPlaySid
 TIMER INTERRUPT ON
 
-MEMCPY @Krills_Save, $bb00, @Krills_Save_End - @Krills_Save
+CALL DecompressZX0_Unsafe(@KRILL_SAVE, $bb00)
 
 CALL SetupGraphics()
 
 IF Debug OR (GameState = GAMESTATE_STARTING) THEN
+    IF Debug THEN GameLevel = 1
     CALL MissionBriefingHandler()
     GameState = GAMESTATE_STATION
     TimeLeft = 1000
@@ -103,8 +106,8 @@ IF Debug OR (GameState = GAMESTATE_STARTING) THEN
 
     MEMCPY @_GameMap, @GameMap, 256
     FOR ZP_B0 = 0 TO 11
-        'ArtifactLocation(ZP_B0) = LOC_SOURCE
-        ArtifactLocation(ZP_B0) = LOC_PLAYER
+        ArtifactLocation(ZP_B0) = LOC_SOURCE
+        'ArtifactLocation(ZP_B0) = LOC_PLAYER
     NEXT
     FOR ZP_B0 = 0 TO 4
         ComponentCapacity(ZP_B0) = ComponentInitialCapacity(ZP_B0)
@@ -666,20 +669,30 @@ SUB MissionBriefingHandler() STATIC
     CALL Panel.Draw(TRUE, TRUE)
 
     CALL Panel.Left(1, 1, "acquire", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(6, 3, ArtifactTitle(0), COLOR_LIGHTGRAY, FALSE)
     CALL Panel.Left(6, 4, ArtifactTitle(1), COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(6, 5, ArtifactTitle(2), COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(6, 6, ArtifactTitle(3), COLOR_LIGHTGRAY, FALSE)
+    IF GameLevel > 0 THEN
+        CALL Panel.Left(6, 3, ArtifactTitle(0), COLOR_LIGHTGRAY, FALSE)
+        CALL Panel.Left(6, 5, ArtifactTitle(2), COLOR_LIGHTGRAY, FALSE)
+        CALL Panel.Left(6, 6, ArtifactTitle(3), COLOR_LIGHTGRAY, FALSE)
+    END IF
     CALL Panel.Left(1, 8, "build a singularity diffuser", COLOR_LIGHTGRAY, FALSE)
 
     CALL Panel.Left(1, 10, "intelligence reports that", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(1, 11, "components are available in nearby", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(1, 12, "space stations", COLOR_LIGHTGRAY, FALSE)
+    IF GameLevel > 0 THEN
+        CALL Panel.Left(1, 11, "components are available in nearby", COLOR_LIGHTGRAY, FALSE)
+        CALL Panel.Left(1, 12, "space stations", COLOR_LIGHTGRAY, FALSE)
 
-    CALL Panel.Left(1, 14, "negotiate with space stations and", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(1, 15, "bring parts to verge station 5", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(1, 16, "before runaway singularity", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(1, 17, "destroys spacetime", COLOR_LIGHTGRAY, FALSE)
+        CALL Panel.Left(1, 14, "negotiate with space stations and", COLOR_LIGHTGRAY, FALSE)
+        CALL Panel.Left(1, 15, "bring parts back to verge", COLOR_LIGHTGRAY, FALSE)
+    ELSE
+        CALL Panel.Left(1, 11, "babbage siphon is available at", COLOR_LIGHTGRAY, FALSE)
+        CALL Panel.Left(1, 12, "verge station 1, but they want", COLOR_LIGHTGRAY, FALSE)
+        CALL Panel.Left(1, 13, "fusion aligner in exchange", COLOR_LIGHTGRAY, FALSE)
+
+        CALL Panel.Left(1, 15, "bring babbage siphon to verge", COLOR_LIGHTGRAY, FALSE)
+    END IF
+    CALL Panel.Left(1, 16, "station 5 before runaway", COLOR_LIGHTGRAY, FALSE)
+    CALL Panel.Left(1, 17, "singularity destroys spacetime", COLOR_LIGHTGRAY, FALSE)
 
     CALL Panel.Center(19, "press fire", COLOR_LIGHTGRAY, TRUE)
 
@@ -696,8 +709,6 @@ SUB Map_AddRandom(Item AS BYTE) SHARED STATIC
         END IF
     LOOP
 END SUB
-
-
 
 GOTO SkipAsm
 InterruptHandlerPlaySid:
@@ -747,7 +758,7 @@ _ComponentInitialCapacity:
 DATA AS WORD 150, 150, 150, 150, 50
 
 _ComponentInitialValue:
-DATA AS WORD 0, 0, 150, 150, 50
+DATA AS WORD 0, 10, 150, 150, 50
 
 _ComponentPrice:
 DATA AS BYTE  60, 40, 10, 15, 1
@@ -776,10 +787,8 @@ DATA AS BYTE $00, $18, $18, $18, $18, $18, $18, $18, $18, $18, $18, $18, $18, $1
 DATA AS BYTE $00, $00, $18, $18, $18, $18, $18, $18, $18, $18, $1f, $1f, $1f, $18, $00, $00
 DATA AS BYTE $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $07, $66, $07, $00, $00, $00
 
-SID_Driven_20:
-INCBIN "../sfx/Driven_20.bin"
-SID_Driven_20_End:
+SID:
+INCBIN "../sfx/Driven_20.zx0"
 
-Krills_Save:
-INCBIN "../loader/save-c64.bin"
-Krills_Save_End:
+KRILL_SAVE:
+INCBIN "../loader/save-c64.zx0"

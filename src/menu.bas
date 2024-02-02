@@ -25,11 +25,13 @@ DECLARE SUB AddLetter(Letter AS STRING*1, X AS BYTE, Y AS BYTE, SprColor AS BYTE
 DECLARE FUNCTION MoveSpritesIn AS BYTE() STATIC
 DECLARE FUNCTION MoveSpritesOut AS BYTE() STATIC
 DECLARE FUNCTION Scroller AS BYTE(Text AS STRING*96, Y AS BYTE, Speed AS BYTE, Color0 AS BYTE) STATIC
+DECLARE FUNCTION ChooseMenu AS INT(BarTop AS BYTE, NumItems AS BYTE, Back AS BYTE) STATIC
 
 SYSTEM INTERRUPT OFF
 
+MEMSET $800, 500, 0
+
 CALL DecompressZX0_Unsafe(@SID, $1000)
-'MEMCPY @SID, $1000, @SID_END - @SID
 ASM
 ;LIB_GFX_DISABLE_BANK_3
     lda #0
@@ -57,13 +59,9 @@ MEMCPY $8800, $c800, 1000
 CALL DecompressZX0_Unsafe(@Image001_Color, $9800)
 MEMCPY $9800, $d800, 1000
 
-CALL RectMC(32, 40, 127, 159, 1, 0)
 CALL SetColorInRect(8, 5, 31, 19, 0, 0)
 CALL SetColorInRect(8, 5, 31, 19, 1, COLOR_RED)
 CALL SetColorInRect(8, 5, 31, 19, 2, COLOR_LIGHTRED)
-CALL TextMC(16, 8, 1, 0, TRUE, "menu", CHAR_MEMORY)
-CALL TextMC(12, 12, 1, 0, TRUE, "new game", CHAR_MEMORY)
-CALL TextMC(16, 14, 1, 0, TRUE, "load", CHAR_MEMORY)
 
 CALL SetVideoBank(3)
 
@@ -117,81 +115,38 @@ IF Sleep(50) THEN GOTO MainMenu
 MainMenu:
 POKE $d015,0
 CALL SetVideoBank(2)
+
+CALL RectMC(32, 40, 127, 159, 1, 0)
+CALL TextMC(16, 8, 2, 0, TRUE, "menu", CHAR_MEMORY)
+CALL TextMC(12, 12, 1, 0, TRUE, "new game", CHAR_MEMORY)
+CALL TextMC(16, 14, 1, 0, TRUE, "load", CHAR_MEMORY)
+
 DIM Selected AS INT
 Selected = 0
 
-CONST BAR_TOP = 92
-CONST BAR_BOTTOM = 108
-CONST SAVE_BAR_TOP = 60
-CONST SAVE_BAR_BOTTOM = 76
-CALL RectMC(40, BAR_TOP + SHL(Selected, 4), 120, BAR_BOTTOM + SHL(Selected, 4), 2, MODE_TRANSPARENT)
+CONST BAR2_TOP = 92
+CONST BAR2_BOTTOM = 108
+CONST BAR4_TOP = 76
+CONST BAR4_BOTTOM = 92
 
-DO
-    CALL JoyUpdate()
-    IF JoySame(JOY2) THEN CONTINUE DO
-    IF JoyDown(JOY2) THEN
-        CALL RectMC(40, BAR_TOP + SHL(Selected, 4), 120, BAR_BOTTOM + SHL(Selected, 4), 0, MODE_TRANSPARENT)
-        Selected = Selected + 1
-        IF Selected > 1 THEN Selected = 0
-        CALL RectMC(40, BAR_TOP + SHL(Selected, 4), 120, BAR_BOTTOM + SHL(Selected, 4), 2, MODE_TRANSPARENT)
-    END IF
-    IF JoyUp(JOY2) THEN
-        CALL RectMC(40, BAR_TOP + SHL(Selected, 4), 120, BAR_BOTTOM + SHL(Selected, 4), 0, MODE_TRANSPARENT)
-        Selected = Selected - 1
-        IF Selected < 0 THEN
-            Selected = 1
-        END IF
-        CALL RectMC(40, BAR_TOP + SHL(Selected, 4), 120, BAR_BOTTOM + SHL(Selected, 4), 2, MODE_TRANSPARENT)
-    END IF
-    IF JoyFire(JOY2) THEN
-        IF Selected = 0 THEN GOTO NewGame
-        IF Selected = 1 THEN GOTO LoadGame
-    END IF
-LOOP
+Selected = ChooseMenu(BAR2_TOP, 2, FALSE)
 
+IF Selected = 0 THEN GOTO NewGame
+IF Selected = 1 THEN GOTO LoadGame
 
 LoadGame:
 CALL RectMC(32, 40, 127, 159, 1, 0)
 
-CALL TextMC(12, 8, 1, 0, TRUE, "main menu", CHAR_MEMORY)
+CALL TextMC(9, 7, 2, 0, TRUE, "choose file", CHAR_MEMORY)
 CALL TextMC(14, 10, 1, 0, TRUE, "slot 1", CHAR_MEMORY)
 CALL TextMC(14, 12, 1, 0, TRUE, "slot 2", CHAR_MEMORY)
 CALL TextMC(14, 14, 1, 0, TRUE, "slot 3", CHAR_MEMORY)
 CALL TextMC(12, 16, 1, 0, TRUE, "autosave", CHAR_MEMORY)
 
-Selected = 0
-CALL RectMC(40, SAVE_BAR_TOP + SHL(Selected, 4), 120, SAVE_BAR_BOTTOM + SHL(Selected, 4), 2, MODE_TRANSPARENT)
+Selected = ChooseMenu(BAR4_TOP, 4, TRUE)
 
-DO
-    CALL JoyUpdate()
-    IF JoySame(JOY2) THEN CONTINUE DO
-    IF JoyDown(JOY2) THEN
-        CALL RectMC(40, SAVE_BAR_TOP + SHL(Selected, 4), 120, SAVE_BAR_BOTTOM + SHL(Selected, 4), 0, MODE_TRANSPARENT)
-        Selected = Selected + 1
-        IF Selected > 4 THEN Selected = 0
-        CALL RectMC(40, SAVE_BAR_TOP + SHL(Selected, 4), 120, SAVE_BAR_BOTTOM + SHL(Selected, 4), 2, MODE_TRANSPARENT)
-    END IF
-    IF JoyUp(JOY2) THEN
-        CALL RectMC(40, SAVE_BAR_TOP + SHL(Selected, 4), 120, SAVE_BAR_BOTTOM + SHL(Selected, 4), 0, MODE_TRANSPARENT)
-        Selected = Selected - 1
-        IF Selected < 0 THEN
-            Selected = 4
-        END IF
-        CALL RectMC(40, SAVE_BAR_TOP + SHL(Selected, 4), 120, SAVE_BAR_BOTTOM + SHL(Selected, 4), 2, MODE_TRANSPARENT)
-    END IF
-    IF JoyFire(JOY2) THEN
-        IF Selected = 0 THEN
-            CALL RectMC(32, 40, 127, 159, 1, 0)
-            CALL TextMC(16, 8, 1, 0, TRUE, "menu", CHAR_MEMORY)
-            CALL TextMC(12, 12, 1, 0, TRUE, "new game", CHAR_MEMORY)
-            CALL TextMC(16, 14, 1, 0, TRUE, "load", CHAR_MEMORY)
-            GOTO MainMenu
-        END IF
-        GOTO Resume
-    END IF
-LOOP
+IF Selected = -1 THEN GOTO MainMenu
 
-Resume:
 CALL SetVideoBank(3)
 CALL SetGraphicsMode(INVALID_MODE)
 CALL SetBitmapMemory(1)
@@ -206,12 +161,24 @@ CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
 
 TIMER INTERRUPT OFF
 CALL SidStop()
-CALL LoadGame(Selected - 1)
+CALL LoadGame(Selected)
 
 IF NOT Debug THEN CALL LoadProgram("station", CWORD(8192))
 END
 
 NewGame:
+CALL RectMC(32, 40, 127, 159, 1, 0)
+
+CALL TextMC(10, 8, 2, 0, TRUE, "difficulty", CHAR_MEMORY)
+CALL TextMC(16, 12, 1, 0, TRUE, "easy", CHAR_MEMORY)
+CALL TextMC(14, 14, 1, 0, TRUE, "normal", CHAR_MEMORY)
+
+Selected = ChooseMenu(BAR2_TOP, 2, TRUE)
+
+IF Selected = -1 THEN GOTO MainMenu
+
+GameLevel = Selected
+
 CALL SetVideoBank(3)
 CALL SetGraphicsMode(INVALID_MODE)
 CALL SetBitmapMemory(1)
@@ -232,21 +199,46 @@ SPRITE 6 AT 260,130 SHAPE 0 COLOR COLOR_RED XYSIZE 1,1 ON
 
 TIMER INTERRUPT OFF
 CALL SidStop()
-IF NOT Debug THEN
-    CALL LoadProgram("intro", CWORD(8192))
-END IF
-
+IF NOT Debug THEN CALL LoadProgram("intro", CWORD(8192))
 END
 
 IRQ:
     ASM
-        ;lda $d027
-        ;eor #%00001000
-
-
         jsr $1003
     END ASM
 RETURN
+
+FUNCTION ChooseMenu AS INT(BarTop AS BYTE, NumItems AS BYTE, Back AS BYTE) STATIC
+    CALL RectMC(40, BarTop, 120, BarTop + 16, 2, MODE_TRANSPARENT)
+    ChooseMenu = 0
+
+    DO
+        CALL JoyUpdate()
+        IF JoySame(JOY2) OR JoyIdle(JOY2) THEN CONTINUE DO
+
+        IF Back AND JoyLeft(JOY2) THEN
+            RETURN -1
+        END IF
+
+        IF JoyFire(JOY2) THEN
+            RETURN ChooseMenu
+        END IF
+
+        CALL RectMC(40, BarTop + SHL(ChooseMenu, 4), 120, BarTop + 16 + SHL(ChooseMenu, 4), 0, MODE_TRANSPARENT)
+        IF JoyDown(JOY2) THEN
+            ChooseMenu = ChooseMenu + 1
+            IF ChooseMenu = NumItems THEN ChooseMenu = 0
+        END IF
+        IF JoyUp(JOY2) THEN
+            CALL RectMC(40, BarTop + SHL(ChooseMenu, 4), 120, BarTop + 16 + SHL(ChooseMenu, 4), 0, MODE_TRANSPARENT)
+            ChooseMenu = ChooseMenu - 1
+            IF ChooseMenu < 0 THEN
+                ChooseMenu = NumItems - 1
+            END IF
+        END IF
+        CALL RectMC(40, BarTop + SHL(ChooseMenu, 4), 120, BarTop + 16 + SHL(ChooseMenu, 4), 2, MODE_TRANSPARENT)
+    LOOP
+END FUNCTION
 
 FUNCTION Sleep AS BYTE(jiffys AS WORD) SHARED STATIC
     DO UNTIL jiffys = 0

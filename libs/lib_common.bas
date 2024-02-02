@@ -88,3 +88,4 @@ DIM ArtifactLocation(12) AS BYTE @$924 SHARED
 DIM PlayerSectorMapX AS WORD @$930 SHARED
 DIM PlayerSectorMapY AS BYTE @$932 SHARED
 DIM PlayerSectorMapRestore AS BYTE @$933 SHARED
+DIM GameLevel AS BYTE @$934 SHARED
