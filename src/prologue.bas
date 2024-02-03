@@ -60,7 +60,7 @@ CALL SetGraphicsMode(MULTICOLOR_BITMAP_MODE)
 CALL ScreenOn()
 RASTER INTERRUPT ON
 
-CALL ShowImage(@Encounter003_Bitmap, @Encounter003_Screen, @Encounter003_Color, $03)
+CALL ShowImage(@Image003_Bitmap, @Image003_Screen, @Image003_Color, $03)
 
 CALL Center(2, COLOR_NARRATOR, "this is your ship - moonwraith")
 CALL ChangePage()
@@ -71,7 +71,7 @@ CALL ChangePage()
 CALL Center(2, COLOR_NARRATOR, "celestial savior on a rescue mission")
 CALL ChangePage()
 
-CALL ShowImage(@Encounter002_Bitmap, @Encounter002_Screen, @Encounter002_Color, $0b)
+CALL ShowImage(@Image002_Bitmap, @Image002_Screen, @Image002_Color, $0b)
 
 CALL Center(2, COLOR_NARRATOR, "this is you, commander jameson")
 CALL Center(3, COLOR_NARRATOR, "a ranger from federation of free traders")
@@ -81,7 +81,7 @@ CALL Center(2, COLOR_NARRATOR, "you walk toward the ominous hq")
 CALL Center(3, COLOR_NARRATOR, "of planet irata")
 CALL ChangePage()
 
-CALL ShowImage(@Encounter001_Bitmap, @Encounter001_Screen, @Encounter001_Color, $00)
+CALL ShowImage(@Image001_Bitmap, @Image001_Screen, @Image001_Color, $00)
 
 CALL Left(0, COLOR_COLONEL, "colonel rockford")
 CALL Center(2, COLOR_COLONEL, "commander jameson, thanks for coming")
@@ -147,7 +147,7 @@ CALL Center(2, COLOR_LIEUTENANT, "i'll show you to the mission control")
 
 CALL ChangePage()
 
-CALL ShowImage(@Encounter004_Bitmap, @Encounter004_Screen, @Encounter004_Color, $00)
+CALL ShowImage(@Image004_Bitmap, @Image004_Screen, @Image004_Color, $00)
 
 CALL Left(0, COLOR_LIEUTENANT, "lieutenant mariah rockford")
 CALL Center(2, COLOR_LIEUTENANT, "commander jameson, situation is dire")
@@ -325,35 +325,35 @@ DATA AS BYTE $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 DATA AS BYTE $ff, $ff, $ff
 
 'BgColor = $00
-Encounter001_Bitmap:
+Image001_Bitmap:
     INCBIN "../gfx/prologue001_bitmap.zx0"
-Encounter001_Screen:
+Image001_Screen:
     INCBIN "../gfx/prologue001_screen.zx0"
-Encounter001_Color:
+Image001_Color:
     INCBIN "../gfx/prologue001_color.zx0"
 
 'BgColor = $0b
-Encounter002_Bitmap:
+Image002_Bitmap:
     INCBIN "../gfx/prologue002_bitmap.zx0"
-Encounter002_Screen:
+Image002_Screen:
     INCBIN "../gfx/prologue002_screen.zx0"
-Encounter002_Color:
+Image002_Color:
     INCBIN "../gfx/prologue002_color.zx0"
 
 'BgColor = $03
-Encounter003_Bitmap:
+Image003_Bitmap:
     INCBIN "../gfx/prologue003_bitmap.zx0"
-Encounter003_Screen:
+Image003_Screen:
     INCBIN "../gfx/prologue003_screen.zx0"
-Encounter003_Color:
+Image003_Color:
     INCBIN "../gfx/prologue003_color.zx0"
 
 'BgColor = $00
-Encounter004_Bitmap:
+Image004_Bitmap:
     INCBIN "../gfx/prologue004_bitmap.zx0"
-Encounter004_Screen:
+Image004_Screen:
     INCBIN "../gfx/prologue004_screen.zx0"
-Encounter004_Color:
+Image004_Color:
     INCBIN "../gfx/prologue004_color.zx0"
 
 Hellrider_SID_ZX0:
