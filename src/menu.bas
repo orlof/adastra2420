@@ -199,7 +199,7 @@ SPRITE 6 AT 260,130 SHAPE 0 COLOR COLOR_RED XYSIZE 1,1 ON
 
 TIMER INTERRUPT OFF
 CALL SidStop()
-IF NOT Debug THEN CALL LoadProgram("intro", CWORD(8192))
+IF NOT Debug THEN CALL LoadProgram("prologue", CWORD(8192))
 END
 
 IRQ:
@@ -414,11 +414,11 @@ INCBIN "../sfx/Syncosmic.zx0"
 
 'BgColor = $00
 Image001_Bitmap:
-    INCBIN "../gfx/title001_bitmap.zx0"
+    INCBIN "../gfx/menu001_bitmap.zx0"
 Image001_Screen:
-    INCBIN "../gfx/title001_screen.zx0"
+    INCBIN "../gfx/menu001_screen.zx0"
 Image001_Color:
-    INCBIN "../gfx/title001_color.zx0"
+    INCBIN "../gfx/menu001_color.zx0"
 
 _SaveFileName:
     DATA AS STRING*8 "save0001"

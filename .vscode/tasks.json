@@ -8,11 +8,11 @@
             "dependsOrder": "sequence",
             "dependsOn": [
                 "Build adastra.d64",
-                "EXOMIZE Intro",
+                "EXOMIZE Prologue",
                 "EXOMIZE Space",
                 "EXOMIZE Station",
                 "EXOMIZE Gameover",
-                "EXOMIZE Denouement",
+                "EXOMIZE Epilogue",
                 "EXOMIZE Menu"
             ],
             "group": {
@@ -51,23 +51,23 @@
             }
         },
         {
-            "label": "Run Intro",
+            "label": "Run Prologue",
             "type": "shell",
             "osx": {
                 "command": "open",
                 "args": [
-                    "build/_intro.prg"
+                    "build/_prologue.prg"
                 ]
             },
             "windows": {
                 "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
                 "args": [
-                    "build/_intro.prg"
+                    "build/_prologue.prg"
                 ]
             },
             "dependsOrder": "sequence",
             "dependsOn": [
-                "EXOMIZE Intro"
+                "EXOMIZE Prologue"
             ],
             "group": {
                 "kind": "build",
@@ -132,23 +132,23 @@
             }
         },
         {
-            "label": "Run Denouement",
+            "label": "Run Epilogue",
             "type": "shell",
             "osx": {
                 "command": "open",
                 "args": [
-                    "build/_denouement.prg"
+                    "build/_epilogue.prg"
                 ]
             },
             "windows": {
                 "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
                 "args": [
-                    "build/_denouement.prg"
+                    "build/_epilogue.prg"
                 ]
             },
             "dependsOrder": "sequence",
             "dependsOn": [
-                "EXOMIZE Denouement"
+                "EXOMIZE Epilogue"
             ],
             "group": {
                 "kind": "build",
@@ -231,14 +231,14 @@
                     "build/menu.prg",
                     "menu",
                     "-write",
-                    "build/intro.prg",
-                    "intro",
+                    "build/prologue.prg",
+                    "prologue",
                     "-write",
                     "build/gameover.prg",
                     "gameover",
                     "-write",
-                    "build/denouement.prg",
-                    "denouement",
+                    "build/epilogue.prg",
+                    "epilogue",
                     "-write",
                     "build/space.prg",
                     "space",
@@ -275,14 +275,14 @@
                     "build/menu.prg",
                     "menu",
                     "-write",
-                    "build/intro.prg",
-                    "intro",
+                    "build/prologue.prg",
+                    "prologue",
                     "-write",
                     "build/gameover.prg",
                     "gameover",
                     "-write",
-                    "build/denouement.prg",
-                    "denouement",
+                    "build/epilogue.prg",
+                    "epilogue",
                     "-write",
                     "build/space.prg",
                     "space",
@@ -309,11 +309,11 @@
             "dependsOrder": "sequence",
             "dependsOn": [
                 "EXOMIZE Loader",
-                "XCB3 Intro",
+                "XCB3 Prologue",
                 "XCB3 Space",
                 "XCB3 Station",
                 "XCB3 Gameover",
-                "XCB3 Denouement",
+                "XCB3 Epilogue",
                 "XCB3 Menu"
             ],
             "group": {
@@ -484,17 +484,17 @@
             }
         },
         {
-            "label": "EXOMIZE Intro",
+            "label": "EXOMIZE Prologue",
             "type": "shell",
             "osx": {
                 "command": "${config:xcbasic3.packer}/exomizer",
                 "args": [
                     "sfx",
                     "8192",
-                    "build/intro.prg",
+                    "build/prologue.prg",
                     "gfx/generic_charset.prg",
                     "-o",
-                    "build/_intro.prg",
+                    "build/_prologue.prg",
                     "-x",
                     "'inc $d020'"
                 ]
@@ -504,17 +504,17 @@
                 "args": [
                     "sfx",
                     "8192",
-                    "build/intro.prg",
+                    "build/prologue.prg",
                     "gfx/generic_charset.prg",
                     "-o",
-                    "build/_intro.prg",
+                    "build/_prologue.prg",
                     "-x",
                     "'inc $d020'"
                 ]
             },
             "dependsOrder": "sequence",
             "dependsOn": [
-                "XCB3 Intro"
+                "XCB3 Prologue"
             ],
             "group": {
                 "kind": "build",
@@ -607,17 +607,17 @@
             }
         },
         {
-            "label": "EXOMIZE Denouement",
+            "label": "EXOMIZE Epilogue",
             "type": "shell",
             "osx": {
                 "command": "${config:xcbasic3.packer}/exomizer",
                 "args": [
                     "sfx",
                     "3072",
-                    "build/denouement.prg",
+                    "build/epilogue.prg",
                     "gfx/generic_charset.prg",
                     "-o",
-                    "build/_denouement.prg",
+                    "build/_epilogue.prg",
                     "-x",
                     "'inc $d020'"
                 ]
@@ -627,17 +627,17 @@
                 "args": [
                     "sfx",
                     "8192",
-                    "build/denouement.prg",
+                    "build/epilogue.prg",
                     "gfx/generic_charset.prg",
                     "-o",
-                    "build/_denouement.prg",
+                    "build/_epilogue.prg",
                     "-x",
                     "'inc $d020'"
                 ]
             },
             "dependsOrder": "sequence",
             "dependsOn": [
-                "XCB3 Denouement"
+                "XCB3 Epilogue"
             ],
             "group": {
                 "kind": "build",
@@ -672,15 +672,15 @@
             }
         },
         {
-            "label": "XCB3 Intro",
+            "label": "XCB3 Prologue",
             "type": "shell",
             "osx": {
                 "command": "${config:xcbasic3.basefolder}/bin/macOS/xcbasic3",
                 "args": [
                     "-b=False",
                     "-o=8192",
-                    "src/intro.bas",
-                    "build/intro.prg"
+                    "src/prologue.bas",
+                    "build/prologue.prg"
                 ]
             },
             "windows": {
@@ -688,8 +688,8 @@
                 "args": [
                     "-b=False",
                     "-o=8192",
-                    "src/intro.bas",
-                    "build/intro.prg"
+                    "src/prologue.bas",
+                    "build/prologue.prg"
                 ]
             },
             "problemMatcher": []
@@ -741,7 +741,7 @@
             "problemMatcher": []
         },
         {
-            "label": "XCB3 Denouement",
+            "label": "XCB3 Epilogue",
             "type": "shell",
             "osx": {
                 "command": "${config:xcbasic3.basefolder}/bin/macOS/xcbasic3",
@@ -749,8 +749,8 @@
                     "-o=3072",
                     "-b=False",
                     "-i=True",
-                    "src/denouement.bas",
-                    "build/denouement.prg"
+                    "src/epilogue.bas",
+                    "build/epilogue.prg"
                 ]
             },
             "windows": {
@@ -758,8 +758,8 @@
                 "args": [
                     "-b=False",
                     "-i=True",
-                    "src/denouement.bas",
-                    "build/denouement.prg"
+                    "src/epilogue.bas",
+                    "build/epilogue.prg"
                 ]
             },
             "problemMatcher": []

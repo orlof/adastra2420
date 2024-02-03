@@ -1,5 +1,13 @@
 OPTION FASTINTERRUPT
 
+GOTO START
+
+ORIGIN $1000
+INCBIN "../sfx/Stylerock.bin"
+
+ORIGIN $2000
+START:
+
 CONST MSGBOX_ADDR = $cb48
 CONST TEXTBOX_LINE = 217
 CONST CURTAIN_LINE = 197
@@ -8,6 +16,8 @@ CONST COLOR_NARRATOR    = $f    'COLOR_LIGHTGRAY
 CONST COLOR_YOU         = $e    'COLOR_LIGHTBLUE
 CONST COLOR_COLONEL     = $8    'COLOR_ORANGE
 CONST COLOR_LIEUTENANT  = $a    'COLOR_LIGHTRED
+CONST COLOR_MULE        = $7    'COLOR_LIGHTGREEN
+CONST COLOR_PRESIDENT   = $3    'COLOR_BLUE
 
 INCLUDE "../libs/lib_common.bas"
 INCLUDE "../libs/lib_gfx.bas"
@@ -25,8 +35,6 @@ DECLARE SUB ChangePage() STATIC
 DIM PETSCII(8) AS BYTE @ _PETSCII
 
 'Setup music
-CALL DecompressZX0_Unsafe(@SID, $1000)
-
 ASM
     lda #0
     jsr $1000
@@ -62,23 +70,72 @@ RASTER INTERRUPT ON
 CALL ShowImage(@Image001_Bitmap, @Image001_Screen, @Image001_Color, $00)
 
 CALL Left(0, COLOR_LIEUTENANT, "lieutenant mariah rockford")
-CALL Center(2, COLOR_LIEUTENANT, "this can't be happening")
-CALL Center(3, COLOR_LIEUTENANT, "we lost contact with the moonwraith")
+CALL Center(2, COLOR_LIEUTENANT, "colonel, he did it!")
 CALL ChangePage()
 
 CALL Left(0, COLOR_LIEUTENANT, "lieutenant mariah rockford")
-CALL Center(2, COLOR_LIEUTENANT, "colonel, what can we do?")
+CALL Center(2, COLOR_LIEUTENANT, "i never doubted him for a second!")
 CALL ChangePage()
 
 CALL ShowImage(@Image002_Bitmap, @Image002_Screen, @Image002_Color, $00)
 
 CALL Left(0, COLOR_COLONEL, "colonel rockford")
-CALL Center(2, COLOR_COLONEL, "there is only one thing left to do")
+CALL Center(2, COLOR_COLONEL, "that lad is truly elite")
 CALL ChangePage()
 
-CALL ShowImage(@Image003_Bitmap, @Image003_Screen, @Image003_Color, $00)
 CALL Left(0, COLOR_COLONEL, "colonel rockford")
-CALL Center(2, COLOR_COLONEL, "god help us all")
+CALL Center(2, COLOR_COLONEL, "i was afraid this would be")
+CALL Center(3, COLOR_COLONEL, "an impossible mission")
+CALL ChangePage()
+
+CALL ShowImage(@Image003_Bitmap, @Image003_Screen, @Image003_Color, $03)
+
+CALL Center(2, COLOR_NARRATOR, "you return to the planet irata")
+CALL Center(3, COLOR_NARRATOR, "for debriefing")
+CALL ChangePage()
+
+CALL ShowImage(@Image004_Bitmap, @Image004_Screen, @Image004_Color, $03)
+
+CALL Center(2, COLOR_NARRATOR, "on your way to the hq you")
+CALL Center(3, COLOR_NARRATOR, "meet an odd cow like robot")
+CALL ChangePage()
+
+CALL Left(0, COLOR_MULE, "mule")
+CALL Center(2, COLOR_MULE, "hello commander jameson")
+CALL ChangePage()
+
+CALL Left(0, COLOR_MULE, "mule")
+CALL Center(2, COLOR_MULE, "i was wondering who the president")
+CALL Center(3, COLOR_MULE, "of foft was here to greet")
+CALL ChangePage()
+
+CALL Center(2, COLOR_NARRATOR, "you leave the cow behind and")
+CALL Center(3, COLOR_NARRATOR, "head for the hq")
+CALL ChangePage()
+
+CALL ShowImage(@Image005_Bitmap, @Image005_Screen, @Image005_Color, $00)
+
+CALL Center(2, COLOR_NARRATOR, "you are escorted to a great hall")
+CALL Center(3, COLOR_NARRATOR, "where president is waiting for you")
+CALL ChangePage()
+
+CALL Left(0, COLOR_PRESIDENT, "president")
+CALL Center(2, COLOR_PRESIDENT, "never in the field of human conflict")
+CALL Center(3, COLOR_PRESIDENT, "was so much owed by so many to so few")
+CALL ChangePage()
+
+CALL Left(0, COLOR_PRESIDENT, "president")
+CALL Center(2, COLOR_PRESIDENT, "i congratulate you commander jameson")
+CALL ChangePage()
+
+CALL Center(2, COLOR_NARRATOR, "after the ceremonies you head to")
+CALL Center(3, COLOR_NARRATOR, "a well deserved holiday")
+CALL ChangePage()
+
+CALL ShowImage(@Image006_Bitmap, @Image006_Screen, @Image006_Color, $03)
+
+CALL DecompressZX0_Unsafe(@Sprite_Font, $c000)
+
 CALL ChangePage()
 
 'BACKGROUND COLOR_BLACK
@@ -89,20 +146,18 @@ ON RASTER $fb GOSUB IRQ2
 RASTER INTERRUPT ON
 
 POKE $d015, 0
-SCREEN 2
 
 'CALL FillBitmap(0)
 'CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 
 'CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
-CALL DecompressZX0_Unsafe(@Sprite_Font, $c000)
 
-SPRITE 0 AT 110,100 SHAPE 19 COLOR COLOR_BLUE XYSIZE 0,0 ON
-SPRITE 1 AT 136,100 SHAPE 7 COLOR COLOR_BLUE XYSIZE 0,0 ON
-SPRITE 2 AT 162,100 SHAPE 4 COLOR COLOR_BLUE XYSIZE 0,0 ON
-SPRITE 3 AT 110,130 SHAPE 4 COLOR COLOR_BLUE XYSIZE 1,1 ON
-SPRITE 4 AT 160,130 SHAPE 13 COLOR COLOR_BLUE XYSIZE 1,1 ON
-SPRITE 5 AT 210,130 SHAPE 3 COLOR COLOR_BLUE XYSIZE 1,1 ON
+SPRITE 0 AT 110,120 SHAPE 19 COLOR COLOR_BLUE XYSIZE 0,0 ON
+SPRITE 1 AT 136,120 SHAPE 7 COLOR COLOR_BLUE XYSIZE 0,0 ON
+SPRITE 2 AT 162,120 SHAPE 4 COLOR COLOR_BLUE XYSIZE 0,0 ON
+SPRITE 3 AT 110,150 SHAPE 4 COLOR COLOR_BLUE XYSIZE 1,1 ON
+SPRITE 4 AT 160,150 SHAPE 13 COLOR COLOR_BLUE XYSIZE 1,1 ON
+SPRITE 5 AT 210,150 SHAPE 3 COLOR COLOR_BLUE XYSIZE 1,1 ON
 
 CALL ChangePage()
 
@@ -250,31 +305,58 @@ DATA AS BYTE $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 DATA AS BYTE $ff, $ff, $ff
 
 'BgColor = $00
+'mariah rockford
 Image001_Bitmap:
-    INCBIN "../gfx/gameover001_bitmap.zx0"
+    INCBIN "../gfx/epilogue001_bitmap.zx0"
 Image001_Screen:
-    INCBIN "../gfx/gameover001_screen.zx0"
+    INCBIN "../gfx/epilogue001_screen.zx0"
 Image001_Color:
-    INCBIN "../gfx/gameover001_color.zx0"
+    INCBIN "../gfx/epilogue001_color.zx0"
 
 'BgColor = $00
+'colonel rockford
 Image002_Bitmap:
-    INCBIN "../gfx/gameover002_bitmap.zx0"
+    INCBIN "../gfx/epilogue002_bitmap.zx0"
 Image002_Screen:
-    INCBIN "../gfx/gameover002_screen.zx0"
+    INCBIN "../gfx/epilogue002_screen.zx0"
 Image002_Color:
-    INCBIN "../gfx/gameover002_color.zx0"
+    INCBIN "../gfx/epilogue002_color.zx0"
 
 'BgColor = $00
+'planet irata
 Image003_Bitmap:
-    INCBIN "../gfx/gameover003_bitmap.zx0"
+    INCBIN "../gfx/prologue003_bitmap.zx0"
 Image003_Screen:
-    INCBIN "../gfx/gameover003_screen.zx0"
+    INCBIN "../gfx/prologue003_screen.zx0"
 Image003_Color:
-    INCBIN "../gfx/gameover003_color.zx0"
+    INCBIN "../gfx/prologue003_color.zx0"
 
-SID:
-    INCBIN "../sfx/Pucker_Up.zx0"
+'BgColor = $00
+'mule
+Image004_Bitmap:
+    INCBIN "../gfx/epilogue004_bitmap.zx0"
+Image004_Screen:
+    INCBIN "../gfx/epilogue004_screen.zx0"
+Image004_Color:
+    INCBIN "../gfx/epilogue004_color.zx0"
+
+'BgColor = $00
+'president
+Image005_Bitmap:
+    INCBIN "../gfx/epilogue005_bitmap.zx0"
+Image005_Screen:
+    INCBIN "../gfx/epilogue005_screen.zx0"
+Image005_Color:
+    INCBIN "../gfx/epilogue005_color.zx0"
+
+'BgColor = $00
+'holiday
+Image006_Bitmap:
+    INCBIN "../gfx/epilogue006_bitmap.zx0"
+Image006_Screen:
+    INCBIN "../gfx/epilogue006_screen.zx0"
+Image006_Color:
+    INCBIN "../gfx/epilogue006_color.zx0"
 
 Sprite_Font:
     INCBIN "../gfx/sprite_font.zx0"

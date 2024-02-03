@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-FILENAME = "gfx/title002.kla"
+FILENAME = "gfx/menu001.kla"
 
 
 def write_data(part, data):
@@ -28,11 +28,11 @@ def main():
         data = f.read()
 
     bitmap_data = bytearray(data[2:8002])
-    #bitmap_data[8000-4*320:] = [0] * 4*320
+    bitmap_data[8000-4*320:] = [255] * 4*320
     screen_data = bytearray(data[8002:9002])
-    #screen_data[1000-4*40:] = [32] * 4*40
+    screen_data[1000-4*40:] = [0] * 4*40
     color_data = bytearray(data[9002:10002])
-    #color_data[1000-4*40:] = [0] * 4*40
+    color_data[1000-4*40:] = [0] * 4*40
 
     bgcolor_data = data[10002]
 

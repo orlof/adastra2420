@@ -7,7 +7,7 @@ You must have following prerequisites in path:
 This will show you the compilation targets.
  - "Run Warzone" builds the disc image and runs it
  - "Build warzone.d64" builds the disc image
- - "Run Intro" runs intro
+ - "Run Intro" runs prologue
  - "Run Battle" runs battle state
 
 

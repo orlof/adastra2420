@@ -504,7 +504,7 @@ IF (LocalMapVergeStationId = 5) AND (ArtifactLocation(1) = LOC_PLAYER) THEN
     (ArtifactLocation(3) = LOC_PLAYER)) THEN
         CALL Text(12, 5, TRUE, "epilogue")
         CALL GraphicsModeValid()
-        IF NOT Debug THEN CALL LoadProgram("denouement", CWORD(3072))
+        IF NOT Debug THEN CALL LoadProgram("epilogue", CWORD(3072))
         END
     END IF
 END IF
