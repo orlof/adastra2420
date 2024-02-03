@@ -545,14 +545,18 @@ SUB CreateDiplomacyPanel() STATIC
     CALL DiplomacyPanel.Center(1, "welcome to verge station " + STR$(LocalMapVergeStationId), COLOR_BLUE, FALSE)
 
     IF ArtifactLocation(LocalMapVergeStationId) = LOC_SOURCE THEN
-        CALL DiplomacyPanel.Center(3, "we can sell you", COLOR_LIGHTGRAY, FALSE)
-        CALL DiplomacyPanel.Center(4, ArtifactTitle(LocalMapVergeStationId), COLOR_YELLOW, FALSE)
-        CALL DiplomacyPanel.Center(5, "in exchange we want", COLOR_LIGHTGRAY, FALSE)
-        CALL DiplomacyPanel.Center(6, ArtifactTitle(LocalMapVergeStationId+4), COLOR_YELLOW, FALSE)
+        IF (GameLevel > 0) OR (LocalMapVergeStationId = 5) THEN
+            CALL DiplomacyPanel.Center(3, "we can sell you", COLOR_LIGHTGRAY, FALSE)
+            CALL DiplomacyPanel.Center(4, ArtifactTitle(LocalMapVergeStationId), COLOR_YELLOW, FALSE)
+            CALL DiplomacyPanel.Center(5, "in exchange we want", COLOR_LIGHTGRAY, FALSE)
+            CALL DiplomacyPanel.Center(6, ArtifactTitle(LocalMapVergeStationId+4), COLOR_YELLOW, FALSE)
 
-        CALL DiplomacyPanel.Center(8, "i'll be back", COLOR_LIGHTGRAY, TRUE)
-        IF ArtifactLocation(LocalMapVergeStationId+4) = LOC_PLAYER THEN
-            CALL DiplomacyPanel.Center(9, "it's a deal", COLOR_LIGHTGRAY, TRUE)
+            CALL DiplomacyPanel.Center(8, "i'll be back", COLOR_LIGHTGRAY, TRUE)
+            IF ArtifactLocation(LocalMapVergeStationId+4) = LOC_PLAYER THEN
+                CALL DiplomacyPanel.Center(9, "it's a deal", COLOR_LIGHTGRAY, TRUE)
+            END IF
+        ELSE
+            CALL DiplomacyPanel.Center(8, "godspeed commander", COLOR_LIGHTGRAY, TRUE)
         END IF
     ELSE
         CALL DiplomacyPanel.Center(8, "godspeed commander", COLOR_LIGHTGRAY, TRUE)
@@ -561,7 +565,7 @@ SUB CreateDiplomacyPanel() STATIC
     CALL DiplomacyPanel.Center(11, "mission status", COLOR_BLUE, FALSE)
 
     FOR ZP_B0 = 0 TO 8
-        IF (ZP_B0 < 4) OR (ArtifactLocation(ZP_B0) > LOC_SOURCE) THEN
+        IF (ZP_B0 = 1) OR ((ZP_B0 < 4) AND (GameLevel > 0)) OR (ArtifactLocation(ZP_B0) > LOC_SOURCE) THEN
             CALL DiplomacyPanel.Left(1, 13+ZP_B0, ArtifactTitle(ZP_B0), COLOR_LIGHTGRAY, TRUE)
             SELECT CASE ArtifactLocation(ZP_B0)
                 CASE LOC_SOURCE
