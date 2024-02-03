@@ -151,12 +151,11 @@ Metal is mostly needed in Shipyard (but it can also be sold for Credits). In Shi
 <tr><td>9</td><td>6 / 7</td><td>10</td><td>180</td></tr>
 </table>
 
-In the bottom part of the Verge Station interface you can Negotiate the mission objectives, Launch back to space, and load or save the game. NOTE that when you save the game - previous save is overwritten. You can only have one game at a time, unless you change the disc.
+In the bottom part of the Verge Station interface you can Negotiate the mission objectives, Launch back to space, and load or save the game.
 
 ## Playing Tips
 
-In the first phase of the game you should stay in close proximity to Verge Station 5 and collect enough Metals to upgrade your ship.
-Verge Station 5 is surrounded by low energy asteroids and it makes it a good place for mining operations.
+In the first phase of the game you should stay in close proximity to Verge Station 5 and collect enough Metals to upgrade your ship. Verge Station 5 is surrounded by low energy asteroids and it makes it a good place for mining operations.
 
 Star Ranger field manual recommends following upgrades:
 <table>
@@ -194,6 +193,45 @@ This table provides the location of each artifact as stated in your intel:
 <tr><td>7</td><td>Quantum Colloid</td><td>500 Gold</td></tr>
 </table>
 
+# Thanks
+
+ - Fekete Csaba for XC=Basic3
+ - Roy Batty for music
+ - Krill for Loader
+ - Michel de Bree for Retropixels
+
+# Release Notes
+
+1.0 changes since Beta
+ - Game balance tuning
+   - cheaper armor, cargo space and engine improvements
+   - weaker gravity
+ - Added sector map and asteroid kinetic energy monitor to dashboard
+ - Title screen with smaller memory footprint
+ - README game tips added
+ - Multiple bug fixes
+
+1.01 fix for gold cargo bug
+
+2.00
+ - New ship improvement - gyroscopes - upgrading those babies can make your ship spin like a wheel (I am still a bit hesitant about this change, as it diminishes the turret's value - but on the other hand I haven't heard anyone even trying the two player co-op)
+ - Both weapons (forward facing railgun and rotating turret) are now part of the initial ship configuration
+ - Possibility to upgrade weapon damage. Initial weapon damage is now weaker than originally, but in the high end the damage is about 2x more powerful than before
+
+2.01
+ - Added Verge stations to sector map
+
+2.02
+ - Color coding for dashboard
+
+3.0 Major release
+ - Instead of single file, game now occupies a floppy disk
+ - Story elements added to beginning and end
+ - New dashboard
+ - New station interface
+ - New game mode "easy"
+ - Usability improvements
+
 # Technical Information
 
 Ad Astra is my project to learn games programming for C64. The code is written with XC-Basic 3 (https://xc-basic.net/) and time/memory critical parts are transformed into assembly.
@@ -230,45 +268,6 @@ MAP data format:
             10  Verge station
             11  missile silo
 </pre>
-
-# Release Notes
-
-1.0 changes since Beta
- - Game balance tuning
-   - cheaper armor, cargo space and engine improvements
-   - weaker gravity
- - Added sector map and asteroid kinetic energy monitor to dashboard
- - Title screen with smaller memory footprint
- - README game tips added
- - Multiple bug fixes
-
-1.01 fix for gold cargo bug
-
-2.00
- - New ship improvement - gyroscopes - upgrading those babies can make your ship spin like a wheel (I am still a bit hesitant about this change, as it diminishes the turret's value - but on the other hand I haven't heard anyone even trying the two player co-op)
- - Both weapons (forward facing railgun and rotating turret) are now part of the initial ship configuration
- - Possibility to upgrade weapon damage. Initial weapon damage is now weaker than originally, but in the high end the damage is about 2x more powerful than before
-
-2.01
- - Added Verge stations to sector map
-
-2.02
- - Color coding for dashboard
-
-3.0 Major release
- - Instead of single file, game now occupies a floppy disk
- - Story elements added to beginning and end
- - New dashboard
- - New station interface
- - New game mode "easy"
- - Usability improvements
-
-# Thanks
-
- - Fekete Csaba for XC=Basic3
- - Roy Batty for music
- - Krill for Loader
- - Michel de Bree for Retropixels
 
 ZERO-PAGE LAYOUT (NOT COMPLETE)
 
