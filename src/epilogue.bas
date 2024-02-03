@@ -102,11 +102,12 @@ CALL ChangePage()
 
 CALL Left(0, COLOR_MULE, "mule")
 CALL Center(2, COLOR_MULE, "hello commander jameson")
+CALL Center(3, COLOR_MULE, "you look dashingly heroic today")
 CALL ChangePage()
 
 CALL Left(0, COLOR_MULE, "mule")
-CALL Center(2, COLOR_MULE, "i was wondering who the president")
-CALL Center(3, COLOR_MULE, "of foft was here to greet")
+CALL Center(2, COLOR_MULE, "i was preparing for an exodus but")
+CALL Center(3, COLOR_MULE, "it seems to be cancelled now")
 CALL ChangePage()
 
 CALL Center(2, COLOR_NARRATOR, "you leave the cow behind and")
