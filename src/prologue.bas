@@ -41,17 +41,17 @@ BACKGROUND COLOR_BLACK
 CALL SetVideoBank(3)
 CALL SetBitmapMemory(1)
 CALL SetScreenMemory(2)
+SCREEN 2
 MEMSET $c800, 1000, 32
 MEMSET $d800, 1000, 0
 MEMSET $e000, 8000, 0
-MEMSET $cbf8, 8, 254
-MEMSET $8bf8, 8, 254
 
-MEMCPY @CoverSprite, $bf80, 64
 MEMCPY @CoverSprite, $ff80, 64
 FOR T AS BYTE = 0 TO 6
-    SPRITE T AT 24+CWORD(48)*T,CURTAIN_LINE COLOR COLOR_BLACK XYSIZE 0,1 HIRES ON
+    SPRITE T AT 24+CWORD(48)*T,CURTAIN_LINE SHAPE 254 COLOR COLOR_BLACK XYSIZE 1,0 HIRES ON
 NEXT T
+
+POKE $d01b,0
 
 SYSTEM INTERRUPT OFF
 ON RASTER TEXTBOX_LINE GOSUB IRQ
@@ -183,10 +183,9 @@ CALL Center(2, COLOR_YOU, "consider it done")
 CALL ChangePage()
 
 RASTER INTERRUPT OFF
-
 POKE $d015, 0
+CALL SidStop()
 
-'CALL SetBitmapMemory(1)
 CALL FillBitmap(0)
 CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 'SCREEN 2
@@ -196,8 +195,6 @@ CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
 CALL Text(7, 5, 1, 0, TRUE, "verge station", CHAR_MEMORY)
 CALL Text(11, 10, 1, 0, FALSE, "network connecting", CHAR_MEMORY)
 
-CALL SidStop()
-
 GameState = GAMESTATE_STARTING
 
 IF NOT Debug THEN CALL LoadProgram("station", CWORD(8192))
@@ -206,10 +203,16 @@ END
 
 IRQ:
     ASM
+        lda $d011
+        and #%00010000
+        beq IRQ_Exit
+
         lda $d021
         pha
         ;-----------------
-        lda #%00100100  ;screen_memory=2, character_memory=2
+        lda $d018
+        and #%11110000
+        ora #%00000100  ;character memory=2
         sta $d018
 
         lda #%00011011
@@ -224,7 +227,9 @@ IRQ:
         bit $d011
         bpl *-3
         ;-----------------
-        lda #%00101000  ;screen_memory=2, bitmap_memory=1
+        lda $d018
+        and #%11110000
+        ora #%00001000  ;bitmap memory=1
         sta $d018
 
         lda #%00111011
@@ -236,6 +241,7 @@ IRQ:
         pla
         sta $d021
 
+IRQ_Exit
         jsr $1003
     END ASM
 RETURN
@@ -292,20 +298,21 @@ SUB Right(LineNr AS BYTE, ColorNr AS BYTE, Msg AS STRING*40) STATIC
 END SUB
 
 SUB ShowImage(BitmapAddr AS WORD, ScreenAddr AS WORD, ColorAddr AS WORD, BgColor AS BYTE) STATIC
+    CALL WaitRasterLine256()
+    CALL ScreenOff()
+
     CALL DecompressZX0_Unsafe(BitmapAddr, $a000)
-    CALL DecompressZX0_Unsafe(ScreenAddr, $8800)
-    CALL DecompressZX0_Unsafe(ColorAddr, $9800)
+    MEMCPY $a000, $e000, 8000
+    CALL DecompressZX0_Unsafe(ColorAddr, $c800)
+    MEMCPY $c800, $d800, 1000
+    CALL DecompressZX0_Unsafe(ScreenAddr, $c800)
 
     CALL WaitRasterLine256()
-    CALL SetVideoBank(2)
+
     BACKGROUND BgColor
 
-    MEMCPY $9800, $d800, 1000
-    MEMCPY $a000, $e000, 8000
-    MEMCPY $8800, $c800, 1000
-
     CALL WaitRasterLine256()
-    CALL SetVideoBank(3)
+    CALL ScreenOn()
 END SUB
 
 SUB ChangePage() STATIC

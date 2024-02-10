@@ -15,12 +15,14 @@ CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 CALL FillBitmap(0)
 SCREEN 2
 
-CALL Text(12, 6, 1, 0, TRUE,  "ad astra", CHAR_MEMORY)
-CALL Text(17, 9, 1, 0, FALSE, "mmxxiv", CHAR_MEMORY)
-CALL Text(14, 11, 1, 0, FALSE, "code    orlof", CHAR_MEMORY)
-CALL Text(10, 13, 1, 0, FALSE, "loader        krill", CHAR_MEMORY)
-CALL Text(9, 15, 1, 0, FALSE, "music            roy batty", CHAR_MEMORY)
-CALL Text(3, 17, 1, 0, FALSE, "xc=basic3                fekete csaba", CHAR_MEMORY)
+CALL Text(11, 6, 1, 0, TRUE,  "ad astra", CHAR_MEMORY)
+CALL Text(16, 9, 1, 0, FALSE, "mmxxiv", CHAR_MEMORY)
+CALL Text(13, 11, 1, 0, FALSE, "code    orlof", CHAR_MEMORY)
+CALL Text(9, 13, 1, 0, FALSE, "loader        krill", CHAR_MEMORY)
+CALL Text(8, 15, 1, 0, FALSE, "music            roy batty", CHAR_MEMORY)
+CALL Text(2, 17, 1, 0, FALSE, "xc=basic3                fekete csaba", CHAR_MEMORY)
+
+CALL Text(3, 20, 1, 0, FALSE, "play testing by timppa and spock", CHAR_MEMORY)
 
 CALL InstallDriveCode()
 CALL InstallLoaderCode()
@@ -43,26 +45,25 @@ BOOTSTRAP_START:
         bcs * + 5
         jmp ({_ProgramAddress})
 _load_program_error
+        sta $fb
         jmp _load_program_error
     END ASM
 BOOTSTRAP_END:
 END SUB
 
 SUB InstallDriveCode() STATIC
-    DIM ErrorCode AS BYTE
+    DIM ErrorCode AS BYTE @$fb
     ErrorCode = 0
 
     ASM
         jsr $4000
-        bcc no_error
-        lda $ff
-        sta {ErrorCode}
-no_error
+        bcc *+4
+            sta {ErrorCode}
     END ASM
 
     IF ErrorCode THEN
         CALL ResetScreen()
-        PRINT "error"
+        PRINT "drive error"
         END
     END IF
 END SUB

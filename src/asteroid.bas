@@ -282,7 +282,12 @@ spawn_asteroid_compare_ok
         sta {AsteroidYHi},x
     END ASM
 
-    ZP_B1 = RNDB() AND %00001111
+    ZP_B1 = RNDB()
+    IF GameLevel THEN
+        ZP_B1 = ZP_B1 AND %00001111
+    ELSE
+        ZP_B1 = ZP_B1 AND %00000111
+    END IF
     SELECT CASE ZP_B1
         CASE 0
             ZP_B1 = COLOR_YELLOW

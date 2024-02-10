@@ -1,7 +1,7 @@
 import pygame
 import os
 
-FILENAME = "/Users/teppo/repo/aileon/gfx/title_image.kla"
+FILENAME = "/Users/teppo/repo/aileon/gfx/menu001.kla"
 
 COLOR_BLACK = 0
 COLOR_WHITE = 1

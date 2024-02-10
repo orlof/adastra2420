@@ -7,7 +7,7 @@
             "label": "Build All",
             "dependsOrder": "sequence",
             "dependsOn": [
-                "Build adastra.d64",
+                "Build adastra_AD.d64",
                 "EXOMIZE Prologue",
                 "EXOMIZE Space",
                 "EXOMIZE Station",
@@ -24,23 +24,23 @@
             }
         },
         {
-            "label": "Run adastra.d64",
+            "label": "Run adastra_AD.d64",
             "type": "shell",
             "osx": {
                 "command": "open",
                 "args": [
-                    "build/adastra.d64"
+                    "build/adastra_AD.d64"
                 ]
             },
             "windows": {
                 "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
                 "args": [
-                    "build/adastra.d64"
+                    "build/adastra_AD.d64"
                 ]
             },
             "dependsOrder": "sequence",
             "dependsOn": [
-                "Build adastra.d64"
+                "Build adastra_AD.d64"
             ],
             "group": {
                 "kind": "build",
@@ -213,7 +213,7 @@
             }
         },
         {
-            "label": "Build adastra.d64",
+            "label": "Build adastra_AD.d64",
             "type": "shell",
             "osx": {
                 "command": "${config:xcbasic3.vice}/bin/c1541",
@@ -221,9 +221,9 @@
                     "-format",
                     "adastra,of",
                     "d64",
-                    "build/adastra.d64",
+                    "build/adastra_AD.d64",
                     "-attach",
-                    "build/adastra.d64",
+                    "build/adastra_AD.d64",
                     "-write",
                     "build/loader.prg",
                     "loader",
@@ -265,9 +265,9 @@
                     "-format",
                     "adastra,of",
                     "d64",
-                    "build/adastra.d64",
+                    "build/adastra_AD.d64",
                     "-attach",
-                    "build/adastra.d64",
+                    "build/adastra_AD.d64",
                     "-write",
                     "build/loader.prg",
                     "loader",
@@ -331,7 +331,7 @@
                 "command": "${config:xcbasic3.vice}/bin/c1541",
                 "args": [
                     "-attach",
-                    "build/adastra.d64",
+                    "build/adastra_AD.d64",
                     "-read",
                     "autosave",
                     "data/savefile.prg"
@@ -341,7 +341,7 @@
                 "command": "${config:xcbasic3.vice}/bin/c1541.exe",
                 "args": [
                     "-attach",
-                    "build/adastra.d64",
+                    "build/adastra_AD.d64",
                     "-read",
                     "autosave",
                     "data/savefile.prg"

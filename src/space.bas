@@ -237,15 +237,17 @@ DO
             IF ComponentValue(COMP_OXYGEN) = 0 THEN
                 GameState = GAMESTATE_OUT_OF_OXYGEN
             END IF
-            ComponentValue(COMP_OXYGEN) = ComponentValue(COMP_OXYGEN) - 1
-            SELECT CASE ComponentValue(COMP_OXYGEN)
-                CASE 0 TO 24
-                    CALL UpdateDashboard(ComponentValue(COMP_OXYGEN), 1, DASHBOARD_COLOR_CRITICAL)
-                CASE 25 TO 49
-                    CALL UpdateDashboard(ComponentValue(COMP_OXYGEN), 1, DASHBOARD_COLOR_WARN)
-                CASE 50 TO 1000
-                    CALL UpdateDashboard(ComponentValue(COMP_OXYGEN), 1, DASHBOARD_COLOR_NOMINAL)
-            END SELECT
+            IF GameLevel OR (GameTime AND %01000000) THEN
+                ComponentValue(COMP_OXYGEN) = ComponentValue(COMP_OXYGEN) - 1
+                SELECT CASE ComponentValue(COMP_OXYGEN)
+                    CASE 0 TO 24
+                        CALL UpdateDashboard(ComponentValue(COMP_OXYGEN), 1, DASHBOARD_COLOR_CRITICAL)
+                    CASE 25 TO 49
+                        CALL UpdateDashboard(ComponentValue(COMP_OXYGEN), 1, DASHBOARD_COLOR_WARN)
+                    CASE 50 TO 1000
+                        CALL UpdateDashboard(ComponentValue(COMP_OXYGEN), 1, DASHBOARD_COLOR_NOMINAL)
+                END SELECT
+            END IF
         CASE 12
             CALL LocalMap_UpdateRadar()
         CASE 16

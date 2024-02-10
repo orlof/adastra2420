@@ -36,6 +36,8 @@ DIM SubSystemTitle(2) AS STRING * 6 @_SubSystemTitle
 
 DIM ComponentInitialCapacity(5) AS WORD @_ComponentInitialCapacity
 DIM ComponentInitialValue(5) AS WORD @_ComponentInitialValue
+DIM ComponentInitialCapacityEasy(5) AS WORD @_ComponentInitialCapacityEasy
+DIM ComponentInitialValueEasy(5) AS WORD @_ComponentInitialValueEasy
 DIM ComponentPrice(5) AS BYTE @_ComponentPrice
 DIM ComponentUpgradeCost(5) AS BYTE @_ComponentUpgradeCost
 DIM ComponentMaxCapacity(5) AS WORD @_ComponentMaxCapacity
@@ -91,7 +93,7 @@ CALL DecompressZX0_Unsafe(@KRILL_SAVE, $bb00)
 CALL SetupGraphics()
 
 IF Debug OR (GameState = GAMESTATE_STARTING) THEN
-    IF Debug THEN GameLevel = 1
+    IF Debug THEN GameLevel = GAMELEVEL_NORMAL
     CALL MissionBriefingHandler()
     GameState = GAMESTATE_STATION
     TimeLeft = 1000
@@ -105,27 +107,46 @@ IF Debug OR (GameState = GAMESTATE_STARTING) THEN
     PlayerSectorMapRestore = 0
 
     MEMCPY @_GameMap, @GameMap, 256
-    FOR ZP_B0 = 0 TO 11
-        ArtifactLocation(ZP_B0) = LOC_SOURCE
-        'ArtifactLocation(ZP_B0) = LOC_PLAYER
-    NEXT
-    FOR ZP_B0 = 0 TO 4
-        ComponentCapacity(ZP_B0) = ComponentInitialCapacity(ZP_B0)
-        ComponentValue(ZP_B0) = ComponentInitialValue(ZP_B0)
-    NEXT
-    PlayerSubSystem(SUBSYSTEM_WEAPON) = 0
-    PlayerSubSystem(SUBSYSTEM_ENGINE) = 0
-    PlayerSubSystem(SUBSYSTEM_GYRO)   = 0
+    ZP_B1 = 20
+    IF GameLevel = 0 THEN
+        ZP_B1 = 10
+        FOR ZP_B0 = 0 TO 255
+            IF (GameMap(ZP_B0) AND %00011000) > 0 THEN
+                GameMap(ZP_B0) = (GameMap(ZP_B0) AND %11100111) OR %00011000
+            END IF
+        NEXT
+    END IF
 
-    ' ADD VERGE STATION 2
     CALL Map_AddRandom(%01000110)
-    FOR ZP_B1 = 0 TO 20
+    FOR ZP_B2 = 0 TO ZP_B1
         ' ADD STAR
         CALL Map_AddRandom(%00000101)
         ' ADD SILO
         CALL Map_AddRandom(%00000111)
     NEXT
-    'LocalMap(135) = %00000101
+
+    FOR ZP_B0 = 0 TO 11
+        ArtifactLocation(ZP_B0) = LOC_SOURCE
+        'ArtifactLocation(ZP_B0) = LOC_PLAYER
+    NEXT
+
+    IF GameLevel = GAMELEVEL_EASY THEN
+        FOR ZP_B0 = 0 TO 4
+            ComponentCapacity(ZP_B0) = ComponentInitialCapacityEasy(ZP_B0)
+            ComponentValue(ZP_B0) = ComponentInitialValueEasy(ZP_B0)
+        NEXT
+        PlayerSubSystem(SUBSYSTEM_WEAPON) = 9
+        PlayerSubSystem(SUBSYSTEM_ENGINE) = 5
+        PlayerSubSystem(SUBSYSTEM_GYRO)   = 8
+    ELSE
+        FOR ZP_B0 = 0 TO 4
+            ComponentCapacity(ZP_B0) = ComponentInitialCapacity(ZP_B0)
+            ComponentValue(ZP_B0) = ComponentInitialValue(ZP_B0)
+        NEXT
+        PlayerSubSystem(SUBSYSTEM_WEAPON) = 0
+        PlayerSubSystem(SUBSYSTEM_ENGINE) = 0
+        PlayerSubSystem(SUBSYSTEM_GYRO)   = 0
+    END IF
 END IF
 
 CALL DrawDesktop($30+LocalMapVergeStationId)
@@ -763,6 +784,12 @@ DATA AS WORD 150, 150, 150, 150, 50
 
 _ComponentInitialValue:
 DATA AS WORD 0, 10, 150, 150, 50
+
+_ComponentInitialCapacityEasy:
+DATA AS WORD 300, 300, 300, 300, 150
+
+_ComponentInitialValueEasy:
+DATA AS WORD 0, 20, 300, 300, 150
 
 _ComponentPrice:
 DATA AS BYTE  60, 40, 10, 15, 1

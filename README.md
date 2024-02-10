@@ -92,9 +92,12 @@ Your ship's status is visible in the right side of the screen.
 </table>
 
 Map is located in the middle of the dashboard and shows your ship's position in Rimward Reach sector.
+Map shows the whole sector and does not scroll. Small "+" signs on the map are Verge Stations and
+your own ship is shown with a single dot that moves on the map.
 
-Radar is placed in the lowest part of the dashboard. It will show large space objects in your local space.
+Radar is placed in the lowest part of the dashboard. It will show large space objects in your local space. Radar is divided into 5x5 matrix and your own ship is always in the center of the radar. Each cell of the radar matrix represent an area of space that same size as the shown in the play screen. Thus an object located in the top left corner of the radar is two screen widths to the left and about two screen heights to up.
 
+Color coding in radar:
 <table>
 <tr>
   <td>Blue</td><td>Verge Station - can be docked for trade and diplomacy. Verge Station will activate Asteroid Protection Field when your ship reaches close proximity. To initiate docking sequence your ship's velocity must be below 3 and your ship must be in touch with the station.</td>
@@ -118,10 +121,10 @@ Note: Your mining computer will mark gold and metal asteroids with small triangl
   <td>Gray (light/medium/dark)</td><td>Stone asteroid, collision damage reduces ship armor and may destroy your ship</td>
 </tr>
 <tr>
-  <td>Yellow</td><td>Gold asteroid can be mined by touching it</td>
+  <td>Yellow</td><td>Gold asteroid can be mined by touching it. Gold asteroid is also marked with small up-pointing triangle</td>
 </tr>
 <tr>
-  <td>Green</td><td>Metal asteroid can be mined by touching it</td>
+  <td>Green</td><td>Metal asteroid can be mined by touching it. Metal steroid is also marked with small down-pointing triangle</td>
 </tr>
 </table>
 
