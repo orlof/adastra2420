@@ -170,10 +170,11 @@ NewGame:
 CALL RectMC(32, 40, 127, 159, 1, 0)
 
 CALL TextMC(10, 8, 2, 0, TRUE, "difficulty", CHAR_MEMORY)
-CALL TextMC(16, 12, 1, 0, TRUE, "easy", CHAR_MEMORY)
-CALL TextMC(14, 14, 1, 0, TRUE, "normal", CHAR_MEMORY)
+CALL TextMC(14, 12, 1, 0, TRUE, "rookie", CHAR_MEMORY)
+CALL TextMC(13, 14, 1, 0, TRUE, "veteran", CHAR_MEMORY)
+CALL TextMC(15, 16, 1, 0, TRUE, "elite", CHAR_MEMORY)
 
-Selected = ChooseMenu(BAR2_TOP, 2, TRUE)
+Selected = ChooseMenu(BAR2_TOP, 3, TRUE)
 
 IF Selected = -1 THEN GOTO MainMenu
 

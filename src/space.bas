@@ -237,7 +237,7 @@ DO
             IF ComponentValue(COMP_OXYGEN) = 0 THEN
                 GameState = GAMESTATE_OUT_OF_OXYGEN
             END IF
-            IF GameLevel OR (GameTime AND %01000000) THEN
+            IF (GameLevel = GAMELEVEL_HARD) OR (GameTime AND %01000000) THEN
                 ComponentValue(COMP_OXYGEN) = ComponentValue(COMP_OXYGEN) - 1
                 SELECT CASE ComponentValue(COMP_OXYGEN)
                     CASE 0 TO 24
@@ -500,10 +500,10 @@ IF (GameState AND GAMESTATE_GAMEOVER) THEN
 END IF
 
 IF (LocalMapVergeStationId = 5) AND (ArtifactLocation(1) = LOC_PLAYER) THEN
-    IF (GameLevel = GAMELEVEL_EASY) OR ((GameLevel = GAMELEVEL_NORMAL) AND _
-    (ArtifactLocation(0) = LOC_PLAYER) AND _
+    IF (GameLevel = GAMELEVEL_EASY) OR ((ArtifactLocation(0) = LOC_PLAYER) AND _
     (ArtifactLocation(2) = LOC_PLAYER) AND _
     (ArtifactLocation(3) = LOC_PLAYER)) THEN
+        GameState = GAMESTATE_COMPLETED
         CALL Text(12, 5, TRUE, "epilogue")
         CALL GraphicsModeValid()
         IF NOT Debug THEN CALL LoadProgram("epilogue", CWORD(3072))
@@ -515,6 +515,7 @@ CALL Text(7, 5, TRUE, "verge station")
 CALL Text(11, 10, FALSE, "network connecting")
 
 CALL GraphicsModeValid()
+GameState = GAMESTATE_STATION
 IF NOT Debug THEN CALL LoadProgram("station", CWORD(8192))
 END
 

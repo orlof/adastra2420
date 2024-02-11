@@ -9,6 +9,7 @@ generic[1] = 0xd0
 
 for x in range(0, 8*64):
     generic[x+2] = generic2[x+2]
+    generic[x+2+128*8] = generic2[x+2] ^ 0xff
 
 #with open("gfx/army_moves.64c", "rb") as f:
 #    army = bytearray(f.read())

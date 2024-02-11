@@ -110,14 +110,16 @@ IF Debug OR (GameState = GAMESTATE_STARTING) THEN
 
     MEMCPY @_GameMap, @GameMap, 256
     ZP_B1 = 20
-    IF GameLevel = GAMELEVEL_EASY THEN
+    IF GameLevel < GAMELEVEL_HARD THEN
         ZP_B1 = 10
         ' CONVERT FAST ASTEROIDS TO SLOW
-        FOR ZP_B0 = 0 TO 255
-            IF (GameMap(ZP_B0) AND %00011000) > 0 THEN
-                GameMap(ZP_B0) = (GameMap(ZP_B0) AND %11100111) OR %00011000
-            END IF
-        NEXT
+        IF GameLevel = GAMELEVEL_EASY THEN
+            FOR ZP_B0 = 0 TO 255
+                IF (GameMap(ZP_B0) AND %00011000) > 0 THEN
+                    GameMap(ZP_B0) = (GameMap(ZP_B0) AND %11100111) OR %00011000
+                END IF
+            NEXT
+        END IF
     END IF
 
     CALL Map_AddRandom(%01000110)
@@ -133,7 +135,7 @@ IF Debug OR (GameState = GAMESTATE_STARTING) THEN
         'ArtifactLocation(ZP_B0) = LOC_PLAYER
     NEXT
 
-    IF GameLevel = GAMELEVEL_EASY THEN
+    IF GameLevel < GAMELEVEL_HARD THEN
         FOR ZP_B0 = 0 TO 4
             ComponentCapacity(ZP_B0) = ComponentInitialCapacityEasy(ZP_B0)
             ComponentValue(ZP_B0) = ComponentInitialValueEasy(ZP_B0)
@@ -602,7 +604,7 @@ SUB CreateDiplomacyPanel() STATIC
     CALL DiplomacyPanel.Center(11, "mission status", COLOR_BLUE, FALSE)
 
     FOR ZP_B0 = 0 TO 8
-        IF (ZP_B0 = 1) OR ((ZP_B0 < 4) AND (GameLevel > 0)) OR (ArtifactLocation(ZP_B0) > LOC_SOURCE) THEN
+        IF (ZP_B0 = 1) OR ((ZP_B0 < 4) AND GameLevel) OR (ArtifactLocation(ZP_B0) > LOC_SOURCE) THEN
             CALL DiplomacyPanel.Left(1, 13+ZP_B0, ArtifactTitle(ZP_B0), COLOR_LIGHTGRAY, TRUE)
             SELECT CASE ArtifactLocation(ZP_B0)
                 CASE LOC_SOURCE
@@ -711,7 +713,7 @@ SUB MissionBriefingHandler() STATIC
 
     CALL Panel.Left(1, 1, "acquire", COLOR_LIGHTGRAY, FALSE)
     CALL Panel.Left(6, 4, ArtifactTitle(1), COLOR_LIGHTGRAY, FALSE)
-    IF GameLevel > 0 THEN
+    IF GameLevel THEN
         CALL Panel.Left(6, 3, ArtifactTitle(0), COLOR_LIGHTGRAY, FALSE)
         CALL Panel.Left(6, 5, ArtifactTitle(2), COLOR_LIGHTGRAY, FALSE)
         CALL Panel.Left(6, 6, ArtifactTitle(3), COLOR_LIGHTGRAY, FALSE)
@@ -719,7 +721,7 @@ SUB MissionBriefingHandler() STATIC
     CALL Panel.Left(1, 8, "build a singularity diffuser", COLOR_LIGHTGRAY, FALSE)
 
     CALL Panel.Left(1, 10, "intelligence reports that", COLOR_LIGHTGRAY, FALSE)
-    IF GameLevel > 0 THEN
+    IF GameLevel THEN
         CALL Panel.Left(1, 11, "components are available in nearby", COLOR_LIGHTGRAY, FALSE)
         CALL Panel.Left(1, 12, "space stations", COLOR_LIGHTGRAY, FALSE)
 
@@ -808,7 +810,7 @@ _ComponentInitialValueEasy:
 DATA AS WORD 0, 20, 300, 300, 150
 
 _ComponentPrice:
-DATA AS BYTE  60, 40, 10, 15, 1
+DATA AS BYTE  60, 40, 10, 14, 1
 
 _ComponentUpgradeCost:
 DATA AS BYTE 1, 1, 1, 1, 3

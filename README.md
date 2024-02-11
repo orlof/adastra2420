@@ -448,3 +448,10 @@ MEMORY LAYOUT (NOT COMPLETE)
 | 0930 | 0931 | PlayerSectorMapX  | W     |
 | 0932 | 0932 | PlayerSectorMapY  | B     |
 | 0933 | 0933 | PlayerSectorMapRestore | B     |
+
+TODO
+- increase bullet speed
+- replace timer with time
+- add score
+- turboboost at gunners joystick
+- map at space station
