@@ -52,6 +52,8 @@ DIM DiscPanel AS UiPanel
 DIM SlotPanel AS UiPanel
 DIM NotifyPanel AS UiPanel
 
+DIM ArtifactVergeStationId AS BYTE
+
 DECLARE SUB DrawDesktop(Char AS BYTE) STATIC
 DECLARE SUB MissionBriefingHandler() STATIC
 DECLARE SUB SetupGraphics() STATIC
@@ -108,8 +110,9 @@ IF Debug OR (GameState = GAMESTATE_STARTING) THEN
 
     MEMCPY @_GameMap, @GameMap, 256
     ZP_B1 = 20
-    IF GameLevel = 0 THEN
+    IF GameLevel = GAMELEVEL_EASY THEN
         ZP_B1 = 10
+        ' CONVERT FAST ASTEROIDS TO SLOW
         FOR ZP_B0 = 0 TO 255
             IF (GameMap(ZP_B0) AND %00011000) > 0 THEN
                 GameMap(ZP_B0) = (GameMap(ZP_B0) AND %11100111) OR %00011000
@@ -264,7 +267,7 @@ DiplomacyPanelHandler:
         CALL DiplomacyPanel.WaitEvent(FALSE)
 
         IF (DiplomacyPanel.Event = EVENT_FIRE) AND (DiplomacyPanel.Selected = 9) THEN
-            SELECT CASE LocalMapVergeStationId
+            SELECT CASE ArtifactVergeStationId
                 CASE 5
                     PlayerCredit = PlayerCredit - 10000
                 CASE 6
@@ -272,10 +275,10 @@ DiplomacyPanelHandler:
                 CASE 7
                     ComponentValue(COMP_GOLD) = ComponentValue(COMP_GOLD) - 500
                 CASE ELSE
-                    ArtifactLocation(LocalMapVergeStationId+4) = LOC_DESTINATION
+                    ArtifactLocation(ArtifactVergeStationId+4) = LOC_DESTINATION
             END SELECT
 
-            ArtifactLocation(LocalMapVergeStationId) = LOC_PLAYER
+            ArtifactLocation(ArtifactVergeStationId) = LOC_PLAYER
         END IF
 
         CALL DiplomacyPanel.Dispose()
@@ -565,22 +568,35 @@ SUB CreateDiplomacyPanel() STATIC
 
     CALL DiplomacyPanel.Center(1, "welcome to verge station " + STR$(LocalMapVergeStationId), COLOR_BLUE, FALSE)
 
-    IF ArtifactLocation(LocalMapVergeStationId) = LOC_SOURCE THEN
-        IF (GameLevel > 0) OR (LocalMapVergeStationId = 5) THEN
-            CALL DiplomacyPanel.Center(3, "we can sell you", COLOR_LIGHTGRAY, FALSE)
-            CALL DiplomacyPanel.Center(4, ArtifactTitle(LocalMapVergeStationId), COLOR_YELLOW, FALSE)
-            CALL DiplomacyPanel.Center(5, "in exchange we want", COLOR_LIGHTGRAY, FALSE)
-            CALL DiplomacyPanel.Center(6, ArtifactTitle(LocalMapVergeStationId+4), COLOR_YELLOW, FALSE)
-
-            CALL DiplomacyPanel.Center(8, "i'll be back", COLOR_LIGHTGRAY, TRUE)
-            IF ArtifactLocation(LocalMapVergeStationId+4) = LOC_PLAYER THEN
-                CALL DiplomacyPanel.Center(9, "it's a deal", COLOR_LIGHTGRAY, TRUE)
-            END IF
-        ELSE
-            CALL DiplomacyPanel.Center(8, "godspeed commander", COLOR_LIGHTGRAY, TRUE)
+    ArtifactVergeStationId = 255
+    IF GameLevel THEN
+        IF ArtifactLocation(LocalMapVergeStationId) = LOC_SOURCE THEN
+            ArtifactVergeStationId = LocalMapVergeStationId
         END IF
     ELSE
+        IF LocalMapVergeStationId = 5 THEN
+            IF ArtifactLocation(5) = LOC_SOURCE THEN
+                ArtifactVergeStationId = 5
+            END IF
+        ELSE
+            IF ArtifactLocation(1) = LOC_SOURCE THEN
+                ArtifactVergeStationId = 1
+            END IF
+        END IF
+    END IF
+
+    IF ArtifactVergeStationId = 255 THEN
         CALL DiplomacyPanel.Center(8, "godspeed commander", COLOR_LIGHTGRAY, TRUE)
+    ELSE
+        CALL DiplomacyPanel.Center(3, "we can sell you", COLOR_LIGHTGRAY, FALSE)
+        CALL DiplomacyPanel.Center(4, ArtifactTitle(ArtifactVergeStationId), COLOR_YELLOW, FALSE)
+        CALL DiplomacyPanel.Center(5, "in exchange we want", COLOR_LIGHTGRAY, FALSE)
+        CALL DiplomacyPanel.Center(6, ArtifactTitle(ArtifactVergeStationId + 4), COLOR_YELLOW, FALSE)
+
+        CALL DiplomacyPanel.Center(8, "i'll be back", COLOR_LIGHTGRAY, TRUE)
+        IF ArtifactLocation(ArtifactVergeStationId + 4) = LOC_PLAYER THEN
+            CALL DiplomacyPanel.Center(9, "it's a deal", COLOR_LIGHTGRAY, TRUE)
+        END IF
     END IF
 
     CALL DiplomacyPanel.Center(11, "mission status", COLOR_BLUE, FALSE)

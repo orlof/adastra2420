@@ -500,7 +500,7 @@ IF (GameState AND GAMESTATE_GAMEOVER) THEN
 END IF
 
 IF (LocalMapVergeStationId = 5) AND (ArtifactLocation(1) = LOC_PLAYER) THEN
-    IF (GameLevel = 0) OR ((GameLevel = 1) AND _
+    IF (GameLevel = GAMELEVEL_EASY) OR ((GameLevel = GAMELEVEL_NORMAL) AND _
     (ArtifactLocation(0) = LOC_PLAYER) AND _
     (ArtifactLocation(2) = LOC_PLAYER) AND _
     (ArtifactLocation(3) = LOC_PLAYER)) THEN

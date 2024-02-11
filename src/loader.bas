@@ -22,7 +22,7 @@ CALL Text(9, 13, 1, 0, FALSE, "loader        krill", CHAR_MEMORY)
 CALL Text(8, 15, 1, 0, FALSE, "music            roy batty", CHAR_MEMORY)
 CALL Text(2, 17, 1, 0, FALSE, "xc=basic3                fekete csaba", CHAR_MEMORY)
 
-CALL Text(3, 20, 1, 0, FALSE, "play testing by timppa and spock", CHAR_MEMORY)
+CALL Text(4, 20, 1, 0, FALSE, "play testing by timppa and spock", CHAR_MEMORY)
 
 CALL InstallDriveCode()
 CALL InstallLoaderCode()

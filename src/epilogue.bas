@@ -102,12 +102,11 @@ CALL ChangePage()
 
 CALL Left(0, COLOR_MULE, "mule")
 CALL Center(2, COLOR_MULE, "hello commander jameson")
-CALL Center(3, COLOR_MULE, "you look dashingly heroic today")
 CALL ChangePage()
 
 CALL Left(0, COLOR_MULE, "mule")
-CALL Center(2, COLOR_MULE, "i was preparing for an exodus but")
-CALL Center(3, COLOR_MULE, "it seems to be cancelled now")
+CALL Center(2, COLOR_MULE, "i was wandering who the president")
+CALL Center(3, COLOR_MULE, "of foft was here to meet")
 CALL ChangePage()
 
 CALL Center(2, COLOR_NARRATOR, "you leave the cow behind and")
@@ -134,24 +133,14 @@ CALL Center(3, COLOR_NARRATOR, "a well deserved holiday")
 CALL ChangePage()
 
 CALL ShowImage(@Image006_Bitmap, @Image006_Screen, @Image006_Color, $03)
-
-CALL DecompressZX0_Unsafe(@Sprite_Font, $c000)
-
-CALL ChangePage()
-
-'BACKGROUND COLOR_BLACK
-'BORDER COLOR_BLACK
-
 RASTER INTERRUPT OFF
 ON RASTER $fb GOSUB IRQ2
 RASTER INTERRUPT ON
-
 POKE $d015, 0
 
-'CALL FillBitmap(0)
-'CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
+CALL DecompressZX0_Unsafe(@Sprite_Font, $c000)
 
-'CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
+CALL JoyWaitClick(JOY2)
 
 SPRITE 0 AT 110,120 SHAPE 19 COLOR COLOR_BLUE XYSIZE 0,0 ON
 SPRITE 1 AT 136,120 SHAPE 7 COLOR COLOR_BLUE XYSIZE 0,0 ON
@@ -160,7 +149,7 @@ SPRITE 3 AT 110,150 SHAPE 4 COLOR COLOR_BLUE XYSIZE 1,1 ON
 SPRITE 4 AT 160,150 SHAPE 13 COLOR COLOR_BLUE XYSIZE 1,1 ON
 SPRITE 5 AT 210,150 SHAPE 3 COLOR COLOR_BLUE XYSIZE 1,1 ON
 
-CALL ChangePage()
+CALL JoyWaitClick(JOY2)
 
 RASTER INTERRUPT OFF
 CALL SidStop()
