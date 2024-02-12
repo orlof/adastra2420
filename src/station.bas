@@ -66,6 +66,7 @@ DECLARE SUB CreateShieldPanel() STATIC
 DECLARE SUB CreateDiplomacyPanel() STATIC
 DECLARE SUB CreateDiscPanel() STATIC
 DECLARE SUB CreateSlotPanel(IsSave AS BYTE) STATIC
+DECLARE SUB CreateMapPanel() STATIC
 DECLARE SUB AutoSave() STATIC
 DECLARE SUB SaveGame(FileNr AS BYTE) STATIC
 DECLARE SUB LoadGame(FileNr AS BYTE) STATIC
@@ -189,6 +190,11 @@ LeftPanelHandler:
                 CALL CreateCargoPanel()
                 CALL CargoPanel.SetSelected(3)
                 GOTO CargoPanelHandler
+            CASE 15 ' map panel
+                CALL LeftPanel.SetFocus(FALSE)
+                CALL CreateMapPanel()
+                CALL MapPanel.SetSelected(255)
+                GOTO MapPanelHandler
             CASE 16 ' diplomacy
                 CALL LeftPanel.SetFocus(FALSE)
                 CALL CreateDiplomacyPanel()
@@ -305,6 +311,22 @@ LoadPanelHandler:
                 CALL LoadGame(SlotPanel.Selected - 1)
                 CALL SlotPanel.Dispose()
                 CALL DiscPanel.Dispose()
+                GOTO LeftPanelHandler
+        END SELECT
+    LOOP
+
+MapPanelHandler:
+    CALL MapPanel.SetFocus(TRUE)
+
+    DO
+        CALL MapPanel.WaitEvent(FALSE)
+
+        SELECT CASE MapPanel.Event
+            CASE EVENT_LEFT
+                CALL MapPanel.Dispose()
+                GOTO LeftPanelHandler
+            CASE EVENT_FIRE
+                CALL MapPanel.Dispose()
                 GOTO LeftPanelHandler
         END SELECT
     LOOP
@@ -535,6 +557,57 @@ SUB CreateCargoPanel() STATIC
     NEXT
 END SUB
 
+SUB CreateMapPanel() STATIC
+    CALL MapPanel.Init("sector map", 6, 3, 18, 18, TRUE)
+    CALL MapPanel.SetEvents(EVENT_FIRE OR EVENT_LEFT)
+    DIM ScreenAddr AS WORD
+    ScreenAddr = $c8a7
+    ZP_B1 = COLOR_BLACK
+    FOR Y AS WORD = 0 TO 15
+        FOR X AS WORD = 0 TO 15
+            ZP_B0 = GameMap(SHL(Y, 4) + X)
+            IF (ZP_B0 AND %00000100) = 0 THEN
+                ' NO STATIONARY OBJECT
+                ZP_B2 = 160
+                SELECT CASE (ZP_B0 AND %00011000)
+                    CASE %00000000 ' NO ASTEROIDS
+                        ZP_B1 = COLOR_BLACK
+                    CASE %00011000 ' LOW
+                        ZP_B1 = COLOR_DARKGRAY
+                    CASE %00010000 ' MEDIUM
+                        ZP_B1 = COLOR_MIDDLEGRAY
+                    CASE %00001000 ' HIGH
+                        ZP_B1 = COLOR_LIGHTGRAY
+                END SELECT
+            ELSE
+                ' STATIONARY OBJECT
+                SELECT CASE (ZP_B0 AND %00000011)
+                    CASE %00000000 ' AI
+                        ZP_B1 = COLOR_LIGHTRED
+                        ZP_B2 = 90
+                    CASE %00000001 ' STAR
+                        ZP_B1 = COLOR_YELLOW
+                        ZP_B2 = 81
+                    CASE %00000010 ' STATION
+                        ZP_B3 = SHR(ZP_B0, 5)
+                        IF ZP_B3 = 2 THEN
+                            ZP_B2 = 160
+                        ELSE
+                            ZP_B1 = COLOR_LIGHTBLUE
+                            ZP_B2 = 48 + ZP_B3
+                        END IF
+                    CASE %00000011 ' SILO
+                        ZP_B1 = COLOR_RED
+                        ZP_B2 = 86
+                END SELECT
+            END IF
+            POKE ScreenAddr + X, ZP_B2
+            POKE ScreenAddr + $1000 + X, ZP_B1
+        NEXT X
+        ScreenAddr = ScreenAddr + 40
+    NEXT Y
+END SUB
+
 SUB CreateShieldPanel() STATIC
     CALL ShieldPanel.Init("shield", 11, 14, 26, 8, TRUE)
     CALL ShieldPanel.SetEvents(EVENT_FIRE OR EVENT_LEFT)
@@ -677,6 +750,7 @@ SUB CreateLeftPanel() STATIC
     CALL LeftPanel.Left(1, 12, "system upgrades", COLOR_LIGHTGRAY, TRUE)
     CALL LeftPanel.Left(1, 13, "shields", COLOR_LIGHTGRAY, TRUE)
     CALL LeftPanel.Left(1, 14, "cargo space", COLOR_LIGHTGRAY, TRUE)
+    CALL LeftPanel.Left(1, 15, "sector map", COLOR_LIGHTGRAY, TRUE)
     CALL LeftPanel.Left(1, 16, "diplomacy", COLOR_LIGHTGRAY, TRUE)
     CALL LeftPanel.Left(1, 17, "disc", COLOR_LIGHTGRAY, TRUE)
     CALL LeftPanel.Left(1, 19, "launch", COLOR_RED, TRUE)
