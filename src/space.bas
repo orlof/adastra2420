@@ -356,45 +356,76 @@ _update_dashboard_loop
             END IF
         CASE 56 ' SPEED
             ASM
+                sta $fff
+                bit {PlayerDx}+1
+                bpl speed_x_plus
+
                 lda {PlayerDx}
-                sta {ZP_B0}
+                eor #$ff
+                clc
+                adc #1
+                sta {ZP_W0}
 
                 lda {PlayerDx}+1
-                lsr
-                ror {ZP_B0}
-                lsr
-                ror {ZP_B0}
-
-                lda {ZP_B0}
-                bpl x_plus
                 eor #$ff
-                clc
-                adc #1
-x_plus
-                sta {ZP_B1}
+                adc #0
+                sta {ZP_W0} + 1
+                jmp speed_y
+
+speed_x_plus
+                lda {PlayerDx}
+                sta {ZP_W0}
+
+                lda {PlayerDx}+1
+                sta {ZP_W0} + 1
+
+speed_y
+                bit {PlayerDy}+1
+                bpl speed_y_plus
 
                 lda {PlayerDy}
-                sta {ZP_B0}
-
-                lda {PlayerDy}+1
-                lsr
-                ror {ZP_B0}
-                lsr
-                ror {ZP_B0}
-
-                lda {ZP_B0}
-                bpl y_plus
                 eor #$ff
                 clc
                 adc #1
-y_plus
-                cmp {ZP_B1}
-                bcc done
-                sta {ZP_B1}
-done
+                sta {ZP_W1}
+
+                lda {PlayerDy}+1
+                eor #$ff
+                adc #0
+                sta {ZP_W1} + 1
+                jmp speed_max
+
+speed_y_plus
+                lda {PlayerDy}
+                sta {ZP_W1}
+
+                lda {PlayerDy}+1
+                sta {ZP_W1} + 1
+
+speed_max
+                lda {ZP_W1}+1
+                cmp {ZP_W0}+1
+                bcc speed_done
+                bne speed_swap
+
+                lda {ZP_W1}
+                cmp {ZP_W0}
+                bcc speed_done
+                beq speed_done
+
+speed_swap
+                lda {ZP_W1}
+                sta {ZP_W0}
+                lda {ZP_W1} + 1
+                sta {ZP_W0} + 1
+
+speed_done
+                lda {ZP_W0}
+                sta {PlayerSpeed}
+                lda {ZP_W0} + 1
+                sta {PlayerSpeed} + 1
             END ASM
-            PlayerSpeed = ZP_B1
-            CALL UpdateDashboard(CWORD(PlayerSpeed), 5, DASHBOARD_COLOR_NOMINAL)
+            CALL UpdateDashboard(ZP_W0, 5, DASHBOARD_COLOR_NOMINAL)
     END SELECT
 
     'CALL SprUpdate(FALSE)

@@ -31,6 +31,7 @@ DIM PlayerCanShoot AS BYTE
 DIM PlayerShootTime AS BYTE
 DIM PlayerCanRotate AS BYTE
 DIM PlayerRotateTime AS BYTE
+DIM TurboBoost AS BYTE
 
 DIM PlayerRotatePower(10) AS BYTE @_PlayerRotatePower SHARED
 DIM PlayerEnginePulseDelay(10) AS BYTE @_PlayerEnginePulseDelay SHARED
@@ -187,8 +188,44 @@ END SUB
 
 SUB Player_Accelerate() SHARED STATIC
     IF PlayerCanAccelerate THEN
-        IF JoyUp(JOY2) AND ComponentValue(COMP_FUEL) > 0 THEN
-            ComponentValue(COMP_FUEL) = ComponentValue(COMP_FUEL) - 1
+        IF JoyUp(JOY1) THEN
+            TurboBoost = 251
+        ELSE
+            TurboBoost = 0
+        END IF
+        IF JoyUp(JOY2) AND (ComponentValue(COMP_FUEL) > 0) THEN
+            ASM
+                lda {TurboBoost}
+                beq turbo_boost_off
+
+                lda {ComponentValue}+5
+                bne turbo_boost_ok
+                lda {ComponentValue}+4
+                cmp #3
+                bcc turbo_boost_out_of_fuel
+turbo_boost_ok
+                sec
+                sbc #3
+                sta {ComponentValue}+4
+                lda {ComponentValue}+5
+                sbc #0
+                sta {ComponentValue}+5
+                jmp turbo_boost_done
+
+turbo_boost_out_of_fuel
+                lda #0
+                sta {ComponentValue}+4
+                sta {TurboBoost}
+                jmp turbo_boost_done
+
+turbo_boost_off
+                ; 16-bit decrement Word
+                lda {ComponentValue}+4
+                bne *+5
+                    dec {ComponentValue}+5
+                dec {ComponentValue}+4
+turbo_boost_done
+            END ASM
             ASM
                 lda {PlayerDirection}
                 lsr
@@ -239,8 +276,13 @@ player_update_y_positive
                 clc
                 lda {Gametime}
                 adc {PlayerPulseDelay}
+                adc {TurboBoost}
                 sta {PlayerAccelerationTime}
             END ASM
+
+            IF TurboBoost THEN
+                CALL ParticleEmit(PLAYER_SX, PLAYER_SY, small_impulse_dx(PlayerDirection), small_impulse_dy(PlayerDirection), 40, 3)
+            END IF
 
             ASM
                 sec
@@ -458,7 +500,7 @@ SUB Player_Shoot() SHARED STATIC
             StatusFlag = StatusFlag OR STATUS_METAL
             CALL SfxPlay(1, @SfxShot)
             PlayerCanShoot = FALSE
-            PlayerShootTime = GameTime + 128
+            PlayerShootTime = GameTime + 96
             CALL Bullet_Spawn(ZP_B1)
         END IF
     END IF
@@ -475,12 +517,12 @@ SUB Player_Collision() SHARED STATIC
                                 CALL AsteroidReduce(ZP_B0-1, 1)
                                 CALL SfxPlay(2, @SfxGold)
                             END IF
-                            IF NOT AsteroidEnabled(ZP_B0-1) THEN
-                                ComponentValue(COMP_GOLD) = ComponentValue(COMP_GOLD) + 15
-                            ELSE
+                            IF AsteroidEnabled(ZP_B0-1) THEN
                                 IF (GameTime AND %11) = 0 THEN
                                     ComponentValue(COMP_GOLD) = ComponentValue(COMP_GOLD) + 2
                                 END IF
+                            ELSE
+                                ComponentValue(COMP_GOLD) = ComponentValue(COMP_GOLD) + 15
                             END IF
                             IF ComponentValue(COMP_GOLD) > ComponentCapacity(COMP_GOLD) THEN
                                 ComponentValue(COMP_GOLD) = ComponentCapacity(COMP_GOLD)
@@ -493,12 +535,12 @@ SUB Player_Collision() SHARED STATIC
                                 CALL AsteroidReduce(ZP_B0-1, 1)
                                 CALL SfxPlay(2, @SfxGold)
                             END IF
-                            IF NOT AsteroidEnabled(ZP_B0-1) THEN
-                                ComponentValue(COMP_METAL) = ComponentValue(COMP_METAL) + 10
-                            ELSE
+                            IF AsteroidEnabled(ZP_B0-1) THEN
                                 IF (GameTime AND %11) = 0 THEN
                                     ComponentValue(COMP_METAL) = ComponentValue(COMP_METAL) + 2
                                 END IF
+                            ELSE
+                                ComponentValue(COMP_METAL) = ComponentValue(COMP_METAL) + 10
                             END IF
                             IF ComponentValue(COMP_METAL) > ComponentCapacity(COMP_METAL) THEN
                                 ComponentValue(COMP_METAL) = ComponentCapacity(COMP_METAL)
@@ -512,10 +554,15 @@ SUB Player_Collision() SHARED STATIC
                         END IF
                         ASM
                             lda {PlayerSpeed}
+                            lsr {PlayerSpeed}+1
+                            ror
                             lsr
                             lsr
                             lsr
+
                             lsr
+                            ;lsr
+
                             clc
                             adc #1
                             sta {ZP_B1}

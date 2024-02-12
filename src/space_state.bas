@@ -10,7 +10,7 @@ DIM small_impulse_dy(32) AS BYTE @_small_impulse_dy SHARED
 DIM StatusFlag AS BYTE SHARED
 DIM PlayerDx AS LONG SHARED
 DIM PlayerDy AS LONG SHARED
-DIM PlayerSpeed AS BYTE SHARED
+DIM PlayerSpeed AS WORD SHARED
 
 DIM TorpedoFuel AS BYTE SHARED
 
