@@ -450,8 +450,10 @@ MEMORY LAYOUT (NOT COMPLETE)
 | 0933 | 0933 | PlayerSectorMapRestore | B     |
 
 TODO
-- increase bullet speed
+- X increase bullet speed
 - X replace timer with time
 - X add score
 - turboboost at gunners joystick
 - X map at space station
+- update README
+- Make ITCH release

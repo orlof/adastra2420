@@ -72,7 +72,9 @@ bullet_spawn_dx_positive
         asl
         asl
         asl
+        asl
         sta {BulletDx}
+        rol {BulletDx}+1
 
         ldy #0
         lda {impulse_dy},x
@@ -87,7 +89,9 @@ bullet_spawn_dy_positive
         asl
         asl
         asl
+        asl
         sta {BulletDy}
+        rol {BulletDy}+1
 
         clc
         lda {PlayerDx}
@@ -116,7 +120,7 @@ bullet_spawn_dy_positive
         sta {BulletDy}+2
     END ASM
 
-    BulletTTL = GameTime + 150
+    BulletTTL = GameTime + 75
     BulletAlive = TRUE
 
     CALL SprXY(SPR_NR_BULLET, PLAYER_SX, PLAYER_SY)
