@@ -5,7 +5,7 @@ GOTO START
 ORIGIN $1000
 INCBIN "../sfx/Stylerock.bin"
 
-ORIGIN $2000
+ORIGIN $1e6a
 START:
 
 CONST MSGBOX_ADDR = $cb48
@@ -151,6 +151,21 @@ SPRITE 5 AT 210,150 SHAPE 3 COLOR COLOR_BLUE XYSIZE 1,1 ON
 
 CALL JoyWaitClick(JOY2)
 
+POKE $d015,0
+
+IF Debug THEN
+    Score = 123456
+END IF
+
+DIM ScoreText AS STRING*8
+ScoreText = STR$(Score)
+CALL ShowImage(@Image007_Bitmap, @Image007_Screen, @Image007_Color, $00)
+CALL TextMC(11, 4, 2, 0, TRUE, "game over", $d000)
+CALL TextMC(15, 8, 3, 0, TRUE, "score", $d000)
+CALL TextMC(20 - LEN(ScoreText), 10, 2, 0, TRUE, ScoreText, $d000)
+
+CALL JoyWaitClick(JOY2)
+
 RASTER INTERRUPT OFF
 CALL SidStop()
 
@@ -264,8 +279,8 @@ SUB ShowImage(BitmapAddr AS WORD, ScreenAddr AS WORD, ColorAddr AS WORD, BgColor
     CALL WaitRasterLine256()
     CALL ScreenOff()
 
-    CALL DecompressZX0_Unsafe(BitmapAddr, $a000)
-    MEMCPY $a000, $e000, 8000
+    CALL DecompressZX0_Unsafe(BitmapAddr, $a800)
+    MEMCPY $a800, $e000, 8000
     CALL DecompressZX0_Unsafe(ColorAddr, $c800)
     MEMCPY $c800, $d800, 1000
     CALL DecompressZX0_Unsafe(ScreenAddr, $c800)
@@ -347,6 +362,14 @@ Image006_Screen:
     INCBIN "../gfx/epilogue006_screen.zx0"
 Image006_Color:
     INCBIN "../gfx/epilogue006_color.zx0"
+
+'BgColor = $00
+Image007_Bitmap:
+    INCBIN "../gfx/highscore001_bitmap.zx0"
+Image007_Screen:
+    INCBIN "../gfx/highscore001_screen.zx0"
+Image007_Color:
+    INCBIN "../gfx/highscore001_color.zx0"
 
 Sprite_Font:
     INCBIN "../gfx/sprite_font.zx0"

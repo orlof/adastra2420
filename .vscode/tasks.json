@@ -626,7 +626,7 @@
                 "command": "${config:xcbasic3.packer}/exomizer.exe",
                 "args": [
                     "sfx",
-                    "8192",
+                    "3072",
                     "build/epilogue.prg",
                     "gfx/generic_charset.prg",
                     "-o",

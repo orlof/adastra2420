@@ -451,7 +451,7 @@ MEMORY LAYOUT (NOT COMPLETE)
 
 TODO
 - increase bullet speed
-- replace timer with time
-- add score
+- X replace timer with time
+- X add score
 - turboboost at gunners joystick
 - map at space station

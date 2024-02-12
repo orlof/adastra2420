@@ -51,6 +51,7 @@ DIM DiplomacyPanel AS UiPanel
 DIM DiscPanel AS UiPanel
 DIM SlotPanel AS UiPanel
 DIM NotifyPanel AS UiPanel
+DIM MapPanel AS UiPanel
 
 DIM ArtifactVergeStationId AS BYTE
 
@@ -98,7 +99,7 @@ IF Debug OR (GameState = GAMESTATE_STARTING) THEN
     IF Debug THEN GameLevel = GAMELEVEL_NORMAL
     CALL MissionBriefingHandler()
     GameState = GAMESTATE_STATION
-    TimeLeft = 1000
+    Time = 0
     LocalMapVergeStationId = 5
     PlayerCredit = 10000
     PlayerX = $068000
@@ -109,9 +110,9 @@ IF Debug OR (GameState = GAMESTATE_STARTING) THEN
     PlayerSectorMapRestore = 0
 
     MEMCPY @_GameMap, @GameMap, 256
-    ZP_B1 = 20
+    ZP_B1 = 19
     IF GameLevel < GAMELEVEL_HARD THEN
-        ZP_B1 = 10
+        ZP_B1 = 9
         ' CONVERT FAST ASTEROIDS TO SLOW
         IF GameLevel = GAMELEVEL_EASY THEN
             FOR ZP_B0 = 0 TO 255

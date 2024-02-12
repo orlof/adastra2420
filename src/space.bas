@@ -23,6 +23,7 @@ DECLARE SUB DrawDashboard() SHARED STATIC
 DECLARE SUB UpdateDashboard(Value AS WORD, Line AS BYTE, FgColor AS BYTE) SHARED STATIC
 DECLARE SUB time_pause(jiffys AS BYTE) SHARED STATIC
 DECLARE SUB InitCommon() STATIC
+DECLARE SUB CalculateScore() STATIC
 
 INCLUDE "space_constants.bas"
 INCLUDE "space_state.bas"
@@ -311,14 +312,7 @@ DO
                 StatusFlag = StatusFlag XOR STATUS_METAL
             END IF
         CASE 40 'TIME
-            SELECT CASE TimeLeft
-                CASE 0 TO 99
-                    CALL UpdateDashboard(TimeLeft, 7, DASHBOARD_COLOR_CRITICAL)
-                CASE 100 TO 199
-                    CALL UpdateDashboard(TimeLeft, 7, DASHBOARD_COLOR_WARN)
-                CASE 200 TO 1000
-                    CALL UpdateDashboard(TimeLeft, 7, DASHBOARD_COLOR_NOMINAL)
-            END SELECT
+            CALL UpdateDashboard(Time, 7, DASHBOARD_COLOR_NOMINAL)
         CASE 48 'ENERGY
             ASM
                 ;color
@@ -408,9 +402,8 @@ done
 
     GameTime = GameTime + 1
     IF GameTime = 0 THEN
-        TimeLeft = TimeLeft - 1
-        IF TimeLeft = 0 THEN
-            GameState = GAMESTATE_OUT_OF_TIME
+        IF Time < 10000 THEN
+            Time = Time + 1
         END IF
     END IF
 LOOP UNTIL GameState
@@ -494,6 +487,7 @@ IF (GameState AND GAMESTATE_GAMEOVER) THEN
             CALL Text(8, 10, FALSE, "moonwraith was destroyed")
             CALL Text(12, 12, FALSE, "in an explosion")
     END SELECT
+    CALL CalculateScore()
     CALL GraphicsModeValid()
     IF NOT Debug THEN CALL LoadProgram("gameover", CWORD(8192))
     END
@@ -506,6 +500,7 @@ IF (LocalMapVergeStationId = 5) AND (ArtifactLocation(1) = LOC_PLAYER) THEN
         GameState = GAMESTATE_COMPLETED
         CALL Text(12, 5, TRUE, "epilogue")
         CALL GraphicsModeValid()
+        CALL CalculateScore()
         IF NOT Debug THEN CALL LoadProgram("epilogue", CWORD(3072))
         END
     END IF
@@ -598,7 +593,7 @@ END SUB
 
 SUB InitCommon() STATIC
     GameState = GAMESTATE_SPACE
-    TimeLeft = 1000
+    Time = 0
     LocalMapVergeStationId = 5
     PlayerCredit = 10000
     PlayerX = $068000
@@ -686,6 +681,54 @@ _update_dashboard_loop3
         dey
         bpl _update_dashboard_loop3
     END ASM
+END SUB
+
+SUB CalculateScore() STATIC
+    POKE $bfff, Score
+    Score = 0
+
+    ' POINTS FROM CREDITS (MAX 2300)
+    ZP_L0 = PlayerCredit
+    DO WHILE ZP_L0
+        Score = Score + 100
+        ZP_L0 = SHR(ZP_L0, 1)
+    LOOP
+    POKE $bfff, Score
+
+    ' POINTS FROM DESTROYED SILOS (MAX 2800)
+    IF GameLevel = GAMELEVEL_HARD THEN
+        ZP_B1 = 28
+    ELSE
+        ZP_B1 = 18
+    END IF
+    FOR ZP_B0 = 0 TO 255
+        IF (GameMap(ZP_B0) AND %00000011) = %00000011 THEN
+            ZP_B1 = ZP_B1 - 1
+        END IF
+    NEXT
+    Score = Score + SHL(CLONG(ZP_B1), 7)
+    POKE $bfff, Score
+
+    ' POINTS FROM ARTIFACTS (MAX EASY: 2048, NORMAL: 24576, HARD: 49152)
+    FOR ZP_B0 = 0 TO 11
+        Score = Score + SHL(CLONG(ArtifactLocation(ZP_B0)), 10 + GameLevel)
+    NEXT
+    POKE $bfff, Score
+
+    IF GameState = GAMESTATE_COMPLETED THEN
+        SELECT CASE GameLevel
+            CASE GAMELEVEL_EASY
+                '2500 - 8192
+                Score = Score + CLONG(32768) / SHR((CLONG(10) + Time), 3)
+            CASE GAMELEVEL_NORMAL
+                '4032 - 14563
+                Score = Score + CLONG(262144) / SHR((CLONG(100) + Time), 5)
+            CASE GAMELEVEL_HARD
+                '8066 - 29127
+                Score = Score + CLONG(524288) / SHR((CLONG(100) + Time), 5)
+        END SELECT
+    END IF
+    POKE $bfff, Score
 END SUB
 
 _ZoneAsteroidSpeedColor:

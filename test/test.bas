@@ -1,43 +1,86 @@
+SHARED CONST GAMELEVEL_EASY     = 0
+SHARED CONST GAMELEVEL_NORMAL   = 1
+SHARED CONST GAMELEVEL_HARD     = 2
 
+SHARED CONST GAMESTATE_STARTING         = %00000001
+SHARED CONST GAMESTATE_SPACE            = %00000000
+SHARED CONST GAMESTATE_STATION          = %00000100
+SHARED CONST GAMESTATE_COMPLETED        = %10000001
+SHARED CONST GAMESTATE_EXPLOSION        = %10000010
+SHARED CONST GAMESTATE_OUT_OF_FUEL      = %10000100
+SHARED CONST GAMESTATE_OUT_OF_OXYGEN    = %10001000
+SHARED CONST GAMESTATE_OUT_OF_TIME      = %10010000
+SHARED CONST GAMESTATE_GAMEOVER         = %10000000
 
-DIM Score AS LONG
+SHARED CONST LOC_SOURCE = 0
+SHARED CONST LOC_PLAYER = 1
+SHARED CONST LOC_DESTINATION = 2
 
-' POINTS FROM CREDITS (MAX 2300)
-ZP_L0 = PlayerCredit
-DO WHILE ZP_L0
-    Score = Score + 100
-    ZP_L0 = SHR(ZP_L0, 1)
-LOOP
-Score = Score + ZP_L0
+DIM Time AS WORD SHARED
+DIM PlayerCredit AS LONG SHARED
+DIM GameLevel AS BYTE SHARED
+DIM GameState AS BYTE SHARED
+DIM Score AS LONG SHARED
+DIM GameMap(255) AS BYTE SHARED
+DIM ArtifactLocation(12) AS BYTE SHARED
 
-' POINTS FROM DESTROYED SILOS (MAX 2800)
-IF GameLevel = GAMELEVEL_HARD THEN
-    ZP_B1 = 28
-ELSE
-    ZP_B1 = 18
-END IF
-FOR ZP_B0 = 0 TO 255
-    IF (GameMap(ZP_B0) AND %00000011) = %00000011 THEN
-        ZP_B1 = ZP_B1 - 1
+DIM ZP_B0 AS BYTE
+DIM ZP_B1 AS BYTE
+DIM ZP_L0 AS LONG
+
+GameLevel = 0
+GameState = GAMESTATE_GAMEOVER
+PlayerCredit = 0
+Time = 1000
+MEMSET @GameMap(0), 256, 0
+MEMSET @GameMap(0), 18, %00000011
+MEMSET @ArtifactLocation(0), 12, LOC_SOURCE
+MEMSET @ArtifactLocation(0), 1, LOC_PLAYER
+
+SUB CalculateScore() STATIC
+    Score = 0
+
+    ' POINTS FROM CREDITS (MAX 2300)
+    ZP_L0 = PlayerCredit
+    DO WHILE ZP_L0
+        PRINT Score
+        Score = Score + 100
+        ZP_L0 = SHR(ZP_L0, 1)
+    LOOP
+
+    ' POINTS FROM DESTROYED SILOS (MAX 2800)
+    IF GameLevel = GAMELEVEL_HARD THEN
+        ZP_B1 = 28
+    ELSE
+        ZP_B1 = 18
     END IF
-NEXT
-Score = Score + SHL(CLONG(ZP_B1), 7)
+    FOR ZP_B0 = 0 TO 255
+        IF (GameMap(ZP_B0) AND %00000011) = %00000011 THEN
+            ZP_B1 = ZP_B1 - 1
+        END IF
+    NEXT
+    Score = Score + SHL(CLONG(ZP_B1), 7)
 
-' POINTS FROM ARTIFACTS (MAX EASY: 2048, NORMAL: 24576, HARD: 49152)
-FOR ZP_B0 = 0 TO 11
-    Score = Score + SHL(CLONG(ArtifactLocation(ZP_B0)), 10 + GameLevel)
-NEXT
+    ' POINTS FROM ARTIFACTS (MAX EASY: 2048, NORMAL: 24576, HARD: 49152)
+    FOR ZP_B0 = 0 TO 11
+        PRINT ArtifactLocation(ZP_B0)
+        Score = Score + SHL(CLONG(ArtifactLocation(ZP_B0)), 10 + GameLevel)
+    NEXT
 
-IF GameState = GAMESTATE_COMPLETED THEN
-    SELECT CASE GameLevel
-        CASE GAMELEVEL_EASY
-            '2500 - 8192
-            Score = Score + CLONG(32768) / SHR((CLONG(10) + Time), 3)
-        CASE GAMELEVEL_NORMAL
-            '4032 - 14563
-            Score = Score + CLONG(262144) / SHR((CLONG(100) + Time), 5)
-        CASE GAMELEVEL_HARD
-            '8066 - 29127
-            Score = Score + CLONG(524288) / SHR((CLONG(100) + Time), 5)
-    END SELECT
-END IF
+    IF GameState = GAMESTATE_COMPLETED THEN
+        SELECT CASE GameLevel
+            CASE GAMELEVEL_EASY
+                '2500 - 8192
+                Score = Score + CLONG(32768) / SHR((CLONG(10) + Time), 3)
+            CASE GAMELEVEL_NORMAL
+                '4032 - 14563
+                Score = Score + CLONG(262144) / SHR((CLONG(100) + Time), 5)
+            CASE GAMELEVEL_HARD
+                '8066 - 29127
+                Score = Score + CLONG(524288) / SHR((CLONG(100) + Time), 5)
+        END SELECT
+    END IF
+END SUB
+
+CALL CalculateScore()
+PRINT "score: "; Score

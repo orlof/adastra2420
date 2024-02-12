@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-FILENAME = "gfx/epilogue006.kla"
+FILENAME = "gfx/highscore001.kla"
 
 
 def write_data(part, data):
