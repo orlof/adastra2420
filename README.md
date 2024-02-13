@@ -38,7 +38,7 @@ The Elite level presents the ultimate challenge, stripping back all the aids and
 
 ## Flight Mode
 
-Movement in flight mode can be controlled with joystick in port 2. Another joystick in port 1 can be used to control weapon turret and engine overdrive. Following table shows the controls:
+Movement in flight mode can be controlled with joystick in port 2. Another joystick in port 1 can be used to control weapon turret. Following table shows the controls:
 
 ### Ship Control
 
@@ -71,9 +71,6 @@ Movement in flight mode can be controlled with joystick in port 2. Another joyst
 </tr>
 <tr>
   <td>Joy1</td><td>Fire</td><td>Shoot Turret</td>
-</tr>
-<tr>
-  <td>Joy1</td><td>Up</td><td>Engine Overdrive. In this mode ship's engine will generate more thrust, but fuel consumption is tripled</td>
 </tr>
 </table>
 

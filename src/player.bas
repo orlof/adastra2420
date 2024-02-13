@@ -63,6 +63,7 @@ SUB Player_Launch() SHARED STATIC
     PlayerRotatePowerRight = PlayerRotatePower(PlayerSubSystem(SUBSYSTEM_GYRO))
     PlayerRotatePowerLeft  = (PlayerRotatePowerRight XOR $ff) + 1
     GeomShipTurretDisable = $10
+    TurboBoost = 0
 
     CALL SprClearSprite(SPR_NR_PLAYER)
 
@@ -188,11 +189,11 @@ END SUB
 
 SUB Player_Accelerate() SHARED STATIC
     IF PlayerCanAccelerate THEN
-        IF JoyUp(JOY1) THEN
-            TurboBoost = 251
-        ELSE
-            TurboBoost = 0
-        END IF
+        'IF JoyUp(JOY1) THEN
+        '    TurboBoost = 251
+        'ELSE
+        '    TurboBoost = 0
+        'END IF
         IF JoyUp(JOY2) AND (ComponentValue(COMP_FUEL) > 0) THEN
             ASM
                 lda {TurboBoost}
@@ -561,7 +562,7 @@ SUB Player_Collision() SHARED STATIC
                             lsr
 
                             lsr
-                            ;lsr
+                            lsr
 
                             clc
                             adc #1

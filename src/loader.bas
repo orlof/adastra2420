@@ -15,8 +15,8 @@ CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 CALL FillBitmap(0)
 SCREEN 2
 
-CALL Text(18, 6, 1, 0, FALSE, "7e8", CHAR_MEMORY)
 CALL Text(5, 7, 1, 0, TRUE,  "ad astra", CHAR_MEMORY)
+CALL Text(5, 8, 1, 0, FALSE, "2420", CHAR_MEMORY)
 'CALL Text(5, 8, 1, 0, FALSE, "mmxxiv", CHAR_MEMORY)
 CALL Text(5, 11, 1, 0, FALSE, "code.............orlof", CHAR_MEMORY)
 CALL Text(5, 13, 1, 0, FALSE, "music............roy batty", CHAR_MEMORY)
