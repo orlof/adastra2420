@@ -2,13 +2,15 @@
 
 ## Introduction
 
-This manual provides specific instructions and information for playing the Ad Astra with Commodore 64 computer. Your package should include 5.25" disk, a manual and a map.
+This manual provides specific instructions and information for playing the Ad Astra (ed. 7E8) with Commodore 64 computer. Your package should include 5.25" disk, a manual and a map.
 
 ## Computer systems
 
-Ad Astra will operate with a Commodore 64 or 128 computer with 1541 disk drive and a joystick. Second joystick is needed for 2 player co-operative game.
+Ad Astra will operate with a Commodore 64 or 128 computer with 1541 disk drive and a joystick. A second joystick is needed for 2 player co-operative game.
 
 ## Game
+
+### Background
 
 You are a star ranger deployed for long range reconnaissance mission in Rimward Reach asteroid belt.
 
@@ -18,11 +20,25 @@ Rimward reach has 8 Verge stations that perform mining operations.
 
 When game stars, your ship is located in Verge Station 5 and you will get your mission parameters via long range quantum communication link.
 
-Note - It is a known fact that bare singularity wraps the edges of the local space.
+## Difficulty levels
+
+When game starts you can choose the difficulty level: Rookie, Veteran or Elite. The difficulty level effects the game play in many different ways.
+
+### Rookie
+
+Designed for newcomers, the Rookie level simplifies gameplay significantly to ensure a smooth and welcoming introduction. At this level, your mission is straightforward: secure a Babbage Siphon from any Verge station (other than 5) and deliver it to Verge Station 5. The game boosts your chances of success by doubling the occurrence of gold and metal asteroids and ensuring their kinetic energy remains low, reducing the risk of collision. Your star ship comes equipped with upgraded engines, weapons, gyroscope, and cargo space, allowing you to focus on the mission without the need for early upgrades. Oxygen consumption is halved, and space hazards are significantly reduced, making your journey through the Rimward Reach asteroid belt safer and more manageable. This level is perfect for players looking to familiarize themselves with the game mechanics without the pressure of complex objectives or the need for extensive upgrades.
+
+### Veteran
+
+The Veteran level maintains the foundational supports of the Rookie difficulty but extends the gameplay to encompass the full campaign. Players are tasked with a more challenging mission: collect four unique items from different Verge stations. This objective necessitates careful planning and strategic upgrades to ship systems, introducing players to the game's deeper mechanics while still providing a safety net through some of the gameplay aids found in the Rookie level. The Veteran level strikes a balance between accessibility and challenge, offering a rewarding experience for players ready to delve deeper into the game's strategy and mechanics.
+
+### Elite
+
+The Elite level presents the ultimate challenge, stripping back all the aids and enhancements of the lower difficulties to deliver a raw and immersive experience. Players start with base-level ship systems, emphasizing the importance of strategic planning and prioritization from the outset. Upgrading your ship becomes a critical early goal, requiring careful management of resources and successful navigation through the asteroid belt's hazards. The Elite level is designed for those seeking to test their skills to the fullest, offering a rigorous campaign that demands tactical thinking, precise control, and a deep engagement with all aspects of gameplay. Only the most dedicated star rangers will thrive at this level, earning their place among the legends of the Rimward Reach.
 
 ## Flight Mode
 
-Movement in flight mode can be controlled with joystick in port 2. Another joystick in port 1 can be used to control weapon turret. Following table shows the controls:
+Movement in flight mode can be controlled with joystick in port 2. Another joystick in port 1 can be used to control weapon turret and engine overdrive. Following table shows the controls:
 
 ### Ship Control
 
@@ -56,6 +72,9 @@ Movement in flight mode can be controlled with joystick in port 2. Another joyst
 <tr>
   <td>Joy1</td><td>Fire</td><td>Shoot Turret</td>
 </tr>
+<tr>
+  <td>Joy1</td><td>Up</td><td>Engine Overdrive. In this mode ship's engine will generate more thrust, but fuel consumption is tripled</td>
+</tr>
 </table>
 
 ### Dashboard
@@ -87,7 +106,7 @@ Your ship's status is visible in the right side of the screen.
   <td>FIELD x</td><td>Asteroids' average kinetic energy in your proximity</td>
 </tr>
 <tr>
-  <td>TIME xxxx</td><td>Singularity countdown sensor</td>
+  <td>TIME xxxx</td><td>Mission Time</td>
 </tr>
 </table>
 
@@ -95,12 +114,12 @@ Map is located in the middle of the dashboard and shows your ship's position in 
 Map shows the whole sector and does not scroll. Small "+" signs on the map are Verge Stations and
 your own ship is shown with a single dot that moves on the map.
 
-Radar is placed in the lowest part of the dashboard. It will show large space objects in your local space. Radar is divided into 5x5 matrix and your own ship is always in the center of the radar. Each cell of the radar matrix represent an area of space that same size as the shown in the play screen. Thus an object located in the top left corner of the radar is two screen widths to the left and about two screen heights to up.
+Radar is placed in the lowest part of the dashboard. It will show large space objects in your local space. Radar is divided into 5x5 matrix and your own ship is always in the center of the radar. Each cell of the radar matrix represent an area of space about same size as the play screen. Thus an object located in the top left corner of the radar is two screen widths to the left and two screen heights to up.
 
 Color coding in radar:
 <table>
 <tr>
-  <td>Blue</td><td>Verge Station - can be docked for trade and diplomacy. Verge Station will activate Asteroid Protection Field when your ship reaches close proximity. To initiate docking sequence your ship's velocity must be below 3 and your ship must be in touch with the station.</td>
+  <td>Blue</td><td>Verge Station - can be docked for trade and diplomacy. Verge Station will activate Asteroid Protection Field when your ship reaches close proximity. To initiate docking sequence your ship's velocity must be below 9 and your ship must be in touch with the station.</td>
 </tr>
 <tr>
   <td>Yellow</td><td>Gravity well - ship's fuel scoops will automatically gather fuel during close approach</td>
@@ -198,12 +217,34 @@ This table provides the location of each artifact as stated in your intel:
 
 # Thanks
 
- - Fekete Csaba for XC=Basic3
  - Roy Batty for music
  - Krill for Loader
+ - Fekete Csaba for XC=Basic3
  - Michel de Bree for Retropixels
+ - Timppa and Spock for play testing
 
 # Release Notes
+
+3.0 Major release
+ - Instead of single file, game now occupies a floppy disk
+ - New story elements
+ - New dashboard
+ - New station interface
+ - Difficulty modes
+ - Usability improvements
+
+2.02
+ - Color coding for dashboard
+
+2.01
+ - Added Verge stations to sector map
+
+2.00
+ - New ship improvement - gyroscopes - upgrading those babies can make your ship spin like a wheel (I am still a bit hesitant about this change, as it diminishes the turret's value - but on the other hand I haven't heard anyone even trying the two player co-op)
+ - Both weapons (forward facing railgun and rotating turret) are now part of the initial ship configuration
+ - Possibility to upgrade weapon damage. Initial weapon damage is now weaker than originally, but in the high end the damage is about 2x more powerful than before
+
+1.01 fix for gold cargo bug
 
 1.0 changes since Beta
  - Game balance tuning
@@ -214,32 +255,11 @@ This table provides the location of each artifact as stated in your intel:
  - README game tips added
  - Multiple bug fixes
 
-1.01 fix for gold cargo bug
-
-2.00
- - New ship improvement - gyroscopes - upgrading those babies can make your ship spin like a wheel (I am still a bit hesitant about this change, as it diminishes the turret's value - but on the other hand I haven't heard anyone even trying the two player co-op)
- - Both weapons (forward facing railgun and rotating turret) are now part of the initial ship configuration
- - Possibility to upgrade weapon damage. Initial weapon damage is now weaker than originally, but in the high end the damage is about 2x more powerful than before
-
-2.01
- - Added Verge stations to sector map
-
-2.02
- - Color coding for dashboard
-
-3.0 Major release
- - Instead of single file, game now occupies a floppy disk
- - Story elements added to beginning and end
- - New dashboard
- - New station interface
- - New game mode "easy"
- - Usability improvements
-
 # Technical Information
 
 Ad Astra is my project to learn games programming for C64. The code is written with XC-Basic 3 (https://xc-basic.net/) and time/memory critical parts are transformed into assembly.
 
-Music is ripped from Millenium Demo and Batty Tunes - made by lengendary Roy Batty. I absolutely love his tunes! The permission to use them is given in the demo scroller.
+Music is ripped from Millenium Demo and Batty Tunes - made by lengendary Roy Batty. I absolutely love his tunes! The permission to use them is given in the Millenium demo scroller.
 Thank you Roy Batty!
 
 ![](https://github.com/orlof/aileon/blob/main/data/music.png?raw=true)
@@ -272,97 +292,7 @@ MAP data format:
             11  missile silo
 </pre>
 
-ZERO-PAGE LAYOUT (NOT COMPLETE)
-
-|  ZP  | SHARED |  XCB3  | LOADER |  ZX0   | INTRO  | BATTLE |
-|------|--------|--------|--------|--------|--------|--------|
-| 0x16 | ZP_W0  |   FP   |  USED  | SRCPTR |        |        |
-| 0x17 | ZP_W0  |   FP   |  USED  | SRCPTR |        |        |
-| 0x18 | ZP_W1  |   FP   |  USED  | DSTPTR |        |        |
-| 0x19 | ZP_W1  |   FP   |  USED  | DSTPTR |        |        |
-| 0x1A | ZP_W2  |   FP   |  USED  | LENGTH |        |        |
-| 0x1B | ZP_W2  |   FP   |  USED  | LENGTH |        |        |
-| 0x1C | ZP_I0  |   FP   |        | OFFSET |        |        |
-| 0x1D | ZP_I0  |   FP   |        | OFFSET |        |        |
-| 0x1E | ZP_I1  |   FP   |        |        |        |        |
-| 0x1F | ZP_I1  |   FP   |        |        |        |        |
-| 0x20 | ZP_B0  |   FP   |        |        |        |        |
-| 0x21 | ZP_B1  |   FP   |        |        |        |        |
-| 0x22 | ZP_B2  |   FP   |        |        |        |        |
-| 0x23 | ZP_B3  |   FP   |        |        |        |        |
-| 0x24 | ZP_B4  |   FP   |        |        |        |        |
-| 0x25 | ZP_B5  |   FP   |        |        |        |        |
-| 0x26 | ZP_L0  |   FP   |        |        |        |        |
-| 0x27 | ZP_L0  |   FP   |        |        |        |        |
-| 0x28 | ZP_L0  |   FP   |        |        |        |        |
-| 0x29 | ZP_L1  |   FP   |        |        |        |        |
-| 0x2A | ZP_L1  |   FP   |        |        |        |        |
-| 0x2B | ZP_L1  |   FP   |        |        |        |        |
-| 0x2C |        |   FP   |        |        |        |        |
-| 0x2D |        |   FP   |        |        |        |        |
-| 0x2E |        |   FP   |        |        |        |        |
-| 0x2F |        |   FP   |        |        |        |        |
-| 0x30 |        |   FP   |        |        |        |        |
-| 0x31 |        |   FP   |        |        |        |        |
-| 0x32 |        |   FP   |        |        |        |        |
-| 0x33 |        |   FP   |        |        |        |        |
-| 0x34 |        |   FP   |        |        |        |        |
-| 0x35 |        |   FP   |        |        |        |        |
-| 0x36 |        |   FP   |        |        |        |        |
-| 0x37 |        |   FP   |        |        |        |        |
-| 0x38 |        |   FP   |        |        |        |        |
-| 0x39 |        |   FP   |        |        |        |        |
-| 0x3A |        |   FP   |        |        |        |        |
-| 0x3B |        |   FP   |        |        |        |        |
-| 0x3C |        |  FAST  |        |        |        |        |
-| 0x3D |        |  FAST  |        |        |        |        |
-| 0x3E |        |  FAST  |        |        |        |        |
-| 0x3F |        |  FAST  |        |        |        |        |
-| 0x40 |        |  FAST  |        |        |        |        |
-| 0x41 |        |  FAST  |        |        |        |        |
-| 0x42 |        |  FAST  |        |        |        |        |
-| 0x43 |        |  FAST  |        |        |        |        |
-| 0x44 |        |  FAST  |        |        |        |        |
-| 0x45 |        |  FAST  |        |        |        |        |
-| 0x46 |        |  FAST  |        |        |        |        |
-| 0x47 |        |  FAST  |        |        |        |        |
-| 0x48 |        |  FAST  |        |        |        |        |
-| 0x49 |        |  FAST  |        |        |        |        |
-| 0x4A |        |  FAST  |        |        |        |        |
-| 0x4B |        |  FAST  |        |        |        |        |
-| 0x4C |        |  FAST  |        |        |        |        |
-| 0x4D |        |  FAST  |        |        |        |        |
-| 0x4E |        |  FAST  |        |        |        |        |
-| 0x4F |        |  FAST  |        |        |        |        |
-| 0x50 |        |  FAST  |        |        |        |        |
-| 0x51 |        |  FAST  |        |        |        |        |
-| 0x52 |        |  FAST  |        |        |        |        |
-| 0x53 |        |  FAST  |        |        |        |        |
-| 0x54 |        |  FAST  |        |        |        |        |
-| 0x55 |        |  FAST  |        |        |        |        |
-| 0x56 |        |  FAST  |        |        |        |        |
-| 0x57 |        |  FAST  |        |        |        |        |
-| 0x58 |        |  FAST  |        |        |        |        |
-| 0x59 |        |  FAST  |        |        |        |        |
-| 0x5A |        |  FAST  |        |        |        |        |
-| 0x5B |        |  FAST  |        |        |        |        |
-| 0x5C |        |  FAST  |        |        |        |        |
-| 0x5D |        |  FAST  |        |        |        |        |
-| 0x5E |        |  FAST  |        |        |        |        |
-| 0x5F |        |  FAST  |        |        |        |        |
-| 0x60 |        |  FAST  |        |        |        |        |
-| 0x61 |        |  FAST  |        |        |        |        |
-| 0x62 |        |  FAST  |        |        |        |        |
-| 0x63 |        |  FAST  |        |        |        |        |
-| 0x64 |        |  FAST  |        |        |        |        |
-| 0x65 |        |  FAST  |        |        |        |        |
-| 0x66 |        |  FAST  |        |        |        |        |
-| 0x67 |        |  FAST  |        |        |        |        |
-| 0x68 |        |  FAST  |        |        |        |        |
-| 0x69 |        |  FAST  |        |        |        |        |
-
-
-MEMORY LAYOUT (NOT COMPLETE)
+MEMORY LAYOUT (INCOMPLETE)
 
 | BANK | START | END   | TYPE   | LOADER   | PROLOGUE | STATION  | SPACE    | GAMEOVER | EPILOGUE |
 |------|-------|-------|--------|----------|----------|----------|----------|----------|----------|
@@ -430,30 +360,3 @@ MEMORY LAYOUT (NOT COMPLETE)
 | 3    | $F400 | $F7FF | KERNAL | BITMAP   | BITMAP   | BITMAP   | BITMAP   | BITMAP   | BITMAP   |
 | 3    | $F800 | $FBFF | KERNAL | BITMAP   | BITMAP   | BITMAP   | BITMAP   | BITMAP   | BITMAP   |
 | 3    | $FC00 | $FFFF | KERNAL | BITMAP   | BITMAP   | BITMAP   | BITMAP   | BITMAP   | BITMAP   |
-
-
-|START |END   | NAME              | TYPE  |
-|------|------|-------------------|-------|
-| 0800 | 08ff | GameMap           | B(256)|
-| 0900 | 0900 | GameState         | B     |
-| 0901 | 0902 | TimeLeft          | D     |
-| 0903 | 0905 | PlayerCredit      | L     |
-| 0906 | 0908 | PlayerX           | L     |
-| 0909 | 090b | PlayerY           | L     |
-| 090c | 090c | StationId         | B     |
-| 090d | 090f | PlayerSubSystem   | B(3)  |
-| 0910 | 0919 | ComponentValue    | W(5)  |
-| 091a | 0923 | ComponentCapacity | W(5)  |
-| 0924 | 092f | ArtifactLocation  | B(12) |
-| 0930 | 0931 | PlayerSectorMapX  | W     |
-| 0932 | 0932 | PlayerSectorMapY  | B     |
-| 0933 | 0933 | PlayerSectorMapRestore | B     |
-
-TODO
-- X increase bullet speed
-- X replace timer with time
-- X add score
-- turboboost at gunners joystick
-- X map at space station
-- update README
-- Make ITCH release
