@@ -15,14 +15,14 @@ CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 CALL FillBitmap(0)
 SCREEN 2
 
-CALL Text(11, 6, 1, 0, TRUE,  "ad astra", CHAR_MEMORY)
-CALL Text(16, 9, 1, 0, FALSE, "mmxxiv", CHAR_MEMORY)
-CALL Text(13, 11, 1, 0, FALSE, "code    orlof", CHAR_MEMORY)
-CALL Text(9, 13, 1, 0, FALSE, "loader        krill", CHAR_MEMORY)
-CALL Text(8, 15, 1, 0, FALSE, "music            roy batty", CHAR_MEMORY)
-CALL Text(2, 17, 1, 0, FALSE, "xc=basic3                fekete csaba", CHAR_MEMORY)
-
-CALL Text(4, 20, 1, 0, FALSE, "play testing by timppa and spock", CHAR_MEMORY)
+CALL Text(18, 6, 1, 0, FALSE, "7e8", CHAR_MEMORY)
+CALL Text(5, 7, 1, 0, TRUE,  "ad astra", CHAR_MEMORY)
+'CALL Text(5, 8, 1, 0, FALSE, "mmxxiv", CHAR_MEMORY)
+CALL Text(5, 11, 1, 0, FALSE, "code.............orlof", CHAR_MEMORY)
+CALL Text(5, 13, 1, 0, FALSE, "music............roy batty", CHAR_MEMORY)
+CALL Text(5, 15, 1, 0, FALSE, "loader...........krill", CHAR_MEMORY)
+CALL Text(5, 17, 1, 0, FALSE, "xc=basic3........fekete csaba", CHAR_MEMORY)
+CALL Text(5, 19, 1, 0, FALSE, "play test........timppa and spock", CHAR_MEMORY)
 
 CALL InstallDriveCode()
 CALL InstallLoaderCode()

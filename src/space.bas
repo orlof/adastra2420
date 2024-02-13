@@ -11,9 +11,9 @@ INCLUDE "../libs/lib_str.bas"
 
 CONST SPACE_CHARSET_NUM_LEFT = $be00
 CONST SPACE_CHARSET_NUM_RIGHT = $be80
-CONST DASHBOARD_COLOR_NOMINAL = 0
+CONST DASHBOARD_COLOR_NOMINAL = 1
 CONST DASHBOARD_COLOR_WARN = 7
-CONST DASHBOARD_COLOR_CRITICAL = 2
+CONST DASHBOARD_COLOR_CRITICAL = 10
 
 ASM
 SPACE_CHARSET_FIELD = $bfc0
@@ -504,7 +504,7 @@ ASM
 END ASM
 
 IF (GameState AND GAMESTATE_GAMEOVER) THEN
-    CALL Text(12, 5, TRUE, "epilogue")
+    'CALL Text(12, 5, TRUE, "irata hq")
     SELECT CASE GameState
         CASE GAMESTATE_OUT_OF_FUEL
             CALL Text(7, 10, FALSE, "moonwraith was lost in the")
@@ -529,7 +529,7 @@ IF (LocalMapVergeStationId = 5) AND (ArtifactLocation(1) = LOC_PLAYER) THEN
     (ArtifactLocation(2) = LOC_PLAYER) AND _
     (ArtifactLocation(3) = LOC_PLAYER)) THEN
         GameState = GAMESTATE_COMPLETED
-        CALL Text(12, 5, TRUE, "epilogue")
+        CALL Text(12, 8, TRUE, "irata hq")
         CALL GraphicsModeValid()
         CALL CalculateScore()
         IF NOT Debug THEN CALL LoadProgram("epilogue", CWORD(3072))
@@ -537,8 +537,8 @@ IF (LocalMapVergeStationId = 5) AND (ArtifactLocation(1) = LOC_PLAYER) THEN
     END IF
 END IF
 
-CALL Text(7, 5, TRUE, "verge station")
-CALL Text(11, 10, FALSE, "network connecting")
+CALL Text(7, 8, TRUE, "verge station")
+'CALL Text(11, 10, FALSE, "network connecting")
 
 CALL GraphicsModeValid()
 GameState = GAMESTATE_STATION
@@ -562,7 +562,7 @@ END SUB
 
 SUB DrawDashboard() STATIC SHARED
     ' DASHBOARD
-    CALL SetColorInRect(33, 0, 39, 24, 0, COLOR_MIDDLEGRAY)
+    CALL SetColorInRect(33, 0, 39, 24, 0, COLOR_BLACK)
     CALL SetColorInRect(33, 0, 39, 24, 1, COLOR_DARKGRAY)
 
     FOR W AS WORD = 264 TO 319 STEP 2
@@ -604,8 +604,8 @@ SUB DrawDashboard() STATIC SHARED
 
     ' RADAR
     CALL SetColorInRect(34, 18, 38, 18, 1, COLOR_WHITE)
-    CALL SetColorInRect(35, 20, 37, 22, 0, COLOR_LIGHTGRAY)
-    CALL SetColorInRect(36, 21, 36, 21, 0, COLOR_MIDDLEGRAY)
+    CALL SetColorInRect(35, 20, 37, 22, 0, COLOR_DARKGRAY)
+    CALL SetColorInRect(36, 21, 36, 21, 0, COLOR_BLACK)
 
     CALL Rect(270, 142, 313, 193, MODE_SET, MODE_CLEAR)
     'CALL Rect(271, 143, 312, 192, MODE_CLEAR, MODE_CLEAR)
@@ -642,7 +642,7 @@ SUB InitCommon() STATIC
         ComponentValue(ZP_B0) = 250
     NEXT
     PlayerSubSystem(SUBSYSTEM_WEAPON) = 0
-    PlayerSubSystem(SUBSYSTEM_ENGINE) = 0
+    PlayerSubSystem(SUBSYSTEM_ENGINE) = 9
     PlayerSubSystem(SUBSYSTEM_GYRO)   = 0
 
     'LocalMap(135) = %00000101
@@ -763,7 +763,7 @@ SUB CalculateScore() STATIC
 END SUB
 
 _ZoneAsteroidSpeedColor:
-DATA AS BYTE $00, $20, $70, $00
+DATA AS BYTE $00, $a0, $70, $10
 
 SPACE_CHARSET_START:
 INCBIN "../gfx/space_charset.bin"

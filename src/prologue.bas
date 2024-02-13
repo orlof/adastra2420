@@ -192,8 +192,8 @@ CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 
 CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
 
-CALL Text(7, 5, 1, 0, TRUE, "verge station", CHAR_MEMORY)
-CALL Text(11, 10, 1, 0, FALSE, "network connecting", CHAR_MEMORY)
+CALL Text(7, 8, 1, 0, TRUE, "verge station", CHAR_MEMORY)
+'CALL Text(11, 10, 1, 0, FALSE, "network connecting", CHAR_MEMORY)
 
 GameState = GAMESTATE_STARTING
 

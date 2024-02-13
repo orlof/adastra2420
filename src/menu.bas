@@ -154,8 +154,8 @@ CALL SetScreenMemory(2)
 CALL FillBitmap(0)
 CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 
-CALL Text(7, 5, 1, 0, TRUE, "verge station", CHAR_MEMORY)
-CALL Text(11, 10, 1, 0, FALSE, "network connecting", CHAR_MEMORY)
+CALL Text(7, 8, 1, 0, TRUE, "verge station", CHAR_MEMORY)
+'CALL Text(11, 10, 1, 0, FALSE, "network connecting", CHAR_MEMORY)
 
 CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
 

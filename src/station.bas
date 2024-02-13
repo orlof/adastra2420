@@ -212,9 +212,10 @@ LeftPanelHandler:
                 CALL FillBitmap(0)
                 CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 
-                CALL Text(10, 5, 1, 0, TRUE, "moonwraith", CHAR_MEMORY)
-                CALL Text(12, 8, 1, 0, FALSE, "launch sequence", CHAR_MEMORY)
-                CALL Text(15, 10, 1, 0, FALSE, "initiated", CHAR_MEMORY)
+                CALL Text(10, 8, 1, 0, TRUE, "moonwraith", CHAR_MEMORY)
+                'CALL Text(10, 5, 1, 0, TRUE, "moonwraith", CHAR_MEMORY)
+                'CALL Text(12, 8, 1, 0, FALSE, "launch sequence", CHAR_MEMORY)
+                'CALL Text(15, 10, 1, 0, FALSE, "initiated", CHAR_MEMORY)
 
                 CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
 
@@ -804,8 +805,8 @@ SUB MissionBriefingHandler() STATIC
         CALL Panel.Left(1, 15, "bring parts back to verge", COLOR_LIGHTGRAY, FALSE)
     ELSE
         CALL Panel.Left(1, 11, "babbage siphon is available at", COLOR_LIGHTGRAY, FALSE)
-        CALL Panel.Left(1, 12, "verge station 1, but they want", COLOR_LIGHTGRAY, FALSE)
-        CALL Panel.Left(1, 13, "fusion aligner in exchange", COLOR_LIGHTGRAY, FALSE)
+        CALL Panel.Left(1, 12, "multiple verge stations, but they", COLOR_LIGHTGRAY, FALSE)
+        CALL Panel.Left(1, 13, "want fusion aligner in exchange", COLOR_LIGHTGRAY, FALSE)
 
         CALL Panel.Left(1, 15, "bring babbage siphon to verge", COLOR_LIGHTGRAY, FALSE)
     END IF

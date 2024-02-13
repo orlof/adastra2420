@@ -281,7 +281,7 @@ player_update_y_positive
             END ASM
 
             IF TurboBoost THEN
-                CALL ParticleEmit(PLAYER_SX, PLAYER_SY, small_impulse_dx(PlayerDirection), small_impulse_dy(PlayerDirection), 40, 3)
+                CALL ParticleEmit(PLAYER_SX, PLAYER_SY, small_impulse_dx(ZP_B0), small_impulse_dy(ZP_B0), 40, 3)
             END IF
 
             ASM
