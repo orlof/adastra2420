@@ -99,6 +99,14 @@ CALL SetupGraphics()
 IF Debug OR (GameState = GAMESTATE_STARTING) THEN
     IF Debug THEN GameLevel = GAMELEVEL_NORMAL
     CALL MissionBriefingHandler()
+    ASM
+        lda {RndTimer}
+        sta {ZP_L0}
+        sta {ZP_L0}+1
+        sta {ZP_L0}+2
+    END ASM
+    RANDOMIZE ZP_L0
+
     GameState = GAMESTATE_STATION
     Time = 0
     LocalMapVergeStationId = 5
@@ -206,6 +214,7 @@ LeftPanelHandler:
                 CALL DiscPanel.SetSelected(1)
                 GOTO DiscPanelHandler
             CASE 19 ' launch
+                CALL WaitRasterLine256()
                 CALL SetGraphicsMode(INVALID_MODE)
                 CALL SetBitmapMemory(1)
                 CALL SetScreenMemory(2)
@@ -504,6 +513,7 @@ REM ********************************
 SUB SetupGraphics() STATIC
     BORDER COLOR_BLACK
     BACKGROUND COLOR_BLACK
+    CALL ScreenOff()
     'CALL SetVideoBank(3)
     ASM
         lda #0          ;bank=3
@@ -516,6 +526,7 @@ SUB SetupGraphics() STATIC
     MEMSET $d800, 1000, 1
 
     CALL SetGraphicsMode(STANDARD_CHARACTER_MODE)
+    CALL ScreenOn()
 END SUB
 
 SUB DrawDesktop(Char AS BYTE) STATIC
@@ -816,7 +827,6 @@ SUB MissionBriefingHandler() STATIC
     CALL Panel.Center(19, "press fire", COLOR_LIGHTGRAY, TRUE)
 
     CALL Panel.WaitEvent(FALSE)
-    RANDOMIZE TI()
 END SUB
 
 SUB Map_AddRandom(Item AS BYTE) SHARED STATIC

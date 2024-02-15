@@ -7,6 +7,7 @@ INCLUDE "../libs/lib_common.bas"
 INCLUDE "../libs/lib_gfx.bas"
 
 BORDER COLOR_BLACK
+CALL ScreenOff()
 CALL SetVideoBank(3)
 CALL SetScreenMemory(2)
 CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
@@ -23,6 +24,8 @@ CALL Text(5, 13, 1, 0, FALSE, "music............roy batty", CHAR_MEMORY)
 CALL Text(5, 15, 1, 0, FALSE, "loader...........krill", CHAR_MEMORY)
 CALL Text(5, 17, 1, 0, FALSE, "xc=basic3........fekete csaba", CHAR_MEMORY)
 CALL Text(5, 19, 1, 0, FALSE, "play test........timppa and spock", CHAR_MEMORY)
+
+CALL ScreenOn()
 
 CALL InstallDriveCode()
 CALL InstallLoaderCode()

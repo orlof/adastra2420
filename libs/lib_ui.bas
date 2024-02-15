@@ -3,6 +3,7 @@ DIM SHARED UiDelay AS BYTE
 DIM SHARED BorderFocusColor AS BYTE
 DIM SHARED BorderNoFocusColor AS BYTE
 DIM SHARED ClientAreaColor AS BYTE
+DIM SHARED RndTimer AS BYTE
 
 REM *********************************
 REM     CONFIGURATION PARAMETERS
@@ -437,6 +438,7 @@ TYPE UiPanel
         DO
             CALL _Sleep(1)
             CALL JoyUpdate()
+            RndTimer = RndTimer + 1
             GET Key
             IF JoySame(Joystick) AND (JoyUp(Joystick) OR JoyDown(Joystick)) THEN
                 CALL _Sleep(UiDelay)

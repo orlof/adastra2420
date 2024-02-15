@@ -100,11 +100,11 @@ CALL Center(2, COLOR_NARRATOR, "on your way to the hq you")
 CALL Center(3, COLOR_NARRATOR, "meet an odd cow like robot")
 CALL ChangePage()
 
-CALL Left(0, COLOR_MULE, "mule")
+CALL Left(0, COLOR_MULE, "cow like robot")
 CALL Center(2, COLOR_MULE, "hello commander jameson")
 CALL ChangePage()
 
-CALL Left(0, COLOR_MULE, "mule")
+CALL Left(0, COLOR_MULE, "cow like robot")
 CALL Center(2, COLOR_MULE, "i was wandering who the president")
 CALL Center(3, COLOR_MULE, "of foft was here to meet")
 CALL ChangePage()

@@ -89,7 +89,7 @@ CALL Center(2, COLOR_COLONEL, "commander jameson, thanks for coming")
 CALL ChangePage()
 
 CALL Left(0, COLOR_COLONEL, "colonel rockford")
-CALL Center(2, COLOR_COLONEL, "elvin atombender has captured")
+CALL Center(2, COLOR_COLONEL, "dr elvin has captured")
 CALL Center(3, COLOR_COLONEL, "the singularity generator")
 
 CALL ChangePage()
@@ -101,7 +101,7 @@ CALL ChangePage()
 
 CALL Left(0, COLOR_COLONEL, "colonel rockford")
 CALL Center(2, COLOR_COLONEL, "yes, but he still dreams of")
-CALL Center(3, COLOR_COLONEL, "world domination")
+CALL Center(3, COLOR_COLONEL, "destroying the earth")
 
 CALL ChangePage()
 
@@ -182,7 +182,9 @@ CALL Center(1, COLOR_YOU, "aye, lieutenant")
 CALL Center(2, COLOR_YOU, "consider it done")
 CALL ChangePage()
 
+CALL ScreenOff()
 RASTER INTERRUPT OFF
+
 POKE $d015, 0
 CALL SidStop()
 
@@ -190,10 +192,11 @@ CALL FillBitmap(0)
 CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
 'SCREEN 2
 
-CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
-
 CALL Text(7, 8, 1, 0, TRUE, "verge station", CHAR_MEMORY)
 'CALL Text(11, 10, 1, 0, FALSE, "network connecting", CHAR_MEMORY)
+
+CALL SetGraphicsMode(STANDARD_BITMAP_MODE)
+CALL ScreenOn()
 
 GameState = GAMESTATE_STARTING
 

@@ -107,8 +107,13 @@ SUB Asteroid_CreateGeometry(AsteroidNr AS BYTE) SHARED STATIC
 END SUB
 
 SUB Asteroid_Destruct(AsteroidNr AS BYTE) SHARED STATIC
-    AsteroidEnabled(AsteroidNr) = FALSE
-    spr_y(AsteroidNr + 1) = $ff
+    ASM
+        ldx {AsteroidNr}
+        lda #$00
+        sta {AsteroidEnabled},x
+        lda #$ff
+        sta {spr_y}+1,x
+    END ASM
     CALL Asteroid_CreateGeometry(AsteroidNr)
     CALL SprDraw_Clear(AsteroidNr + 1)
 END SUB

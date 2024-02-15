@@ -154,7 +154,8 @@ SUB Star_Animate() SHARED STATIC
 END SUB
 
 SUB PoiShip_Animate() SHARED STATIC
-    IF ZoneType = ZONE_MISSILE_SILO OR ZoneType = ZONE_PORTAL THEN
+    'IF ZoneType = ZONE_MISSILE_SILO OR ZoneType = ZONE_PORTAL THEN
+    IF ZoneType = ZONE_PORTAL THEN
         CALL SprDraw_SetAngle(SPR_NR_POI, GameTime)
     END IF
 END SUB

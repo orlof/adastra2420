@@ -671,46 +671,28 @@ update_dashboard_color_loop
 
     ZP_W0 = $e000 + 320 * (Line+1) + 296
     ZP_W1 = SPACE_CHARSET_NUM_LEFT + SHL(DecByte(0), 3)
+    ZP_W2 = SPACE_CHARSET_NUM_RIGHT + SHL(DecByte(1), 3)
     ASM
         ldy #7
 _update_dashboard_loop0
         lda ({ZP_W1}),y
+        ora ({ZP_W2}),y
         sta ({ZP_W0}),y
         dey
         bpl _update_dashboard_loop0
     END ASM
 
-    ZP_W1 = SPACE_CHARSET_NUM_RIGHT + SHL(DecByte(1), 3)
-    ASM
-        ldy #7
-_update_dashboard_loop1
-        lda ({ZP_W1}),y
-        ora ({ZP_W0}),y
-        sta ({ZP_W0}),y
-        dey
-        bpl _update_dashboard_loop1
-    END ASM
-
     ZP_W0 = ZP_W0 + 8
     ZP_W1 = SPACE_CHARSET_NUM_LEFT + SHL(DecByte(2), 3)
+    ZP_W2 = SPACE_CHARSET_NUM_RIGHT + SHL(DecByte(3), 3)
     ASM
         ldy #7
 _update_dashboard_loop2
         lda ({ZP_W1}),y
+        ora ({ZP_W2}),y
         sta ({ZP_W0}),y
         dey
         bpl _update_dashboard_loop2
-    END ASM
-
-    ZP_W1 = SPACE_CHARSET_NUM_RIGHT + SHL(DecByte(3), 3)
-    ASM
-        ldy #7
-_update_dashboard_loop3
-        lda ({ZP_W1}),y
-        ora ({ZP_W0}),y
-        sta ({ZP_W0}),y
-        dey
-        bpl _update_dashboard_loop3
     END ASM
 END SUB
 
