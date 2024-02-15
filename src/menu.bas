@@ -188,7 +188,7 @@ CALL SetVideoBank(3)
 CALL SetBitmapMemory(1)
 CALL SetScreenMemory(2)
 CALL FillBitmap(0)
-CALL FillColors(COLOR_BLACK, COLOR_ORANGE)
+CALL FillColors(COLOR_BLACK, COLOR_LIGHTRED)
 
 CALL Text(12, 18, 1, 0, TRUE, "prologue", CHAR_MEMORY)
 

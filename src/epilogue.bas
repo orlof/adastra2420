@@ -90,14 +90,14 @@ CALL ChangePage()
 
 CALL ShowImage(@Image003_Bitmap, @Image003_Screen, @Image003_Color, $03)
 
-CALL Center(2, COLOR_NARRATOR, "you return to the headquarters")
+CALL Center(2, COLOR_NARRATOR, "you return to planet irata")
 CALL Center(3, COLOR_NARRATOR, "for debriefing")
 CALL ChangePage()
 
 CALL ShowImage(@Image004_Bitmap, @Image004_Screen, @Image004_Color, $03)
 
-CALL Center(2, COLOR_NARRATOR, "on your way to the hq you")
-CALL Center(3, COLOR_NARRATOR, "meet an odd cow like robot")
+CALL Center(2, COLOR_NARRATOR, "on your way to the headquarters")
+CALL Center(3, COLOR_NARRATOR, "you meet an odd cow like robot")
 CALL ChangePage()
 
 CALL Left(0, COLOR_MULE, "cow like robot")
