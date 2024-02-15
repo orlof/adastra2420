@@ -90,7 +90,7 @@ CALL ChangePage()
 
 CALL ShowImage(@Image003_Bitmap, @Image003_Screen, @Image003_Color, $03)
 
-CALL Center(2, COLOR_NARRATOR, "you return to the planet irata")
+CALL Center(2, COLOR_NARRATOR, "you return to the headquarters")
 CALL Center(3, COLOR_NARRATOR, "for debriefing")
 CALL ChangePage()
 

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This manual provides specific instructions and information for playing the Ad Astra (ed. 7E8) with Commodore 64 computer. Your package should include 5.25" disk, a manual and a map.
+This manual provides specific instructions and information for playing the Ad Astra 2420 with Commodore 64 computer. Your package should include 5.25" disk, a manual and a map.
 
 ## Computer systems
 
@@ -18,7 +18,7 @@ You are a star ranger deployed for long range reconnaissance mission in Rimward 
 
 Rimward reach has 8 Verge stations that perform mining operations.
 
-When game stars, your ship is located in Verge Station 5 and you will get your mission parameters via long range quantum communication link.
+When game stars, your ship is located in Verge Station 5 and you will see your mission parameters via long range quantum communication link.
 
 ## Difficulty levels
 
@@ -107,11 +107,9 @@ Your ship's status is visible in the right side of the screen.
 </tr>
 </table>
 
-Map is located in the middle of the dashboard and shows your ship's position in Rimward Reach sector.
-Map shows the whole sector and does not scroll. Small "+" signs on the map are Verge Stations and
-your own ship is shown with a single dot that moves on the map.
+Map is located in the middle of the dashboard and shows your ship's position in Rimward Reach sector. Map shows the whole sector and does not scroll. Small "+" signs on the map are Verge Stations and your own ship is shown with a single dot that moves on the map.
 
-Radar is placed in the lowest part of the dashboard. It will show large space objects in your local space. Radar is divided into 5x5 matrix and your own ship is always in the center of the radar. Each cell of the radar matrix represent an area of space about same size as the play screen. Thus an object located in the top left corner of the radar is two screen widths to the left and two screen heights to up.
+The radar is positioned at the bottom of the dashboard. It displays large space objects within your close proximity. The radar screen is divided into a 5x5 grid, with your ship always at the center. Each cell on the radar corresponds to an area visible on the main gameplay screen. For instance, an object shown at the top left corner of the radar indicates it is two screen widths to the left and two screen heights upwards from your current position.
 
 Color coding in radar:
 <table>
@@ -130,7 +128,7 @@ Color coding in radar:
 
 Collisions with different asteroids have different effects.
 
-Note: Your mining computer will mark gold and metal asteroids with small triangles in the center of the asteroid.
+Note: Your ship's mining computer will mark gold and metal asteroids with small triangles in the center of the asteroid.
 
 <table>
 <tr>
@@ -154,7 +152,7 @@ Eight Verge Stations that are located in Rimward Reach provide a place to trade 
 
 Top part of the screen is trade interface. Left side shows how much each material you have stored in cargo. It also shows how much cargo space (or tank volume) you have for each material. Typically you trade your Gold for credits, and use Credits to fill your Fuel and Oxygen tanks.
 
-Metal is mostly needed in Shipyard (but it can also be sold for Credits). In Shipyard you can use Metal to upgrade your ship's Weapon, Manouver Drive, Gyroscopes, Armor and Cargo Space. Following table shows the benefit of each upgrade level for subsystems:
+Metal is mostly needed in Shipyard for system upgrades (but it can also be sold for Credits). In Shipyard you can use Metal to upgrade your ship's Weapon, Engines, Gyroscopes and Armor, or to increase your Cargo Space. Following table shows the benefit of each upgrade level for subsystems:
 
 <table>
 <tr><th>Level</th><th>Weapon Damage<br>Cannon/Turret</th><th>Drive Pulse</th><th>Gyroscope deg/s</th></tr>
@@ -195,7 +193,6 @@ In the second phase of the game, you must travel through all the Verge stations 
  - Beware of AI missile silos
  - If you have strong enough engine, you can scoop fuel from stars
  - Bigger engines consume more fuel. You may want to upgrade your fuel tank capacity along the engine
- - Watch that Singularity countdown sensor!
 
 Note: Difficulty level Easy requires you to deliver only Babbage Siphon.
 
@@ -222,8 +219,8 @@ This table provides the location of each artifact as stated in your intel:
 
 # Release Notes
 
-3.0 Major release
- - Instead of single file, game now occupies a floppy disk
+3.0 Major release - Ad Astra 2420
+ - Instead of single file, game now occupies a whole floppy
  - New story elements
  - New dashboard
  - New station interface

@@ -284,6 +284,7 @@ wait2:  bit $d011
 END SUB
 
 SUB ScreenOff() SHARED STATIC
+    CALL WaitRasterLine256()
     ASM
         lda $d011
         and #%01101111
@@ -292,6 +293,7 @@ SUB ScreenOff() SHARED STATIC
 END SUB
 
 SUB ScreenOn() SHARED STATIC
+    CALL WaitRasterLine256()
     ASM
         lda $d011
         and #%01111111

@@ -504,11 +504,10 @@ ASM
 END ASM
 
 IF (GameState AND GAMESTATE_GAMEOVER) THEN
-    'CALL Text(12, 5, TRUE, "irata hq")
     SELECT CASE GameState
         CASE GAMESTATE_OUT_OF_FUEL
-            CALL Text(7, 10, FALSE, "moonwraith was lost in the")
-            CALL Text(9, 12, FALSE, "dark between the stars")
+            CALL Text(7, 10, FALSE, "moonwraith was lost among")
+            CALL Text(9, 12, FALSE, "billions of asteroids")
         CASE GAMESTATE_OUT_OF_OXYGEN
             CALL Text(10, 11, FALSE, "life support failed")
         CASE GAMESTATE_OUT_OF_TIME
@@ -529,7 +528,7 @@ IF (LocalMapVergeStationId = 5) AND (ArtifactLocation(1) = LOC_PLAYER) THEN
     (ArtifactLocation(2) = LOC_PLAYER) AND _
     (ArtifactLocation(3) = LOC_PLAYER)) THEN
         GameState = GAMESTATE_COMPLETED
-        CALL Text(12, 8, TRUE, "irata hq")
+        CALL Text(12, 8, TRUE, "headquarters")
         CALL GraphicsModeValid()
         CALL CalculateScore()
         IF NOT Debug THEN CALL LoadProgram("epilogue", CWORD(3072))

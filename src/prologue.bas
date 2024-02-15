@@ -73,8 +73,8 @@ CALL ChangePage()
 
 CALL ShowImage(@Image002_Bitmap, @Image002_Screen, @Image002_Color, $0b)
 
-CALL Center(2, COLOR_NARRATOR, "this is you, commander jameson")
-CALL Center(3, COLOR_NARRATOR, "a ranger from federation of free traders")
+CALL Center(2, COLOR_NARRATOR, "this is you, commander jameson, a ranger")
+CALL Center(3, COLOR_NARRATOR, "from the federation of free traders")
 CALL ChangePage()
 
 CALL Center(2, COLOR_NARRATOR, "you walk toward the ominous hq")
@@ -89,8 +89,8 @@ CALL Center(2, COLOR_COLONEL, "commander jameson, thanks for coming")
 CALL ChangePage()
 
 CALL Left(0, COLOR_COLONEL, "colonel rockford")
-CALL Center(2, COLOR_COLONEL, "dr elvin has captured")
-CALL Center(3, COLOR_COLONEL, "the singularity generator")
+CALL Center(2, COLOR_COLONEL, "a criminal called elvin the hacker")
+CALL Center(3, COLOR_COLONEL, "has built a singularity generator")
 
 CALL ChangePage()
 
@@ -100,8 +100,7 @@ CALL Center(2, COLOR_YOU, "that is both stupid and dangerous")
 CALL ChangePage()
 
 CALL Left(0, COLOR_COLONEL, "colonel rockford")
-CALL Center(2, COLOR_COLONEL, "yes, but he still dreams of")
-CALL Center(3, COLOR_COLONEL, "destroying the earth")
+CALL Center(2, COLOR_COLONEL, "yes, but he dreams of world domination")
 
 CALL ChangePage()
 
@@ -160,7 +159,7 @@ CALL ChangePage()
 
 CALL Left(0, COLOR_YOU, "you")
 CALL Center(2, COLOR_YOU, "gathering components for it")
-CALL Center(3, COLOR_YOU, "will be an extremely dangerous task")
+CALL Center(3, COLOR_YOU, "is going to be dangerous")
 CALL ChangePage()
 
 CALL Left(0, COLOR_LIEUTENANT, "lieutenant mariah rockford")

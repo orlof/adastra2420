@@ -777,20 +777,19 @@ SUB MissionBriefingHandler() STATIC
     Panel.Selected = 19
 
     CALL Panel.Left(1, 1, "status", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(1, 3, "elvin atombender's terrorist", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(1, 4, "organisation has captured core", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(1, 5, "density singularity to assure", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(1, 6, "unlimited energy source and world", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(1, 7, "domination", COLOR_LIGHTGRAY, FALSE)
+    CALL Panel.Left(1, 3, "elvin the hacker has build", COLOR_LIGHTGRAY, FALSE)
+    CALL Panel.Left(1, 4, "a singularity generator", COLOR_LIGHTGRAY, FALSE)
+    CALL Panel.Left(1, 5, "to assure unlimited energy source", COLOR_LIGHTGRAY, FALSE)
+    CALL Panel.Left(1, 6, "and world domination", COLOR_LIGHTGRAY, FALSE)
 
-    CALL Panel.Left(1, 9, "warning!", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(1, 11, "cosmic projections indicate", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(1, 12, "possibility of runaway singularity", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(1, 13, "resulting in supercluster", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(1, 14, "destruction", COLOR_LIGHTGRAY, FALSE)
+    CALL Panel.Left(1, 8, "warning!", COLOR_LIGHTGRAY, FALSE)
+    CALL Panel.Left(1, 10, "cosmic projections indicate", COLOR_LIGHTGRAY, FALSE)
+    CALL Panel.Left(1, 11, "possibility of runaway singularity", COLOR_LIGHTGRAY, FALSE)
+    CALL Panel.Left(1, 12, "resulting in supercluster", COLOR_LIGHTGRAY, FALSE)
+    CALL Panel.Left(1, 13, "destruction", COLOR_LIGHTGRAY, FALSE)
 
-    CALL Panel.Left(1, 16, "elvin has deployed ai missile", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(1, 17, "silos to block interception", COLOR_LIGHTGRAY, FALSE)
+    CALL Panel.Left(1, 15, "elvin has deployed ai missile", COLOR_LIGHTGRAY, FALSE)
+    CALL Panel.Left(1, 16, "silos to block interception", COLOR_LIGHTGRAY, FALSE)
 
     CALL Panel.Center(19, "press fire", COLOR_LIGHTGRAY, TRUE)
 
