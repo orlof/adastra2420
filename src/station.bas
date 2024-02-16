@@ -110,6 +110,7 @@ IF Debug OR (GameState = GAMESTATE_STARTING) THEN
     GameState = GAMESTATE_STATION
     Time = 0
     LocalMapVergeStationId = 5
+    Verge2Found = FALSE
     PlayerCredit = 10000
     PlayerX = $068000
     PlayerY = $088000
@@ -162,6 +163,10 @@ IF Debug OR (GameState = GAMESTATE_STARTING) THEN
         PlayerSubSystem(SUBSYSTEM_ENGINE) = 0
         PlayerSubSystem(SUBSYSTEM_GYRO)   = 0
     END IF
+END IF
+
+IF LocalMapVergeStationId = 2 THEN
+    Verge2Found = TRUE
 END IF
 
 CALL DrawDesktop($30+LocalMapVergeStationId)
@@ -602,10 +607,14 @@ SUB CreateMapPanel() STATIC
                         ZP_B2 = 81
                     CASE %00000010 ' STATION
                         ZP_B3 = SHR(ZP_B0, 5)
-                        IF ZP_B3 = 2 THEN
+                        IF (ZP_B3 = 2) AND (NOT Verge2Found) THEN
                             ZP_B2 = 160
                         ELSE
-                            ZP_B1 = COLOR_LIGHTBLUE
+                            IF ZP_B3 = LocalMapVergeStationId THEN
+                                ZP_B1 = COLOR_WHITE
+                            ELSE
+                                ZP_B1 = COLOR_LIGHTBLUE
+                            END IF
                             ZP_B2 = 48 + ZP_B3
                         END IF
                     CASE %00000011 ' SILO
@@ -778,8 +787,8 @@ SUB MissionBriefingHandler() STATIC
 
     CALL Panel.Left(1, 1, "status", COLOR_LIGHTGRAY, FALSE)
     CALL Panel.Left(1, 3, "elvin the hacker has build", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(1, 4, "a singularity generator", COLOR_LIGHTGRAY, FALSE)
-    CALL Panel.Left(1, 5, "to assure unlimited energy source", COLOR_LIGHTGRAY, FALSE)
+    CALL Panel.Left(1, 4, "a singularity generator to", COLOR_LIGHTGRAY, FALSE)
+    CALL Panel.Left(1, 5, "assure unlimited energy source", COLOR_LIGHTGRAY, FALSE)
     CALL Panel.Left(1, 6, "and world domination", COLOR_LIGHTGRAY, FALSE)
 
     CALL Panel.Left(1, 8, "warning!", COLOR_LIGHTGRAY, FALSE)
@@ -804,7 +813,7 @@ SUB MissionBriefingHandler() STATIC
         CALL Panel.Left(6, 5, ArtifactTitle(2), COLOR_LIGHTGRAY, FALSE)
         CALL Panel.Left(6, 6, ArtifactTitle(3), COLOR_LIGHTGRAY, FALSE)
     END IF
-    CALL Panel.Left(1, 8, "build a singularity diffuser", COLOR_LIGHTGRAY, FALSE)
+    CALL Panel.Left(1, 8, "to build a singularity diffuser", COLOR_LIGHTGRAY, FALSE)
 
     CALL Panel.Left(1, 10, "intelligence reports that", COLOR_LIGHTGRAY, FALSE)
     IF GameLevel THEN

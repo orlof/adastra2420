@@ -528,7 +528,7 @@ IF (LocalMapVergeStationId = 5) AND (ArtifactLocation(1) = LOC_PLAYER) THEN
     (ArtifactLocation(2) = LOC_PLAYER) AND _
     (ArtifactLocation(3) = LOC_PLAYER)) THEN
         GameState = GAMESTATE_COMPLETED
-        CALL Text(12, 8, TRUE, "headquarters")
+        CALL Text(8, 8, TRUE, "headquarters")
         CALL GraphicsModeValid()
         CALL CalculateScore()
         IF NOT Debug THEN CALL LoadProgram("epilogue", CWORD(3072))
