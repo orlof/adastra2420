@@ -33,7 +33,7 @@
                 ]
             },
             "windows": {
-                "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
+                "command": "${config:xcbasic3.vice}/bin/x64sc.exe",
                 "args": [
                     "build/adastra_AD.d64"
                 ]
@@ -60,7 +60,7 @@
                 ]
             },
             "windows": {
-                "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
+                "command": "${config:xcbasic3.vice}/bin/x64sc.exe",
                 "args": [
                     "build/_prologue.prg"
                 ]
@@ -87,7 +87,7 @@
                 ]
             },
             "windows": {
-                "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
+                "command": "${config:xcbasic3.vice}/bin/x64sc.exe",
                 "args": [
                     "build/_gameover.prg"
                 ]
@@ -114,7 +114,7 @@
                 ]
             },
             "windows": {
-                "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
+                "command": "${config:xcbasic3.vice}/bin/x64sc.exe",
                 "args": [
                     "build/_menu.prg"
                 ]
@@ -141,7 +141,7 @@
                 ]
             },
             "windows": {
-                "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
+                "command": "${config:xcbasic3.vice}/bin/x64sc.exe",
                 "args": [
                     "build/_epilogue.prg"
                 ]
@@ -168,7 +168,7 @@
                 ]
             },
             "windows": {
-                "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
+                "command": "${config:xcbasic3.vice}/bin/x64sc.exe",
                 "args": [
                     "build/_space.prg"
                 ]
@@ -195,7 +195,7 @@
                 ]
             },
             "windows": {
-                "command": "${config:xcbasic3.vice}\\bin\\x64sc.exe",
+                "command": "${config:xcbasic3.vice}/bin/x64sc.exe",
                 "args": [
                     "build/_station.prg"
                 ]
@@ -299,9 +299,6 @@
                     "data/savefile.prg",
                     "save0003",
                     "-write",
-                    "data/savefile.prg",
-                    "save0005",
-                    "-write",
                     "build/station.prg",
                     "station"
                 ]
@@ -377,7 +374,6 @@
                 "args": [
                     "sfx",
                     "basic",
-                    "loader/loader-c64.prg",
                     "build/_loader.prg",
                     "loader/install-c64.prg",
                     "gfx/generic_charset.prg",
@@ -663,7 +659,7 @@
                 "args": [
                     "${file}",
                     "-k",
-                    "${fileDirname}\\${fileBasenameNoExtension}.prg"
+                    "${fileDirname}/${fileBasenameNoExtension}.prg"
                 ]
             },
             "group": {
@@ -756,6 +752,7 @@
             "windows": {
                 "command": "${config:xcbasic3.basefolder}/bin/Windows/xcbasic3.exe",
                 "args": [
+                    "-o=3072",
                     "-b=False",
                     "-i=True",
                     "src/epilogue.bas",
