@@ -1,46 +1,32 @@
-SUB playnote(note$ as string*20)
-    dim freq as int
-    FREQ = 0
-    dim b as byte
-    b=1
-    dim notes$ as string*1
-    for x as byte = 0 to len(note$)-1
-        notes$=mid$(note$,x,1)
-        SELECT CASE NOTES$
-            CASE "B"
-                FREQ = 125
-            CASE "C"
-                FREQ = 238
-            CASE "C#"
-                FREQ = 224
-            CASE "D"
-                FREQ = 210
-            CASE "D#"
-                FREQ = 199
-            CASE "E"
-                FREQ = 188
-            CASE "F"
-                FREQ = 177
-            CASE "F#"
-                FREQ = 168
-            CASE "G"
-                FREQ = 158
-            CASE "G#"
-                FREQ = 149
-            CASE "A"
-                FREQ = 140
-            CASE "A#"
-                FREQ = 133
-            CASE ELSE
-                PRINT "Error: Note not found"
-        END SELECT
-        REM Play the note
-        POKE 59466, 51 : REM Set octave to 1
-        POKE 59464, FREQ : REM Set frequency
-        FOR DELAY as int = 1 TO 5000
-    NEXT
-    POKE 59464, 0 : REM Turn off the note
-    next
-end SUB
+ASM
+        sta $400
+        LDA #fname_end-fname
+        LDX #<fname
+        LDY #>fname
+        JSR $FFBD     ; call SETNAM
+        LDA #$01
+        LDX $BA       ; last used device number
+        BNE .skip
+        LDX #$08      ; default to device 8
+.skip   LDY #$01      ; not $01 means: load to address stored in file
+        JSR $FFBA     ; call SETLFS
 
-CALL playnote("CDE")
+        LDA #$00      ; $00 means: load to memory (not verify)
+        JSR $FFD5     ; call LOAD
+        BCS .error    ; if carry set, a load error has happened
+        jmp *
+.error
+        ; Accumulator contains BASIC error code
+        sta $fb
+
+        ; most likely errors:
+        ; A = $05 (DEVICE NOT PRESENT)
+        ; A = $04 (FILE NOT FOUND)
+        ; A = $1D (LOAD ERROR)
+        ; A = $00 (BREAK, RUN/STOP has been pressed during loading)
+
+        jmp *
+
+fname:  dc "DATA"
+fname_end:
+END ASM

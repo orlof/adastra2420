@@ -254,6 +254,37 @@ This table provides the location of each artifact as stated in your intel:
 Ad Astra is my project to learn games programming for C64. The code is written with XC-Basic 3 (https://xc-basic.net/) and time/memory critical parts are transformed into assembly.
 
 Music is ripped from Millenium Demo and Batty Tunes - made by lengendary Roy Batty. I absolutely love his tunes! The permission to use them is given in the Millenium demo scroller.
+
+    *C:4a78 He^ao                     HOWDY, AND WEL
+    *C:4aa0 COME TO THE DEBUT RELEASE OF THE NEW GRO
+    *C:4ac8 UP...    MILLENIUM!
+    *C:4af0                          ROY BATTY HERE,
+    *C:4b18  I'M VERY PROUD TO OFFER THE COMBINED EF
+    *C:4b40 FORTS OF MYSELF, FUNGUS, AND WAVEFORM IN
+    *C:4b68  OUR FIRST RELEASE.  WE'VE CHOSEN THE NA
+    *C:4b90 ME MILLENIUM BECAUSE WE ALL FEEL THAT TH
+    *C:4bb8 E C= CULT WILL PROSPER WELL INTO THE SEC
+    *C:4be0 OND MILLENNIUM... AND BEYOND!
+    *C:4c08      WE ARE NOT HERE TO COMPETE, (WELL,
+    *C:4c30 MAYBE A LITTLE...) OUR ONLY GOAL IS TO A
+    *C:4c58 CHIEVE A HIGHER UNDERSTANDING OF PROGRAM
+    *C:4c80 MING AND TO HAVE FUN DOING IT. WE ARE WI
+    *C:4ca8 LLING TO SHARE OUR IDEAS AND ALGORYTHMS
+    *C:4cd0 WITH ANYONE WHO MIGHT BE INTERESTED, WE
+    *C:4cf8 BELIEVE THAT A GOOD THING IS NOT SO GOOD
+    *C:4d20      IF IT'S NOT SHARED...   ALL MUSICS IN T
+    *C:4d48     HIS DEMO ARE BATTY-TUNES, FEEL FREE TO R
+    *C:4d70     IP THEM, ALL I ASK IS THAT YOU MENTION M
+    *C:4d98     Y NAME IN YOUR WORK.     THE MEMBERS OF
+    *C:4dc0 MILLENIUM WILL BE RELEASING WAREZ ON THE
+    *C:4de8 IR OWN AS WELL AS IN COLLABORATION WITH
+    *C:4e10 OTHER GROUPS. FOR TRADES, DICUSSIONS AND
+    *C:4e38  SUCH, CONTACT WAVEFORM OR FUNGUS AT THE
+    *C:4e60 IR E-MAIL ADDYS LISTED ELSEWHERE IN THIS
+    *C:4e88  DEMO.                      MEANWHILE, R
+    *C:4eb0 ELAX, HAVE A BANANA, SIT BACK AND ENJOY.
+    *C:4ed8 ..                             MILLENIUM
+
 Thank you Roy Batty!
 
 ![](https://github.com/orlof/aileon/blob/main/data/music.png?raw=true)

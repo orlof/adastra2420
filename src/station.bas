@@ -575,10 +575,10 @@ SUB CreateCargoPanel() STATIC
 END SUB
 
 SUB CreateMapPanel() STATIC
-    CALL MapPanel.Init("sector map", 6, 3, 18, 18, TRUE)
+    CALL MapPanel.Init("sector map", 16, 3, 18, 18, TRUE)
     CALL MapPanel.SetEvents(EVENT_FIRE OR EVENT_LEFT)
     DIM ScreenAddr AS WORD
-    ScreenAddr = $c8a7
+    ScreenAddr = $c8b1
     ZP_B1 = COLOR_BLACK
     FOR Y AS WORD = 0 TO 15
         FOR X AS WORD = 0 TO 15
