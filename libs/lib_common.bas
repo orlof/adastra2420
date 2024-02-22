@@ -56,14 +56,15 @@ DIM SHARED ZP_B5 AS BYTE @$25
 DIM SHARED ZP_L0 AS LONG @$26
 DIM SHARED ZP_L1 AS LONG @$29
 
+DIM SHARED UseDiscTurbo AS BYTE @$41f
 DIM SHARED _ProgramAddress AS WORD @$420
 DIM SHARED _ProgramFilename AS STRING*28 @$422
 
 DIM SHARED Debug AS BYTE
-Debug = (PEEK($441) <> $ee)
+Debug = NOT (PEEK($441) = $ee)
 
 SUB LoadProgram(Filename AS STRING*16, Address AS WORD) STATIC SHARED
-    IF PEEK($441) = $ee THEN
+    IF NOT Debug THEN
         MEMSET @_ProgramFilename, 29, 0
         _ProgramFilename = Filename
         _ProgramAddress = Address

@@ -29,6 +29,7 @@ SaveParams.LoadAddress = $0800
 SaveParams.DriveCodeBuffer = $b300
 
 DIM SaveFileName(4) AS STRING * 9 @_SaveFileName
+DIM ReplaceFileName(4) AS STRING * 11 @_ReplaceFileName
 
 DIM ArtifactTitle(12) AS STRING * 15 @_ArtifactTitle
 DIM ComponentTitle(5) AS STRING * 6 @_ComponentTitle
@@ -171,7 +172,7 @@ END IF
 
 CALL DrawDesktop($30+LocalMapVergeStationId)
 
-CALL AutoSave()
+'CALL AutoSave()
 
 CALL CreateLeftPanel()
 
@@ -251,22 +252,65 @@ SUB AutoSave() STATIC
 END SUB
 
 SUB SaveGame(FileNr AS BYTE) STATIC
-    SaveParams.FileName = @SaveFileName(FileNr) + 1
-    ZP_W0 = @SaveParams
-
     IF NOT Debug THEN
-        ASM
-            lda #1
-            sta $30
+        IF UseDiscTurbo THEN
+            SaveParams.FileName = @SaveFileName(FileNr) + 1
+            ZP_W0 = @SaveParams
+            ASM
+                lda #1
+                sta $30
 
-            ldx {ZP_W0}
-            ldy {ZP_W0}+1
-            jsr $bb00
-            bcs save_failed
-            lda #0
+                ldx {ZP_W0}
+                ldy {ZP_W0}+1
+                jsr $bb00
+                bcs save_failed
+                lda #0
 save_failed
-            sta $30
-        END ASM
+                sta $30
+            END ASM
+        ELSE
+            TIMER INTERRUPT OFF
+            CALL SidStop()
+
+            ZP_W0 = @ReplaceFileName(FileNr) + 1
+
+            ASM
+                sta $30
+
+                lda #10
+                ldx {ZP_W0}
+                ldy {ZP_W0}+1
+                jsr $ffbd     ; call SETNAM
+
+                lda #$00
+                ldx $ba         ; last used device number
+                bne *+4
+                    ldx #$08    ; default to device 8
+                ldy #$00
+                jsr $ffba       ; call SETLFS
+
+                lda #<$0800
+                sta {ZP_W1}
+                lda #>$0800
+                sta {ZP_W1}+1
+
+                ldx #<$09f4
+                ldy #>$09f4
+
+                lda #$18        ; address of ZP_W1
+                jsr $ffd8       ; call SAVE
+                bcs *           ; if carry set, a load error has happened
+            END ASM
+
+            ON TIMER 17095 GOSUB InterruptHandlerPlaySid3
+            TIMER INTERRUPT ON
+            EXIT SUB
+InterruptHandlerPlaySid3:
+            ASM
+                jsr $1003
+                rts
+            END ASM
+        END IF
     END IF
 END SUB
 
@@ -274,13 +318,28 @@ SUB LoadGame(FileNr AS BYTE) STATIC
     ZP_W0 = @SaveFileName(FileNr) + 1
 
     IF NOT Debug THEN
+        IF NOT UseDiscTurbo THEN
+            TIMER INTERRUPT OFF
+            CALL SidStop()
+        END IF
         ASM
+            lda {SaveFileName}
             ldx {ZP_W0}
             ldy {ZP_W0}+1
             jsr $440
-load_failed
-            bcs load_failed
+
+            bcs *
         END ASM
+        IF NOT UseDiscTurbo THEN
+            ON TIMER 17095 GOSUB InterruptHandlerPlaySid2
+            TIMER INTERRUPT ON
+            EXIT SUB
+InterruptHandlerPlaySid2:
+            ASM
+                jsr $1003
+                rts
+            END ASM
+        END IF
     END IF
 END SUB
 
@@ -326,6 +385,8 @@ LoadPanelHandler:
                 CALL LoadGame(SlotPanel.Selected - 1)
                 CALL SlotPanel.Dispose()
                 CALL DiscPanel.Dispose()
+                CALL CreateLeftPanel()
+                CALL LeftPanel.SetSelected(17)
                 GOTO LeftPanelHandler
         END SELECT
     LOOP
@@ -890,6 +951,17 @@ DATA AS STRING*8 "save0003"
 DATA AS BYTE 0
 DATA AS STRING*8 "autosave"
 DATA AS BYTE 0
+
+_ReplaceFileName:
+DATA AS STRING*10 "@:save0001"
+DATA AS BYTE 0
+DATA AS STRING*10 "@:save0002"
+DATA AS BYTE 0
+DATA AS STRING*10 "@:save0003"
+DATA AS BYTE 0
+DATA AS STRING*10 "@:autosave"
+DATA AS BYTE 0
+
 
 _ComponentInitialCapacity:
 DATA AS WORD 150, 150, 150, 150, 50

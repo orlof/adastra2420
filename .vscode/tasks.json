@@ -814,7 +814,6 @@
             "osx": {
                 "command": "${config:xcbasic3.basefolder}/bin/macOS/xcbasic3",
                 "args": [
-                    "-p=False",
                     "src/loader.bas",
                     "build/_loader.prg"
                 ]
