@@ -213,11 +213,16 @@ This table provides the location of each artifact as stated in your intel:
 
  - Roy Batty for music
  - Krill for Loader
+ - John Brandwood for ZX0 decompressor
  - Fekete Csaba for XC=Basic3
  - Michel de Bree for Retropixels
  - Timppa and Spock for play testing
 
 # Release Notes
+
+3.01 Bug fix release
+ - Initial support for SD2IEC
+ - Station UI is now fully updated after load
 
 3.0 Major release - Ad Astra 2420
  - Instead of single file, game now occupies a whole floppy
